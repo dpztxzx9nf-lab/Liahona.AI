@@ -59,6 +59,10 @@ section:last-child {
   color: var(--accent);
   font-size: 0.82rem;
   font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant: normal;
+  font-variant-caps: normal;
 }
 
 h1,
