@@ -16,10 +16,13 @@
 
 html {
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  overflow-x: hidden;
   min-height: 100vh;
   color: var(--text);
   background:
@@ -30,9 +33,9 @@ body {
 }
 
 main {
-  width: min(1120px, calc(100% - 32px));
+  width: min(1120px, 100%);
   margin: 0 auto;
-  padding: 56px 0;
+  padding: 56px 16px;
 }
 
 section {
@@ -103,7 +106,7 @@ li {
 }
 
 .reference-quote {
-  width: min(100%, 920px);
+  width: 100%;
   max-width: 920px;
   margin: 32px auto;
   padding: 48px 24px;
@@ -207,6 +210,7 @@ pre {
   margin: 0;
   padding: 18px;
   overflow-x: auto;
+  max-width: 100%;
   background: var(--panel-soft);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -216,6 +220,8 @@ code {
   color: var(--text);
   font-family: Consolas, "Courier New", monospace;
   font-size: 0.95rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .stack {
@@ -277,8 +283,8 @@ code {
 
 @media (max-width: 760px) {
   main {
-    width: min(100% - 24px, 1120px);
-    padding: 32px 0;
+    width: 100%;
+    padding: 32px 12px;
   }
 
   section {
@@ -293,6 +299,33 @@ code {
   .lifecycle,
   .source-list {
     grid-template-columns: 1fr;
+  }
+
+  article,
+  pre,
+  .stack p,
+  .source-list a {
+    max-width: 100%;
+  }
+
+  .reference-quote {
+    margin: 24px auto;
+    padding: 34px 16px;
+  }
+
+  .reference-quote p {
+    margin-bottom: 24px;
+    font-size: clamp(1.1rem, 5vw, 1.34rem);
+    line-height: 1.5;
+  }
+
+  .reference-quote p:first-child {
+    margin-bottom: 20px;
+    font-size: clamp(1.22rem, 5.6vw, 1.52rem);
+  }
+
+  .reference-quote footer {
+    font-size: 1rem;
   }
 
   .lifecycle li {
