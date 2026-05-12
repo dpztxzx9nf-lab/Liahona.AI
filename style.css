@@ -98,6 +98,10 @@ li {
   font-size: 1.1rem;
 }
 
+.section-intro {
+  max-width: 760px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -178,6 +182,38 @@ code {
   border-left: 3px solid var(--accent);
 }
 
+.source-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.source-list a {
+  display: block;
+  padding: 16px;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.source-list a:hover,
+.source-list a:focus {
+  border-color: var(--accent);
+}
+
+.source-list span,
+.source-list small {
+  display: block;
+}
+
+.source-list small {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
 .roadmap {
   display: flex;
   flex-wrap: wrap;
@@ -207,7 +243,8 @@ code {
   }
 
   .grid,
-  .lifecycle {
+  .lifecycle,
+  .source-list {
     grid-template-columns: 1fr;
   }
 
