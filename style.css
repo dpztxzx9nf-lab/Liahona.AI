@@ -102,6 +102,30 @@ li {
   max-width: 760px;
 }
 
+.reference-quote {
+  max-width: 860px;
+  margin: 22px 0;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+}
+
+.reference-quote p {
+  margin-bottom: 12px;
+}
+
+.reference-quote p:last-of-type {
+  margin-bottom: 0;
+}
+
+.reference-quote footer {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
