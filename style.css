@@ -59,6 +59,8 @@ section:last-child {
   --tilt-y: 0deg;
   --glow-x: 50%;
   --glow-y: 50%;
+  --touch-x: 50%;
+  --touch-y: 50%;
   --particle-x: 0px;
   --particle-y: 0px;
   --shadow-x: 0px;
@@ -82,6 +84,7 @@ section:last-child {
     var(--shadow-x) var(--shadow-y) 56px rgba(0, 0, 0, 0.68),
     0 0 34px rgba(127, 183, 166, 0.16);
   cursor: pointer;
+  touch-action: manipulation;
   transform: rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
   transform-style: preserve-3d;
   transition: transform 160ms ease, box-shadow 160ms ease;
@@ -94,6 +97,10 @@ section:last-child {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   transform: translateZ(28px) scale(1.03);
+}
+
+.hologram-card.is-touched img {
+  animation: artifact-shimmer 720ms ease-out;
 }
 
 .hologram-glow,
@@ -135,6 +142,79 @@ section:last-child {
     calc(40px - var(--particle-x)) calc(10px - var(--particle-y));
   background-size: 82px 82px, 124px 124px;
   transform: translateZ(54px);
+}
+
+.hologram-card::after {
+  content: "";
+  position: absolute;
+  left: var(--touch-x);
+  top: var(--touch-y);
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42), rgba(127, 183, 166, 0.24) 38%, transparent 72%);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.hologram-card.is-touched::after {
+  animation: hologram-ripple 680ms ease-out;
+}
+
+.hologram-touch-burst {
+  position: absolute;
+  z-index: 3;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: #d9fff6;
+  box-shadow:
+    0 -22px 0 rgba(127, 183, 166, 0.86),
+    19px -11px 0 rgba(255, 224, 178, 0.78),
+    19px 13px 0 rgba(127, 183, 166, 0.72),
+    0 24px 0 rgba(255, 255, 255, 0.72),
+    -20px 12px 0 rgba(127, 183, 166, 0.64),
+    -18px -12px 0 rgba(255, 224, 178, 0.68);
+  transform: translate(-50%, -50%) scale(0.65);
+  animation: hologram-burst 720ms ease-out forwards;
+}
+
+@keyframes hologram-ripple {
+  0% {
+    opacity: 0.78;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(18);
+  }
+}
+
+@keyframes hologram-burst {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.8) rotate(32deg);
+  }
+}
+
+@keyframes artifact-shimmer {
+  0%,
+  100% {
+    filter: saturate(1) brightness(1);
+  }
+
+  42% {
+    filter: saturate(1.12) brightness(1.08);
+  }
 }
 
 .eyebrow {

@@ -28,6 +28,40 @@ function isCoarsePointer() {
   return window.matchMedia("(pointer: coarse)").matches;
 }
 
+function triggerTouchEffect(event) {
+  const rect = hologramCard.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  const burst = document.createElement("span");
+
+  burst.className = "hologram-touch-burst";
+  burst.style.left = `${x}px`;
+  burst.style.top = `${y}px`;
+  burst.setAttribute("aria-hidden", "true");
+
+  hologramCard.style.setProperty("--touch-x", `${x}px`);
+  hologramCard.style.setProperty("--touch-y", `${y}px`);
+  hologramCard.classList.remove("is-touched");
+  hologramCard.appendChild(burst);
+
+  requestAnimationFrame(() => {
+    hologramCard.classList.add("is-touched");
+  });
+
+  window.setTimeout(() => {
+    burst.remove();
+    hologramCard.classList.remove("is-touched");
+  }, 760);
+
+  if (navigator.vibrate) {
+    try {
+      navigator.vibrate(12);
+    } catch (error) {
+      // Haptics are optional; unsupported browsers can ignore this.
+    }
+  }
+}
+
 if (hologram && hologramCard) {
   resetTilt();
 
@@ -47,6 +81,10 @@ if (hologram && hologramCard) {
     if (event.pointerType === "mouse") {
       resetTilt();
     }
+  });
+
+  hologramCard.addEventListener("pointerdown", (event) => {
+    triggerTouchEffect(event);
   });
 
   hologramCard.addEventListener("click", async () => {
