@@ -54,6 +54,89 @@ section:last-child {
   justify-content: center;
 }
 
+.hologram-shell {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --particle-x: 0px;
+  --particle-y: 0px;
+  --shadow-x: 0px;
+  --shadow-y: 18px;
+  width: min(100%, 620px);
+  margin-top: 34px;
+  perspective: 1100px;
+}
+
+.hologram-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  color: inherit;
+  background: #000000;
+  border: 1px solid rgba(127, 183, 166, 0.34);
+  border-radius: 8px;
+  box-shadow:
+    var(--shadow-x) var(--shadow-y) 56px rgba(0, 0, 0, 0.68),
+    0 0 34px rgba(127, 183, 166, 0.16);
+  cursor: pointer;
+  transform: rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+  transform-style: preserve-3d;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.hologram-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transform: translateZ(28px) scale(1.03);
+}
+
+.hologram-glow,
+.hologram-reflection,
+.hologram-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hologram-glow {
+  background:
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 183, 166, 0.34), transparent 30%),
+    radial-gradient(circle at calc(100% - var(--glow-x)) calc(100% - var(--glow-y)), rgba(214, 168, 92, 0.24), transparent 34%);
+  mix-blend-mode: screen;
+}
+
+.hologram-reflection {
+  background: linear-gradient(
+    115deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0.24) 48%,
+    rgba(127, 183, 166, 0.10) 58%,
+    transparent 76%
+  );
+  transform: translate3d(var(--particle-x), var(--particle-y), 42px);
+  mix-blend-mode: screen;
+}
+
+.hologram-particles {
+  opacity: 0.62;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(127, 183, 166, 0.58) 0 1px, transparent 1.5px);
+  background-position:
+    calc(10px + var(--particle-x)) calc(18px + var(--particle-y)),
+    calc(40px - var(--particle-x)) calc(10px - var(--particle-y));
+  background-size: 82px 82px, 124px 124px;
+  transform: translateZ(54px);
+}
+
 .eyebrow {
   margin: 0 0 12px;
   color: var(--accent);
