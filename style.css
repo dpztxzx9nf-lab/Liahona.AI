@@ -63,6 +63,12 @@ section:last-child {
   --touch-y: 50%;
   --particle-x: 0px;
   --particle-y: 0px;
+  --particle-x-strong: 0px;
+  --particle-y-strong: 0px;
+  --particle-x-reverse: 0px;
+  --particle-y-reverse: 0px;
+  --particle-x-soft: 0px;
+  --particle-y-soft: 0px;
   --shadow-x: 0px;
   --shadow-y: 18px;
   width: min(100%, 620px);
@@ -74,29 +80,75 @@ section:last-child {
   position: relative;
   display: block;
   width: 100%;
+  aspect-ratio: 1 / 1;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   color: inherit;
-  background: #000000;
-  border: 1px solid rgba(127, 183, 166, 0.34);
+  background: transparent;
+  border: 0;
   border-radius: 8px;
   box-shadow:
     var(--shadow-x) var(--shadow-y) 56px rgba(0, 0, 0, 0.68),
     0 0 34px rgba(127, 183, 166, 0.16);
   cursor: pointer;
   touch-action: manipulation;
-  transform: rotateX(var(--tilt-y)) rotateY(var(--tilt-x));
+  transform: rotateX(var(--tilt-y)) rotateY(var(--tilt-x)) translateZ(0);
   transform-style: preserve-3d;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+
+.hologram-card:focus-visible {
+  outline: 2px solid rgba(127, 183, 166, 0.86);
+  outline-offset: 5px;
+}
+
+.hologram-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid rgba(127, 183, 166, 0.34);
+  border-radius: 8px;
+  background: #000000;
+  transform-style: preserve-3d;
+  transition: transform 620ms cubic-bezier(0.2, 0.84, 0.22, 1);
+}
+
+.hologram-card.is-flipped .hologram-inner {
+  transform: rotateY(180deg);
+}
+
+.hologram-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.hologram-front {
+  background: #000000;
+}
+
+.hologram-back {
+  padding: 28px;
+  background: #000000;
+  transform: rotateY(180deg);
 }
 
 .hologram-card img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  transform: translateZ(28px) scale(1.03);
+  max-height: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+  transform: translateZ(34px) scale(0.98);
 }
 
 .hologram-card.is-touched img {
@@ -104,6 +156,7 @@ section:last-child {
 }
 
 .hologram-glow,
+.hologram-iridescence,
 .hologram-reflection,
 .hologram-particles {
   position: absolute;
@@ -124,24 +177,36 @@ section:last-child {
     115deg,
     transparent 18%,
     rgba(255, 255, 255, 0.04) 34%,
-    rgba(255, 255, 255, 0.24) 48%,
-    rgba(127, 183, 166, 0.10) 58%,
+    rgba(255, 255, 255, 0.32) 48%,
+    rgba(127, 183, 166, 0.14) 58%,
     transparent 76%
   );
-  transform: translate3d(var(--particle-x), var(--particle-y), 42px);
+  transform: translate3d(var(--particle-x-strong), var(--particle-y-strong), 42px);
   mix-blend-mode: screen;
 }
 
+.hologram-iridescence {
+  opacity: 0.32;
+  background:
+    linear-gradient(130deg, transparent 12%, rgba(122, 255, 226, 0.18), transparent 38%),
+    linear-gradient(35deg, transparent 20%, rgba(255, 210, 130, 0.16), transparent 58%),
+    radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(255, 255, 255, 0.12), transparent 42%);
+  mix-blend-mode: screen;
+  transform: translate3d(var(--particle-x-soft), var(--particle-y-soft), 46px);
+}
+
 .hologram-particles {
-  opacity: 0.62;
+  opacity: 0.76;
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(127, 183, 166, 0.58) 0 1px, transparent 1.5px);
+    radial-gradient(circle, rgba(127, 183, 166, 0.58) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 210, 130, 0.52) 0 1px, transparent 1.5px);
   background-position:
-    calc(10px + var(--particle-x)) calc(18px + var(--particle-y)),
-    calc(40px - var(--particle-x)) calc(10px - var(--particle-y));
-  background-size: 82px 82px, 124px 124px;
-  transform: translateZ(54px);
+    calc(10px + var(--particle-x-strong)) calc(18px + var(--particle-y-strong)),
+    calc(40px + var(--particle-x-reverse)) calc(10px + var(--particle-y-reverse)),
+    calc(16px + var(--particle-x-soft)) calc(52px + var(--particle-y-soft));
+  background-size: 82px 82px, 124px 124px, 56px 56px;
+  transform: translateZ(58px);
 }
 
 .hologram-card::after {
@@ -161,6 +226,18 @@ section:last-child {
 
 .hologram-card.is-touched::after {
   animation: hologram-ripple 680ms ease-out;
+}
+
+.hologram-card.is-touched .hologram-glow {
+  animation: hologram-glow-pulse 720ms ease-out;
+}
+
+.hologram-card.is-touched .hologram-inner {
+  animation: card-glow-pulse 720ms ease-out;
+}
+
+.hologram-card.is-touched .hologram-reflection {
+  animation: shimmer-sweep 820ms ease-out;
 }
 
 .hologram-touch-burst {
@@ -215,6 +292,84 @@ section:last-child {
   42% {
     filter: saturate(1.12) brightness(1.08);
   }
+}
+
+@keyframes hologram-glow-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  36% {
+    opacity: 1.65;
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    opacity: 0.3;
+    transform: translate3d(-28px, -12px, 42px);
+  }
+
+  52% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.72;
+    transform: translate3d(34px, 18px, 42px);
+  }
+}
+
+@keyframes card-glow-pulse {
+  0%,
+  100% {
+    box-shadow: none;
+  }
+
+  42% {
+    box-shadow:
+      0 0 32px rgba(127, 183, 166, 0.34),
+      inset 0 0 28px rgba(127, 183, 166, 0.16);
+  }
+}
+
+.hologram-reference {
+  width: 100%;
+  max-height: 100%;
+  margin: 0;
+  overflow-y: auto;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+  scrollbar-width: thin;
+}
+
+.hologram-reference p {
+  margin: 0 auto 14px;
+  color: #ffffff;
+  font-size: clamp(0.78rem, 1.55vw, 1rem);
+  font-weight: 700;
+  line-height: 1.36;
+}
+
+.hologram-reference p:first-child {
+  margin-bottom: 16px;
+  font-size: clamp(1rem, 2vw, 1.32rem);
+}
+
+.hologram-reference a {
+  color: #008fa8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hologram-reference footer {
+  margin-top: 18px;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.76rem, 1.35vw, 0.92rem);
+  font-weight: 700;
 }
 
 .eyebrow {
@@ -504,9 +659,20 @@ code {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: min(100%, 72vh, 540px);
     max-width: 100%;
     max-height: min(72vh, 540px);
+    margin: 0 auto;
     overflow: hidden;
+  }
+
+  .hologram-inner {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hologram-back {
+    padding: 18px;
   }
 
   .hologram-card img {
@@ -521,6 +687,22 @@ code {
 
   .hologram-particles {
     transform: translateZ(32px);
+  }
+
+  .hologram-reference p {
+    margin-bottom: 10px;
+    font-size: clamp(0.66rem, 2.6vw, 0.88rem);
+    line-height: 1.28;
+  }
+
+  .hologram-reference p:first-child {
+    margin-bottom: 12px;
+    font-size: clamp(0.9rem, 3.6vw, 1.12rem);
+  }
+
+  .hologram-reference footer {
+    margin-top: 12px;
+    font-size: clamp(0.64rem, 2.4vw, 0.82rem);
   }
 
   .lifecycle li {

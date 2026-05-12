@@ -1,5 +1,7 @@
 const hologram = document.querySelector("[data-hologram]");
 const hologramCard = hologram?.querySelector(".hologram-card");
+let swipeStart = null;
+let suppressNextClick = false;
 
 function setTilt(x, y) {
   if (!hologram) {
@@ -10,10 +12,16 @@ function setTilt(x, y) {
   hologram.style.setProperty("--tilt-y", `${y}deg`);
   hologram.style.setProperty("--glow-x", `${50 + x * 2}%`);
   hologram.style.setProperty("--glow-y", `${50 - y * 2}%`);
-  hologram.style.setProperty("--particle-x", `${x * 1.4}px`);
-  hologram.style.setProperty("--particle-y", `${y * 1.4}px`);
-  hologram.style.setProperty("--shadow-x", `${x * -1.8}px`);
-  hologram.style.setProperty("--shadow-y", `${18 + y * 1.2}px`);
+  hologram.style.setProperty("--particle-x", `${x * 2.2}px`);
+  hologram.style.setProperty("--particle-y", `${y * 2.2}px`);
+  hologram.style.setProperty("--particle-x-strong", `${x * 3.6}px`);
+  hologram.style.setProperty("--particle-y-strong", `${y * 3.6}px`);
+  hologram.style.setProperty("--particle-x-reverse", `${x * -2.8}px`);
+  hologram.style.setProperty("--particle-y-reverse", `${y * -2.8}px`);
+  hologram.style.setProperty("--particle-x-soft", `${x * -1.6}px`);
+  hologram.style.setProperty("--particle-y-soft", `${y * 1.6}px`);
+  hologram.style.setProperty("--shadow-x", `${x * -2.2}px`);
+  hologram.style.setProperty("--shadow-y", `${20 + y * 1.5}px`);
 }
 
 function resetTilt() {
@@ -26,6 +34,16 @@ function clamp(value, min, max) {
 
 function isCoarsePointer() {
   return window.matchMedia("(pointer: coarse)").matches;
+}
+
+function pulseHaptic() {
+  if (navigator.vibrate) {
+    try {
+      navigator.vibrate(12);
+    } catch (error) {
+      // Haptics are optional; unsupported browsers can ignore this.
+    }
+  }
 }
 
 function triggerTouchEffect(event) {
@@ -53,12 +71,33 @@ function triggerTouchEffect(event) {
     hologramCard.classList.remove("is-touched");
   }, 760);
 
-  if (navigator.vibrate) {
-    try {
-      navigator.vibrate(12);
-    } catch (error) {
-      // Haptics are optional; unsupported browsers can ignore this.
+  pulseHaptic();
+}
+
+function flipCard() {
+  const isFlipped = hologramCard.classList.toggle("is-flipped");
+  hologramCard.setAttribute("aria-pressed", String(isFlipped));
+  pulseHaptic();
+}
+
+async function requestMotionPermission() {
+  if (!window.DeviceOrientationEvent) {
+    hologram.dataset.motion = "unsupported";
+    return;
+  }
+
+  try {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      const permission = await DeviceOrientationEvent.requestPermission();
+      if (permission !== "granted") {
+        hologram.dataset.motion = "denied";
+        return;
+      }
     }
+
+    hologram.dataset.motion = "enabled";
+  } catch (error) {
+    hologram.dataset.motion = "denied";
   }
 }
 
@@ -74,7 +113,7 @@ if (hologram && hologramCard) {
     const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
 
-    setTilt(clamp(x * 9, -9, 9), clamp(y * -9, -9, 9));
+    setTilt(clamp(x * 13, -13, 13), clamp(y * -13, -13, 13));
   });
 
   hologramCard.addEventListener("pointerleave", (event) => {
@@ -84,28 +123,60 @@ if (hologram && hologramCard) {
   });
 
   hologramCard.addEventListener("pointerdown", (event) => {
+    swipeStart = {
+      x: event.clientX,
+      y: event.clientY
+    };
     triggerTouchEffect(event);
   });
 
-  hologramCard.addEventListener("click", async () => {
-    if (!window.DeviceOrientationEvent) {
-      hologram.dataset.motion = "unsupported";
+  hologramCard.addEventListener("pointerup", (event) => {
+    if (!swipeStart) {
       return;
     }
 
-    try {
-      if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        const permission = await DeviceOrientationEvent.requestPermission();
-        if (permission !== "granted") {
-          hologram.dataset.motion = "denied";
-          return;
-        }
-      }
+    const deltaX = event.clientX - swipeStart.x;
+    const deltaY = event.clientY - swipeStart.y;
+    const isSwipe = Math.abs(deltaX) > 42 || Math.abs(deltaY) > 48;
 
-      hologram.dataset.motion = "enabled";
-    } catch (error) {
-      hologram.dataset.motion = "denied";
+    swipeStart = null;
+
+    if (isSwipe) {
+      suppressNextClick = true;
+      flipCard();
+      requestMotionPermission();
+      window.setTimeout(() => {
+        suppressNextClick = false;
+      }, 0);
     }
+  });
+
+  hologramCard.addEventListener("pointercancel", () => {
+    swipeStart = null;
+  });
+
+  hologramCard.addEventListener("click", (event) => {
+    if (event.target.closest("a")) {
+      return;
+    }
+
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      return;
+    }
+
+    flipCard();
+    requestMotionPermission();
+  });
+
+  hologramCard.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    flipCard();
+    requestMotionPermission();
   });
 
   window.addEventListener("deviceorientation", (event) => {
@@ -113,9 +184,9 @@ if (hologram && hologramCard) {
       return;
     }
 
-    const limit = isCoarsePointer() ? 4 : 9;
-    const x = clamp((event.gamma || 0) / 6, -limit, limit);
-    const y = clamp((event.beta || 0) / -10, -limit, limit);
+    const limit = isCoarsePointer() ? 5 : 13;
+    const x = clamp((event.gamma || 0) / 5, -limit, limit);
+    const y = clamp((event.beta || 0) / -8, -limit, limit);
 
     setTilt(x, y);
   });
