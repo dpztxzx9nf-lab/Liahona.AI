@@ -1,4 +1,5 @@
 import { fragments, memoryEchoes, chambers } from "./data/cosmology.js";
+import { logs } from "./data/logs.js";
 
 const storageKey = "liahonaCosmologyState";
 const defaultState = {
@@ -197,6 +198,7 @@ function renderDevice() {
   const fragmentList = document.querySelector("[data-fragment-list]");
   const returnList = document.querySelector("[data-return-points]");
   const echoesList = document.querySelector("[data-memory-echoes]");
+  const deviceLogs = document.querySelector("[data-device-logs]");
   const chamberList = document.querySelector("[data-chamber-list]");
 
   if (fragmentList) {
@@ -249,6 +251,16 @@ function renderDevice() {
         <span>Echo</span>
         <h4>${echo.title}</h4>
         <p>${echo.summary}</p>
+      </article>
+    `).join("");
+  }
+
+  if (deviceLogs) {
+    deviceLogs.innerHTML = logs.slice(0, 5).map((entry) => `
+      <article class="device-item">
+        <span>${entry.date} / ${entry.project}</span>
+        <h4>${entry.title}</h4>
+        <p>${entry.summary}</p>
       </article>
     `).join("");
   }

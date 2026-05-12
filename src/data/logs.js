@@ -2,6 +2,16 @@ export const logs = [
   {
     date: "2026-05-12",
     project: "Website",
+    area: "entry",
+    title: "Separated immersive Liahona entry from operational continuity device.",
+    summary: "Reduced first-load explanatory surfaces and moved operational continuity access into the floating device.",
+    purpose: "Keep the Liahona object as the primary orienting layer and the continuity device as the secondary operational layer.",
+    status: "experimental",
+    commit: ""
+  },
+  {
+    date: "2026-05-12",
+    project: "Website",
     area: "continuity",
     title: "Added gesture-based continuity device controls.",
     summary: "Added orb, peek, full archive states with swipe delete and lock controls for continuity items.",

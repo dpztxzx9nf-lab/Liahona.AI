@@ -49,9 +49,10 @@ main {
   --light-y: 50%;
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1fr);
+  grid-template-columns: 1fr;
   gap: clamp(24px, 6vw, 72px);
   align-items: center;
+  justify-items: center;
   min-height: calc(100vh - 112px);
   overflow: hidden;
   border: 1px solid rgba(127, 183, 166, 0.18);
@@ -115,18 +116,23 @@ main {
 .cosmology-copy {
   position: relative;
   z-index: 2;
+  max-width: 620px;
+  text-align: center;
 }
 
 .cosmology-copy h1 {
   max-width: 760px;
-  font-size: clamp(2.6rem, 7.2vw, 6rem);
+  margin-right: auto;
+  margin-left: auto;
+  font-size: clamp(2.6rem, 8vw, 7rem);
 }
 
 .artifact-world {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: min(68vw, 680px);
+  width: min(100%, 760px);
+  min-height: min(72vw, 720px);
   perspective: 1200px;
   transform: translate3d(calc(var(--world-x) * 0.28), calc(var(--world-y) * 0.28), 0);
 }
@@ -236,19 +242,25 @@ main {
   z-index: 4;
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(127, 183, 166, 0.75);
+  border: 1px solid rgba(127, 183, 166, 0.28);
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(237, 242, 247, 0.9) 0 3px, rgba(127, 183, 166, 0.22) 4px, rgba(9, 10, 12, 0.52) 100%);
-  box-shadow: 0 0 22px rgba(127, 183, 166, 0.42);
+  background: radial-gradient(circle, rgba(237, 242, 247, 0.58) 0 2px, rgba(127, 183, 166, 0.12) 4px, rgba(9, 10, 12, 0.18) 100%);
+  box-shadow: 0 0 18px rgba(127, 183, 166, 0.22);
+  opacity: 0.62;
   cursor: pointer;
   transform: translateZ(78px);
 }
 
 .artifact-hotspot:hover,
 .artifact-hotspot:focus {
+  opacity: 1;
   outline: 0;
   border-color: #d9fff6;
   box-shadow: 0 0 34px rgba(127, 183, 166, 0.72);
+}
+
+.site-archive {
+  display: none;
 }
 
 .hotspot-one {
@@ -589,6 +601,15 @@ button.device-item:disabled {
   color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.42;
+}
+
+.device-item a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .device-item.is-unlocked {
