@@ -27,7 +27,7 @@ function setTilt(x, y) {
   hologram.style.setProperty("--particle-y-soft", `${y * 1.6}px`);
   hologram.style.setProperty("--shadow-x", `${x * -2.2}px`);
   hologram.style.setProperty("--shadow-y", `${20 + y * 1.5}px`);
-  hologram.style.setProperty("--safe-scale", String(1 + Math.min(Math.max(Math.abs(x), Math.abs(y)) / 13, 1) * 0.045));
+  hologram.style.setProperty("--safe-scale", String(1 + Math.min(Math.max(Math.abs(x), Math.abs(y)) / 6, 1) * 0.08));
 }
 
 function resetTilt() {
@@ -200,7 +200,7 @@ if (hologram && hologramCard) {
   initializeMotionPreference();
 
   hologramCard.querySelectorAll(".hologram-reference a").forEach((link) => {
-    ["pointerdown", "pointerup", "click"].forEach((eventName) => {
+    ["pointerdown", "pointerup", "mousedown", "mouseup", "click", "auxclick"].forEach((eventName) => {
       link.addEventListener(eventName, (event) => {
         event.stopPropagation();
       });

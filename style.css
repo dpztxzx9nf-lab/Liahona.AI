@@ -200,8 +200,21 @@ section:last-child {
 }
 
 .hologram-front {
+  position: relative;
   background: #000000;
   z-index: 2;
+}
+
+.hologram-front::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  background: url("assets/liahona-artifact.jpeg") center / cover no-repeat;
+  opacity: 0.34;
+  filter: blur(18px) saturate(1.08);
+  transform: translateZ(6px) scale(calc(1.08 * var(--safe-scale)));
+  pointer-events: none;
 }
 
 .hologram-back {
@@ -214,22 +227,27 @@ section:last-child {
 
 .hologram-card.is-flipped .hologram-front {
   pointer-events: none;
+  visibility: hidden;
 }
 
 .hologram-card.is-flipped .hologram-back {
   z-index: 3;
   pointer-events: auto;
+  visibility: visible;
+  transform: rotateY(180deg) translateZ(2px);
 }
 
 .hologram-card img {
+  position: relative;
+  z-index: 1;
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
   height: auto;
-  max-height: 100%;
+  max-height: none;
   aspect-ratio: auto;
   object-fit: contain;
-  transform: translateZ(38px) scale(calc(0.98 * var(--safe-scale)));
+  transform: translateZ(38px) scale(calc(1.01 * var(--safe-scale)));
 }
 
 .hologram-card.is-touched img {
@@ -243,7 +261,7 @@ section:last-child {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 .hologram-glow {
@@ -418,6 +436,8 @@ section:last-child {
 }
 
 .hologram-reference {
+  position: relative;
+  z-index: 5;
   width: 100%;
   max-height: 100%;
   margin: 0;
@@ -444,7 +464,7 @@ section:last-child {
 .hologram-reference a {
   color: #008fa8;
   position: relative;
-  z-index: 6;
+  z-index: 12;
   pointer-events: auto;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -762,13 +782,13 @@ code {
   }
 
   .hologram-card img {
-    width: auto;
-    max-width: 100%;
+    width: 100%;
+    max-width: none;
     height: auto;
-    max-height: min(72vh, 540px);
+    max-height: none;
     aspect-ratio: auto;
     object-fit: contain;
-    transform: translateZ(16px) scale(calc(0.96 * var(--safe-scale)));
+    transform: translateZ(16px) scale(calc(0.98 * var(--safe-scale)));
   }
 
   .hologram-particles {
