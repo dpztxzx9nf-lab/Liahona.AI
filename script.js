@@ -75,9 +75,9 @@ if (hologram && hologramCard) {
       return;
     }
 
-    const limit = isCoarsePointer() ? 5 : 9;
-    const x = clamp((event.gamma || 0) / 5, -limit, limit);
-    const y = clamp((event.beta || 0) / -8, -limit, limit);
+    const limit = isCoarsePointer() ? 4 : 9;
+    const x = clamp((event.gamma || 0) / 6, -limit, limit);
+    const y = clamp((event.beta || 0) / -10, -limit, limit);
 
     setTilt(x, y);
   });

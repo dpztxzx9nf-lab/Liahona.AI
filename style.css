@@ -421,18 +421,22 @@ code {
   }
 
   .hologram-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     max-width: 100%;
-    max-height: min(74vh, 560px);
+    max-height: min(72vh, 540px);
     overflow: hidden;
   }
 
   .hologram-card img {
-    width: 100%;
+    width: auto;
     max-width: 100%;
     height: auto;
-    max-height: min(74vh, 560px);
+    max-height: min(72vh, 540px);
+    aspect-ratio: auto;
     object-fit: contain;
-    transform: translateZ(18px) scale(0.96);
+    transform: translateZ(16px) scale(0.9);
   }
 
   .hologram-particles {
