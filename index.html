@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liahona</title>
+  <meta name="description" content="Liahona is a grounded conversational system for KINDEX.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <section class="hero" aria-labelledby="liahona-title">
+      <p class="eyebrow">Liahona</p>
+      <h1 id="liahona-title">A grounded conversational system for KINDEX.</h1>
+      <p class="lead">
+        Liahona is an early Discord-based system for interpretation, response judgment,
+        and future source-grounded retrieval across a human archive.
+      </p>
+    </section>
+
+    <section aria-labelledby="current-system">
+      <h2 id="current-system">Current System</h2>
+      <div class="grid">
+        <article>
+          <h3>Discord bot</h3>
+          <p>Receives messages, interprets intent, generates replies, and delivers responses.</p>
+        </article>
+        <article>
+          <h3>PM2 runtime</h3>
+          <p>Runs as a managed Node process with simple restart and log commands.</p>
+        </article>
+        <article>
+          <h3>Observability</h3>
+          <p>Structured lifecycle logs show where each message succeeds or fails.</p>
+        </article>
+        <article>
+          <h3>DM support</h3>
+          <p>Direct messages are part of the working surface and need clear diagnostics.</p>
+        </article>
+        <article>
+          <h3>Semantic retrieval direction</h3>
+          <p>Retrieval will become more precise as memory and source indexing mature.</p>
+        </article>
+        <article>
+          <h3>Source grounding direction</h3>
+          <p>Future answers should point back to trusted source material when possible.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="lifecycle">
+      <h2 id="lifecycle">Lifecycle</h2>
+      <ol class="lifecycle">
+        <li>MESSAGE_RECEIVED</li>
+        <li>INTERPRETATION_RESULT</li>
+        <li>GENERATION_RESULT</li>
+        <li>DELIVERY_RESULT</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="operations">
+      <h2 id="operations">Operations</h2>
+      <pre><code>pm2 restart liahona --update-env
+pm2 logs liahona
+pm2 logs liahona --err
+pm2 logs liahona --out</code></pre>
+    </section>
+
+    <section aria-labelledby="architecture-direction">
+      <h2 id="architecture-direction">Architecture Direction</h2>
+      <div class="stack">
+        <p><strong>KINDEX</strong> is the human archive.</p>
+        <p><strong>Database</strong> is memory and retrieval.</p>
+        <p><strong>Sources</strong> are grounding.</p>
+        <p><strong>Liahona</strong> is the judgment and interpretation layer.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="roadmap">
+      <h2 id="roadmap">Roadmap</h2>
+      <ul class="roadmap">
+        <li>Better observability</li>
+        <li>Retrieval refinement</li>
+        <li>Journal continuity</li>
+        <li>Weekly digest later</li>
+        <li>Lightweight dashboard later</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
