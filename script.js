@@ -24,6 +24,10 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function isCoarsePointer() {
+  return window.matchMedia("(pointer: coarse)").matches;
+}
+
 if (hologram && hologramCard) {
   resetTilt();
 
@@ -71,8 +75,9 @@ if (hologram && hologramCard) {
       return;
     }
 
-    const x = clamp((event.gamma || 0) / 4, -9, 9);
-    const y = clamp((event.beta || 0) / -6, -9, 9);
+    const limit = isCoarsePointer() ? 5 : 9;
+    const x = clamp((event.gamma || 0) / 5, -limit, limit);
+    const y = clamp((event.beta || 0) / -8, -limit, limit);
 
     setTilt(x, y);
   });

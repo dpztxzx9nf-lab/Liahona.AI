@@ -413,6 +413,32 @@ code {
     font-size: 1rem;
   }
 
+  .hologram-shell {
+    width: 100%;
+    max-width: min(100%, 520px);
+    margin-top: 28px;
+    perspective: 850px;
+  }
+
+  .hologram-card {
+    max-width: 100%;
+    max-height: min(74vh, 560px);
+    overflow: hidden;
+  }
+
+  .hologram-card img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: min(74vh, 560px);
+    object-fit: contain;
+    transform: translateZ(18px) scale(0.96);
+  }
+
+  .hologram-particles {
+    transform: translateZ(32px);
+  }
+
   .lifecycle li {
     text-align: left;
   }
