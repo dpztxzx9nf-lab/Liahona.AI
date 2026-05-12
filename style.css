@@ -208,12 +208,12 @@ section:last-child {
 .hologram-front::before {
   content: "";
   position: absolute;
-  inset: -10%;
+  inset: -18%;
   z-index: 0;
   background: url("assets/liahona-artifact.jpeg") center / cover no-repeat;
-  opacity: 0.34;
-  filter: blur(18px) saturate(1.08);
-  transform: translateZ(6px) scale(calc(1.08 * var(--safe-scale)));
+  opacity: 0.42;
+  filter: blur(20px) saturate(1.12);
+  transform: translateZ(6px) scale(calc(1.18 * var(--safe-scale)));
   pointer-events: none;
 }
 
@@ -247,7 +247,7 @@ section:last-child {
   max-height: none;
   aspect-ratio: auto;
   object-fit: contain;
-  transform: translateZ(38px) scale(calc(1.01 * var(--safe-scale)));
+  transform: translateZ(38px) scale(calc(1.04 * var(--safe-scale)));
 }
 
 .hologram-card.is-touched img {
@@ -788,7 +788,7 @@ code {
     max-height: none;
     aspect-ratio: auto;
     object-fit: contain;
-    transform: translateZ(16px) scale(calc(0.98 * var(--safe-scale)));
+    transform: translateZ(16px) scale(calc(1.04 * var(--safe-scale)));
   }
 
   .hologram-particles {
