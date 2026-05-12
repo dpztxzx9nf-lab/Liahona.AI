@@ -1,5 +1,10 @@
 const hologram = document.querySelector("[data-hologram]");
 const hologramCard = hologram?.querySelector(".hologram-card");
+const motionPrompt = hologram?.querySelector("[data-motion-prompt]");
+const motionEnable = hologram?.querySelector("[data-motion-enable]");
+const motionDismiss = hologram?.querySelector("[data-motion-dismiss]");
+const motionControl = hologram?.querySelector("[data-motion-control]");
+const motionPreferenceKey = "liahonaMotionPreference";
 let swipeStart = null;
 let suppressNextClick = false;
 
@@ -22,6 +27,7 @@ function setTilt(x, y) {
   hologram.style.setProperty("--particle-y-soft", `${y * 1.6}px`);
   hologram.style.setProperty("--shadow-x", `${x * -2.2}px`);
   hologram.style.setProperty("--shadow-y", `${20 + y * 1.5}px`);
+  hologram.style.setProperty("--safe-scale", String(1 + Math.min(Math.max(Math.abs(x), Math.abs(y)) / 13, 1) * 0.045));
 }
 
 function resetTilt() {
@@ -36,10 +42,56 @@ function isCoarsePointer() {
   return window.matchMedia("(pointer: coarse)").matches;
 }
 
+function isDesktopPointer() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
+function getMotionPreference() {
+  try {
+    return window.localStorage.getItem(motionPreferenceKey);
+  } catch (error) {
+    return null;
+  }
+}
+
+function setMotionPreference(value) {
+  try {
+    window.localStorage.setItem(motionPreferenceKey, value);
+  } catch (error) {
+    // Persistence is optional; the site still works without localStorage.
+  }
+}
+
+function canUseMotion() {
+  return Boolean(window.DeviceOrientationEvent);
+}
+
+function requiresMotionPermission() {
+  return canUseMotion() && typeof DeviceOrientationEvent.requestPermission === "function";
+}
+
+function hideMotionPrompt() {
+  if (motionPrompt) {
+    motionPrompt.hidden = true;
+  }
+}
+
+function showMotionControl() {
+  if (motionControl && canUseMotion() && !isDesktopPointer()) {
+    motionControl.hidden = false;
+  }
+}
+
+function hideMotionControl() {
+  if (motionControl) {
+    motionControl.hidden = true;
+  }
+}
+
 function pulseHaptic() {
   if (navigator.vibrate) {
     try {
-      navigator.vibrate(12);
+      navigator.vibrate(20);
     } catch (error) {
       // Haptics are optional; unsupported browsers can ignore this.
     }
@@ -91,18 +143,69 @@ async function requestMotionPermission() {
       const permission = await DeviceOrientationEvent.requestPermission();
       if (permission !== "granted") {
         hologram.dataset.motion = "denied";
+        setMotionPreference("denied");
+        showMotionControl();
         return;
       }
     }
 
     hologram.dataset.motion = "enabled";
+    setMotionPreference("accepted");
+    hideMotionPrompt();
+    hideMotionControl();
   } catch (error) {
     hologram.dataset.motion = "denied";
+    setMotionPreference("denied");
+    showMotionControl();
   }
+}
+
+function initializeMotionPreference() {
+  if (!canUseMotion() || isDesktopPointer()) {
+    hideMotionPrompt();
+    hideMotionControl();
+    return;
+  }
+
+  const preference = getMotionPreference();
+
+  if (preference === "accepted") {
+    if (requiresMotionPermission()) {
+      hideMotionPrompt();
+      showMotionControl();
+      return;
+    }
+
+    hologram.dataset.motion = "enabled";
+    hideMotionPrompt();
+    hideMotionControl();
+    return;
+  }
+
+  if (preference === "denied" || preference === "dismissed") {
+    hideMotionPrompt();
+    showMotionControl();
+    return;
+  }
+
+  if (motionPrompt) {
+    motionPrompt.hidden = false;
+  }
+
+  showMotionControl();
 }
 
 if (hologram && hologramCard) {
   resetTilt();
+  initializeMotionPreference();
+
+  hologramCard.querySelectorAll(".hologram-reference a").forEach((link) => {
+    ["pointerdown", "pointerup", "click"].forEach((eventName) => {
+      link.addEventListener(eventName, (event) => {
+        event.stopPropagation();
+      });
+    });
+  });
 
   hologramCard.addEventListener("pointermove", (event) => {
     if (event.pointerType !== "mouse") {
@@ -123,6 +226,10 @@ if (hologram && hologramCard) {
   });
 
   hologramCard.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("a")) {
+      return;
+    }
+
     swipeStart = {
       x: event.clientX,
       y: event.clientY
@@ -131,6 +238,11 @@ if (hologram && hologramCard) {
   });
 
   hologramCard.addEventListener("pointerup", (event) => {
+    if (event.target.closest("a")) {
+      swipeStart = null;
+      return;
+    }
+
     if (!swipeStart) {
       return;
     }
@@ -144,7 +256,6 @@ if (hologram && hologramCard) {
     if (isSwipe) {
       suppressNextClick = true;
       flipCard();
-      requestMotionPermission();
       window.setTimeout(() => {
         suppressNextClick = false;
       }, 0);
@@ -166,17 +277,36 @@ if (hologram && hologramCard) {
     }
 
     flipCard();
-    requestMotionPermission();
   });
 
   hologramCard.addEventListener("keydown", (event) => {
+    if (event.target.closest("a")) {
+      return;
+    }
+
     if (event.key !== "Enter" && event.key !== " ") {
       return;
     }
 
     event.preventDefault();
     flipCard();
+  });
+
+  motionEnable?.addEventListener("click", (event) => {
+    event.stopPropagation();
     requestMotionPermission();
+  });
+
+  motionControl?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    requestMotionPermission();
+  });
+
+  motionDismiss?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setMotionPreference("dismissed");
+    hideMotionPrompt();
+    showMotionControl();
   });
 
   window.addEventListener("deviceorientation", (event) => {
