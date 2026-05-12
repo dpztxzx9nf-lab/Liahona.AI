@@ -2,6 +2,16 @@ export const logs = [
   {
     date: "2026-05-12",
     project: "Website",
+    area: "continuity",
+    title: "Added gesture-based continuity device controls.",
+    summary: "Added orb, peek, full archive states with swipe delete and lock controls for continuity items.",
+    purpose: "Make the continuity device feel like a persistent companion layer attached to the cosmology.",
+    status: "experimental",
+    commit: ""
+  },
+  {
+    date: "2026-05-12",
+    project: "Website",
     area: "dashboard",
     title: "Continuity dashboard foundation",
     summary: "Added modular project, log, behavior lab, and version data for a readable website map.",

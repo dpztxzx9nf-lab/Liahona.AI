@@ -7,10 +7,13 @@ const defaultState = {
   device: {
     x: null,
     y: null,
-    minimized: false,
+    minimized: true,
     expanded: false,
+    view: "orb",
     tab: "private"
   },
+  lockedItems: {},
+  deletedItems: {},
   lastViewedArtifact: null,
   lastViewedChamber: null,
   progress: {
@@ -25,6 +28,7 @@ const dragHandle = document.querySelector("[data-device-drag]");
 const statusNode = document.querySelector("[data-device-status]");
 let state = loadState();
 let dragState = null;
+let rowGesture = null;
 
 function loadState() {
   try {
@@ -33,6 +37,8 @@ function loadState() {
       ...defaultState,
       ...stored,
       device: { ...defaultState.device, ...stored?.device },
+      lockedItems: { ...defaultState.lockedItems, ...stored?.lockedItems },
+      deletedItems: { ...defaultState.deletedItems, ...stored?.deletedItems },
       progress: { ...defaultState.progress, ...stored?.progress }
     };
   } catch (error) {
@@ -58,9 +64,57 @@ function setStatus(message) {
   }
 }
 
+function pulseHaptic(strength = 14) {
+  if (!navigator.vibrate) {
+    return;
+  }
+
+  try {
+    navigator.vibrate(strength);
+  } catch (error) {
+    // Haptics are optional and unsupported browsers can ignore them.
+  }
+}
+
 function pulseArtifact() {
   artifact?.classList.remove("is-awake");
   window.requestAnimationFrame(() => artifact?.classList.add("is-awake"));
+}
+
+function itemKey(type, id) {
+  return `${type}:${id}`;
+}
+
+function isLocked(type, id) {
+  return Boolean(state.lockedItems[itemKey(type, id)]);
+}
+
+function isDeleted(type, id) {
+  return Boolean(state.deletedItems[itemKey(type, id)]);
+}
+
+function toggleLock(type, id) {
+  const key = itemKey(type, id);
+  state.lockedItems[key] = !state.lockedItems[key];
+  saveState();
+  renderDevice();
+  pulseHaptic(12);
+  setStatus(state.lockedItems[key] ? "Item locked." : "Item unlocked.");
+}
+
+function deleteItem(type, id) {
+  if (isLocked(type, id)) {
+    setStatus("Unlock this item before deleting it.");
+    pulseHaptic([8, 24, 8]);
+    renderDevice();
+    return;
+  }
+
+  state.deletedItems[itemKey(type, id)] = true;
+  saveState();
+  renderDevice();
+  pulseHaptic(18);
+  setStatus("Item hidden from this archive.");
 }
 
 function unlockFragment(fragmentId) {
@@ -146,27 +200,46 @@ function renderDevice() {
   const chamberList = document.querySelector("[data-chamber-list]");
 
   if (fragmentList) {
-    fragmentList.innerHTML = fragments.map((fragment) => {
+    fragmentList.innerHTML = fragments.filter((fragment) => !isDeleted("fragment", fragment.id)).map((fragment) => {
       const unlocked = state.unlockedArtifacts.includes(fragment.id);
+      const locked = isLocked("fragment", fragment.id);
       return `
-        <article class="device-item ${unlocked ? "is-unlocked" : "is-locked"}">
-          <span>${unlocked ? "Unlocked" : "Dormant"}</span>
-          <h4>${fragment.title}</h4>
-          <p>${unlocked ? fragment.summary : "Touch the artifact to reveal this fragment."}</p>
+        <article class="gesture-row" data-row-type="fragment" data-row-id="${fragment.id}">
+          <div class="row-actions">
+            <button type="button" data-delete-item="fragment" data-item-id="${fragment.id}" ${locked ? "disabled" : ""}>Delete</button>
+          </div>
+          <div class="device-item row-content ${unlocked ? "is-unlocked" : "is-locked"} ${locked ? "is-pinned" : ""}">
+            <button class="item-lock" type="button" data-lock-item="fragment" data-item-id="${fragment.id}" aria-label="${locked ? "Unlock" : "Lock"} ${fragment.title}">${locked ? "Locked" : "Lock"}</button>
+            <span>${unlocked ? "Unlocked" : "Dormant"}</span>
+            <h4>${fragment.title}</h4>
+            <p>${unlocked ? fragment.summary : "Touch the artifact to reveal this fragment."}</p>
+          </div>
         </article>
       `;
-    }).join("");
+    }).join("") || `<p class="device-empty">All fragments are hidden.</p>`;
   }
 
   if (returnList) {
-    returnList.innerHTML = state.returnPoints.length
-      ? state.returnPoints.map((point) => `
-          <button class="device-item return-point" type="button" data-return-artifact="${point.artifact}">
-            <span>${point.date}</span>
-            <h4>${point.title}</h4>
-            <p>${point.chamber}</p>
-          </button>
-        `).join("")
+    const visibleReturnPoints = state.returnPoints.filter((point) => !isDeleted("return", point.id));
+    returnList.innerHTML = visibleReturnPoints.length
+      ? visibleReturnPoints.map((point) => {
+        const locked = isLocked("return", point.id);
+        return `
+          <article class="gesture-row" data-row-type="return" data-row-id="${point.id}">
+            <div class="row-actions">
+              <button type="button" data-delete-item="return" data-item-id="${point.id}" ${locked ? "disabled" : ""}>Delete</button>
+            </div>
+            <div class="device-item row-content return-point ${locked ? "is-pinned" : ""}">
+              <button class="item-lock" type="button" data-lock-item="return" data-item-id="${point.id}" aria-label="${locked ? "Unlock" : "Lock"} ${point.title}">${locked ? "Locked" : "Lock"}</button>
+              <button class="return-point-trigger" type="button" data-return-artifact="${point.artifact}">
+                <span>${point.date}</span>
+                <h4>${point.title}</h4>
+                <p>${point.chamber}</p>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("")
       : `<p class="device-empty">No return points saved yet.</p>`;
   }
 
@@ -210,8 +283,14 @@ function applyDeviceState() {
     return;
   }
 
+  if (state.device.minimized) {
+    state.device.view = "orb";
+  }
+
   device.classList.toggle("is-minimized", Boolean(state.device.minimized));
   device.classList.toggle("is-expanded", Boolean(state.device.expanded));
+  device.classList.toggle("is-peek", state.device.view === "peek" && !state.device.expanded && !state.device.minimized);
+  device.classList.toggle("is-orb", Boolean(state.device.minimized));
 
   if (Number.isFinite(state.device.x) && Number.isFinite(state.device.y)) {
     device.style.left = `${state.device.x}px`;
@@ -221,6 +300,16 @@ function applyDeviceState() {
   }
 
   setDeviceTab(state.device.tab);
+}
+
+function setDeviceView(view) {
+  state.device.view = view;
+  state.device.minimized = view === "orb";
+  state.device.expanded = view === "full";
+  saveState();
+  applyDeviceState();
+  keepDeviceInBounds();
+  pulseHaptic(view === "full" ? 18 : 10);
 }
 
 function keepDeviceInBounds() {
@@ -273,17 +362,19 @@ function bindInteractions() {
   });
 
   document.querySelector("[data-device-minimize]")?.addEventListener("click", () => {
-    state.device.minimized = !state.device.minimized;
-    saveState();
-    applyDeviceState();
+    setDeviceView("orb");
   });
 
   document.querySelector("[data-device-expand]")?.addEventListener("click", () => {
-    state.device.expanded = !state.device.expanded;
-    state.device.minimized = false;
-    saveState();
-    applyDeviceState();
-    keepDeviceInBounds();
+    setDeviceView(state.device.expanded ? "peek" : "full");
+  });
+
+  device.addEventListener("click", (event) => {
+    if (!device.classList.contains("is-orb") || event.target.closest("button")) {
+      return;
+    }
+
+    setDeviceView("peek");
   });
 
   document.querySelector("[data-device-snap]")?.addEventListener("click", () => {
@@ -297,6 +388,22 @@ function bindInteractions() {
   document.addEventListener("click", (event) => {
     const returnPoint = event.target.closest("[data-return-artifact]");
     const chamber = event.target.closest("[data-chamber-id]");
+    const lockButton = event.target.closest("[data-lock-item]");
+    const deleteButton = event.target.closest("[data-delete-item]");
+
+    if (lockButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleLock(lockButton.dataset.lockItem, lockButton.dataset.itemId);
+      return;
+    }
+
+    if (deleteButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      deleteItem(deleteButton.dataset.deleteItem, deleteButton.dataset.itemId);
+      return;
+    }
 
     if (returnPoint) {
       unlockFragment(returnPoint.dataset.returnArtifact);
@@ -307,12 +414,77 @@ function bindInteractions() {
       saveState();
       renderDevice();
       setStatus(`Chamber opened: ${chamber.querySelector("h4")?.textContent}`);
+      pulseHaptic(18);
     }
   });
 
   window.addEventListener("pointermove", updateParallax, { passive: true });
   window.addEventListener("touchmove", updateParallax, { passive: true });
   window.addEventListener("resize", keepDeviceInBounds);
+  bindRowGestures();
+}
+
+function bindRowGestures() {
+  if (!device) {
+    return;
+  }
+
+  device.addEventListener("pointerdown", (event) => {
+    const row = event.target.closest(".gesture-row");
+
+    if (!row || event.target.closest("button")) {
+      return;
+    }
+
+    const content = row.querySelector(".row-content");
+    rowGesture = {
+      row,
+      content,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      currentX: 0
+    };
+  });
+
+  device.addEventListener("pointermove", (event) => {
+    if (!rowGesture || rowGesture.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - rowGesture.startX;
+    const deltaY = event.clientY - rowGesture.startY;
+
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 12) {
+      rowGesture = null;
+      return;
+    }
+
+    if (deltaX < -8) {
+      event.preventDefault();
+    }
+
+    rowGesture.currentX = clamp(deltaX, -96, 0);
+    rowGesture.content.style.transform = `translateX(${rowGesture.currentX}px)`;
+  });
+
+  device.addEventListener("pointerup", (event) => {
+    if (!rowGesture || rowGesture.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const isOpen = rowGesture.currentX < -44;
+    rowGesture.row.classList.toggle("is-swiped", isOpen);
+    rowGesture.content.style.transform = isOpen ? "translateX(-82px)" : "";
+    rowGesture = null;
+  });
+
+  device.addEventListener("pointercancel", () => {
+    if (rowGesture?.content) {
+      rowGesture.content.style.transform = "";
+    }
+    rowGesture = null;
+  });
 }
 
 function bindDrag() {
@@ -329,7 +501,9 @@ function bindDrag() {
     dragState = {
       pointerId: event.pointerId,
       offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top
+      offsetY: event.clientY - rect.top,
+      startY: event.clientY,
+      moved: false
     };
     dragHandle.setPointerCapture(event.pointerId);
   });
@@ -346,6 +520,7 @@ function bindDrag() {
 
     state.device.x = x;
     state.device.y = y;
+    dragState.moved = true;
     device.style.left = `${x}px`;
     device.style.top = `${y}px`;
     device.style.right = "auto";
@@ -354,6 +529,9 @@ function bindDrag() {
 
   dragHandle.addEventListener("pointerup", (event) => {
     if (dragState?.pointerId === event.pointerId) {
+      if (state.device.view === "peek" && dragState.startY - event.clientY > 64) {
+        setDeviceView("full");
+      }
       dragState = null;
       saveState();
     }
