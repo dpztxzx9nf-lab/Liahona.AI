@@ -35,6 +35,19 @@ let rowGesture = null;
 let artifactFocusTimer = null;
 let artifactPointerStart = null;
 let suppressDeviceClick = false;
+let artifactMotionFrame = null;
+const artifactMotionCurrent = {
+  worldX: 0,
+  worldY: 0,
+  tiltX: 0,
+  tiltY: 0,
+  depth: 1,
+  shiftX: 0,
+  shiftY: 0,
+  lightX: 50,
+  lightY: 50
+};
+const artifactMotionTarget = { ...artifactMotionCurrent };
 
 function loadState() {
   try {
@@ -88,6 +101,10 @@ function saveState() {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function isContinuityOpen() {
+  return Boolean(device && !state.device.minimized);
 }
 
 function setStatus(message) {
@@ -387,6 +404,10 @@ function applyDeviceState() {
   device.classList.toggle("is-docked-right", state.device.dockSide !== "left");
   document.body.classList.toggle("is-continuity-open", !state.device.minimized);
 
+  if (!state.device.minimized) {
+    resetArtifactMotion();
+  }
+
   if (state.device.view === "orb" || state.device.minimized) {
     const dockWidth = isMobileViewport() ? 38 : 42;
     state.device.x = state.device.dockSide === "left" ? 0 : Math.max(0, window.innerWidth - dockWidth);
@@ -444,24 +465,78 @@ function keepDeviceInBounds() {
   }
 }
 
-function updateParallax(event) {
+function applyArtifactMotion(values) {
   if (!cosmology) {
+    return;
+  }
+
+  cosmology.style.setProperty("--world-x", `${values.worldX}px`);
+  cosmology.style.setProperty("--world-y", `${values.worldY}px`);
+  cosmology.style.setProperty("--artifact-tilt-x", `${values.tiltX}deg`);
+  cosmology.style.setProperty("--artifact-tilt-y", `${values.tiltY}deg`);
+  cosmology.style.setProperty("--artifact-depth", String(values.depth));
+  cosmology.style.setProperty("--artifact-shift-x", `${values.shiftX}px`);
+  cosmology.style.setProperty("--artifact-shift-y", `${values.shiftY}px`);
+  cosmology.style.setProperty("--light-x", `${values.lightX}%`);
+  cosmology.style.setProperty("--light-y", `${values.lightY}%`);
+}
+
+function scheduleArtifactMotion() {
+  if (artifactMotionFrame) {
+    return;
+  }
+
+  const step = () => {
+    const ease = isMobileViewport() ? 0.11 : 0.15;
+    let largestDelta = 0;
+
+    Object.keys(artifactMotionTarget).forEach((key) => {
+      const delta = artifactMotionTarget[key] - artifactMotionCurrent[key];
+      artifactMotionCurrent[key] += delta * ease;
+      largestDelta = Math.max(largestDelta, Math.abs(delta));
+    });
+
+    applyArtifactMotion(artifactMotionCurrent);
+
+    if (largestDelta > 0.025) {
+      artifactMotionFrame = window.requestAnimationFrame(step);
+      return;
+    }
+
+    Object.assign(artifactMotionCurrent, artifactMotionTarget);
+    applyArtifactMotion(artifactMotionCurrent);
+    artifactMotionFrame = null;
+  };
+
+  artifactMotionFrame = window.requestAnimationFrame(step);
+}
+
+function setArtifactMotionTarget(nextTarget) {
+  Object.assign(artifactMotionTarget, nextTarget);
+  scheduleArtifactMotion();
+}
+
+function updateParallax(event) {
+  if (!cosmology || isContinuityOpen() || event.target?.closest?.("[data-continuity-device]")) {
     return;
   }
 
   const point = event.touches?.[0] || event;
   const x = (point.clientX / window.innerWidth - 0.5) * 2;
   const y = (point.clientY / window.innerHeight - 0.5) * 2;
+  const intensity = isMobileViewport() ? 0.78 : 1;
 
-  cosmology.style.setProperty("--world-x", `${x * 18}px`);
-  cosmology.style.setProperty("--world-y", `${y * 18}px`);
-  cosmology.style.setProperty("--artifact-tilt-x", `${clamp(y * -7, -7, 7)}deg`);
-  cosmology.style.setProperty("--artifact-tilt-y", `${clamp(x * 9, -9, 9)}deg`);
-  cosmology.style.setProperty("--artifact-depth", String(1 + Math.min(Math.hypot(x, y), 1) * 0.035));
-  cosmology.style.setProperty("--artifact-shift-x", `${x * 7}px`);
-  cosmology.style.setProperty("--artifact-shift-y", `${y * 7}px`);
-  cosmology.style.setProperty("--light-x", `${50 + x * 22}%`);
-  cosmology.style.setProperty("--light-y", `${50 + y * 18}%`);
+  setArtifactMotionTarget({
+    worldX: x * 16 * intensity,
+    worldY: y * 16 * intensity,
+    tiltX: clamp(y * -6.2 * intensity, -6.2, 6.2),
+    tiltY: clamp(x * 8 * intensity, -8, 8),
+    depth: 1 + Math.min(Math.hypot(x, y), 1) * 0.028,
+    shiftX: x * 5.6 * intensity,
+    shiftY: y * 5.6 * intensity,
+    lightX: 50 + x * 18,
+    lightY: 50 + y * 15
+  });
 }
 
 function resetArtifactMotion() {
@@ -469,15 +544,17 @@ function resetArtifactMotion() {
     return;
   }
 
-  cosmology.style.setProperty("--world-x", "0px");
-  cosmology.style.setProperty("--world-y", "0px");
-  cosmology.style.setProperty("--artifact-tilt-x", "0deg");
-  cosmology.style.setProperty("--artifact-tilt-y", "0deg");
-  cosmology.style.setProperty("--artifact-depth", "1");
-  cosmology.style.setProperty("--artifact-shift-x", "0px");
-  cosmology.style.setProperty("--artifact-shift-y", "0px");
-  cosmology.style.setProperty("--light-x", "50%");
-  cosmology.style.setProperty("--light-y", "50%");
+  setArtifactMotionTarget({
+    worldX: 0,
+    worldY: 0,
+    tiltX: 0,
+    tiltY: 0,
+    depth: 1,
+    shiftX: 0,
+    shiftY: 0,
+    lightX: 50,
+    lightY: 50
+  });
 }
 
 function bindInteractions() {
