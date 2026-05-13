@@ -19,11 +19,13 @@
 html {
   background: var(--bg);
   overflow-x: hidden;
+  width: 100%;
 }
 
 body {
   margin: 0;
   width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
   min-height: 100vh;
   color: var(--text);
@@ -197,11 +199,19 @@ main {
     transform 220ms cubic-bezier(0.2, 0.84, 0.22, 1),
     filter 260ms ease;
   will-change: transform;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .semantic-artifact.is-focused {
   --artifact-focus-scale: 1.055;
   filter: saturate(1.08) brightness(1.05);
+}
+
+.semantic-artifact:focus-visible {
+  outline: 2px solid rgba(127, 183, 166, 0.78);
+  outline-offset: 10px;
+  border-radius: 50%;
 }
 
 .semantic-artifact.is-flipped .artifact-vessel {
@@ -271,6 +281,7 @@ main {
     inset 0 0 54px rgba(127, 183, 166, 0.12),
     0 0 60px rgba(0, 0, 0, 0.48);
   transform: rotateY(180deg) translateZ(1px);
+  pointer-events: auto;
 }
 
 .artifact-back p {
@@ -280,6 +291,7 @@ main {
   font-family: Georgia, "Times New Roman", serif;
   font-weight: 700;
   line-height: 1.38;
+  text-wrap: balance;
 }
 
 .artifact-back p:first-child {
@@ -419,6 +431,8 @@ main {
   backdrop-filter: blur(18px);
   transform-origin: bottom right;
   transition:
+    left 240ms cubic-bezier(0.2, 0.84, 0.22, 1),
+    top 240ms cubic-bezier(0.2, 0.84, 0.22, 1),
     width 260ms cubic-bezier(0.2, 0.84, 0.22, 1),
     max-height 260ms cubic-bezier(0.2, 0.84, 0.22, 1),
     border-radius 260ms ease,
@@ -502,6 +516,7 @@ main {
   padding: 14px;
   cursor: grab;
   touch-action: none;
+  user-select: none;
   border-bottom: 1px solid rgba(127, 183, 166, 0.18);
 }
 
@@ -1688,7 +1703,7 @@ code {
 @media (max-width: 760px) {
   main {
     width: 100%;
-    padding: 32px 12px;
+    padding: 12px;
   }
 
   section {
@@ -1701,13 +1716,15 @@ code {
 
   .cosmology-hero {
     grid-template-columns: 1fr;
-    min-height: auto;
-    padding: 24px 14px 28px;
+    min-height: calc(100vh - 24px);
+    min-height: calc(100svh - 24px);
+    padding: 18px 12px 22px;
     border-radius: 14px;
   }
 
   .artifact-world {
-    min-height: 68vh;
+    min-height: min(62svh, 560px);
+    width: 100%;
   }
 
   .semantic-artifact {
@@ -1729,6 +1746,15 @@ code {
   .artifact-hotspot {
     width: 42px;
     height: 42px;
+  }
+
+  .artifact-back {
+    padding: 14%;
+  }
+
+  .artifact-back p {
+    max-width: 15rem;
+    font-size: clamp(0.92rem, 4.6vw, 1.1rem);
   }
 
   .continuity-device {

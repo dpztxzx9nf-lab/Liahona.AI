@@ -33,11 +33,12 @@ let dragState = null;
 let rowGesture = null;
 let artifactFocusTimer = null;
 let artifactPointerStart = null;
+let suppressDeviceClick = false;
 
 function loadState() {
   try {
     const stored = JSON.parse(window.localStorage.getItem(storageKey));
-    return {
+    const nextState = {
       ...defaultState,
       ...stored,
       device: { ...defaultState.device, ...stored?.device },
@@ -45,6 +46,32 @@ function loadState() {
       deletedItems: { ...defaultState.deletedItems, ...stored?.deletedItems },
       progress: { ...defaultState.progress, ...stored?.progress }
     };
+
+    if (!Array.isArray(nextState.unlockedArtifacts)) {
+      nextState.unlockedArtifacts = [];
+    }
+
+    if (!Array.isArray(nextState.returnPoints)) {
+      nextState.returnPoints = [];
+    }
+
+    if (!["orb", "peek", "full"].includes(nextState.device.view)) {
+      nextState.device.view = defaultState.device.view;
+    }
+
+    if (!["left", "right"].includes(nextState.device.dockSide)) {
+      nextState.device.dockSide = defaultState.device.dockSide;
+    }
+
+    if (!Number.isFinite(nextState.device.x)) {
+      nextState.device.x = null;
+    }
+
+    if (!Number.isFinite(nextState.device.y)) {
+      nextState.device.y = null;
+    }
+
+    return nextState;
   } catch (error) {
     return JSON.parse(JSON.stringify(defaultState));
   }
@@ -104,7 +131,8 @@ function flipArtifact() {
     return;
   }
 
-  artifact.classList.toggle("is-flipped");
+  const isFlipped = artifact.classList.toggle("is-flipped");
+  artifact.setAttribute("aria-pressed", String(isFlipped));
   focusArtifact(1800);
 }
 
@@ -336,6 +364,11 @@ function applyDeviceState() {
   device.classList.toggle("is-docked-left", state.device.dockSide === "left");
   device.classList.toggle("is-docked-right", state.device.dockSide !== "left");
 
+  if (state.device.view === "orb" || state.device.minimized) {
+    const dockWidth = isMobileViewport() ? 38 : 42;
+    state.device.x = state.device.dockSide === "left" ? 0 : Math.max(0, window.innerWidth - dockWidth);
+  }
+
   if (Number.isFinite(state.device.x) && Number.isFinite(state.device.y)) {
     device.style.left = `${state.device.x}px`;
     device.style.top = `${state.device.y}px`;
@@ -350,6 +383,13 @@ function setDeviceView(view) {
   state.device.view = view;
   state.device.minimized = view === "orb";
   state.device.expanded = view === "full";
+
+  if (view !== "orb") {
+    const targetWidth = view === "full" ? Math.min(640, window.innerWidth - 24) : Math.min(330, window.innerWidth - 24);
+    state.device.x = state.device.dockSide === "left" ? 12 : Math.max(12, window.innerWidth - targetWidth - 12);
+    state.device.y = clamp(state.device.y ?? window.innerHeight - 480, 12, Math.max(12, window.innerHeight - 160));
+  }
+
   saveState();
   applyDeviceState();
   keepDeviceInBounds();
@@ -377,6 +417,11 @@ function dockDevice(side = state.device.dockSide || "right") {
 
 function keepDeviceInBounds() {
   if (!device) {
+    return;
+  }
+
+  if (state.device.view === "orb" || state.device.minimized) {
+    dockDevice(state.device.dockSide);
     return;
   }
 
@@ -437,6 +482,10 @@ function bindInteractions() {
   });
 
   artifact?.addEventListener("pointerdown", (event) => {
+    if (event.button && event.button !== 0) {
+      return;
+    }
+
     if (event.target.closest("[data-fragment-id]")) {
       return;
     }
@@ -469,6 +518,19 @@ function bindInteractions() {
     artifactPointerStart = null;
   });
 
+  artifact?.addEventListener("pointerleave", () => {
+    artifactPointerStart = null;
+  });
+
+  artifact?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    flipArtifact();
+  });
+
   document.querySelector("[data-save-return]")?.addEventListener("click", saveReturnPoint);
   document.querySelector("[data-copy-return-link]")?.addEventListener("click", copyReturnPointLink);
 
@@ -485,6 +547,11 @@ function bindInteractions() {
   });
 
   device.addEventListener("click", (event) => {
+    if (suppressDeviceClick) {
+      suppressDeviceClick = false;
+      return;
+    }
+
     if (!device.classList.contains("is-orb") || event.target.closest("button")) {
       return;
     }
@@ -621,7 +688,8 @@ function bindDrag() {
       offsetY: event.clientY - rect.top,
       startX: event.clientX,
       startY: event.clientY,
-      moved: false
+      moved: false,
+      startedAsOrb: state.device.view === "orb" || state.device.minimized
     };
     dragHandle.setPointerCapture(event.pointerId);
   });
@@ -639,6 +707,9 @@ function bindDrag() {
     state.device.x = x;
     state.device.y = y;
     dragState.moved = true;
+    if (dragState.startedAsOrb) {
+      suppressDeviceClick = true;
+    }
     device.style.left = `${x}px`;
     device.style.top = `${y}px`;
     device.style.right = "auto";
@@ -658,6 +729,8 @@ function bindDrag() {
         dockDevice(nearLeft || deltaX < 0 ? "left" : "right");
       } else if ((state.device.view === "peek" || state.device.view === "orb") && shouldExpand) {
         setDeviceView("full");
+      } else if (dragState.startedAsOrb && !dragState.moved) {
+        setDeviceView("peek");
       }
       dragState = null;
       saveState();
