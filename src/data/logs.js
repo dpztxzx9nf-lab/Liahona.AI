@@ -2,6 +2,16 @@ export const logs = [
   {
     date: "2026-05-12",
     project: "Website",
+    area: "continuity",
+    title: "Refined continuity device into gesture-first docked mobile layer.",
+    summary: "Shifted mobile continuity controls toward docked orb, drag-to-edge collapse, drag expansion, and protected locked rows.",
+    purpose: "Make the continuity device behave more like a floating companion layer than a button-driven modal.",
+    status: "experimental",
+    commit: ""
+  },
+  {
+    date: "2026-05-12",
+    project: "Website",
     area: "entry",
     title: "Separated immersive Liahona entry from operational continuity device.",
     summary: "Reduced first-load explanatory surfaces and moved operational continuity access into the floating device.",

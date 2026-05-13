@@ -11,6 +11,7 @@ const defaultState = {
     minimized: true,
     expanded: false,
     view: "orb",
+    dockSide: "right",
     tab: "private"
   },
   lockedItems: {},
@@ -92,6 +93,10 @@ function isLocked(type, id) {
 
 function isDeleted(type, id) {
   return Boolean(state.deletedItems[itemKey(type, id)]);
+}
+
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
 }
 
 function toggleLock(type, id) {
@@ -206,7 +211,7 @@ function renderDevice() {
       const unlocked = state.unlockedArtifacts.includes(fragment.id);
       const locked = isLocked("fragment", fragment.id);
       return `
-        <article class="gesture-row" data-row-type="fragment" data-row-id="${fragment.id}">
+        <article class="gesture-row ${locked ? "is-locked-row" : ""}" data-row-type="fragment" data-row-id="${fragment.id}" data-row-locked="${locked}">
           <div class="row-actions">
             <button type="button" data-delete-item="fragment" data-item-id="${fragment.id}" ${locked ? "disabled" : ""}>Delete</button>
           </div>
@@ -227,7 +232,7 @@ function renderDevice() {
       ? visibleReturnPoints.map((point) => {
         const locked = isLocked("return", point.id);
         return `
-          <article class="gesture-row" data-row-type="return" data-row-id="${point.id}">
+          <article class="gesture-row ${locked ? "is-locked-row" : ""}" data-row-type="return" data-row-id="${point.id}" data-row-locked="${locked}">
             <div class="row-actions">
               <button type="button" data-delete-item="return" data-item-id="${point.id}" ${locked ? "disabled" : ""}>Delete</button>
             </div>
@@ -303,6 +308,8 @@ function applyDeviceState() {
   device.classList.toggle("is-expanded", Boolean(state.device.expanded));
   device.classList.toggle("is-peek", state.device.view === "peek" && !state.device.expanded && !state.device.minimized);
   device.classList.toggle("is-orb", Boolean(state.device.minimized));
+  device.classList.toggle("is-docked-left", state.device.dockSide === "left");
+  device.classList.toggle("is-docked-right", state.device.dockSide !== "left");
 
   if (Number.isFinite(state.device.x) && Number.isFinite(state.device.y)) {
     device.style.left = `${state.device.x}px`;
@@ -322,6 +329,24 @@ function setDeviceView(view) {
   applyDeviceState();
   keepDeviceInBounds();
   pulseHaptic(view === "full" ? 18 : 10);
+}
+
+function dockDevice(side = state.device.dockSide || "right") {
+  if (!device) {
+    return;
+  }
+
+  state.device.dockSide = side;
+  state.device.view = "orb";
+  state.device.minimized = true;
+  state.device.expanded = false;
+
+  const orbWidth = isMobileViewport() ? 62 : 68;
+  state.device.x = side === "left" ? 10 : window.innerWidth - orbWidth - 10;
+  state.device.y = clamp(state.device.y ?? window.innerHeight - orbWidth - 22, 10, window.innerHeight - orbWidth - 10);
+  saveState();
+  applyDeviceState();
+  pulseHaptic(10);
 }
 
 function keepDeviceInBounds() {
@@ -374,7 +399,7 @@ function bindInteractions() {
   });
 
   document.querySelector("[data-device-minimize]")?.addEventListener("click", () => {
-    setDeviceView("orb");
+    dockDevice(state.device.dockSide);
   });
 
   document.querySelector("[data-device-expand]")?.addEventListener("click", () => {
@@ -391,7 +416,8 @@ function bindInteractions() {
 
   document.querySelector("[data-device-snap]")?.addEventListener("click", () => {
     const rect = device.getBoundingClientRect();
-    state.device.x = rect.left < window.innerWidth / 2 ? 10 : window.innerWidth - rect.width - 10;
+    state.device.dockSide = rect.left < window.innerWidth / 2 ? "left" : "right";
+    state.device.x = state.device.dockSide === "left" ? 10 : window.innerWidth - rect.width - 10;
     state.device.y = clamp(rect.top, 10, window.innerHeight - rect.height - 10);
     saveState();
     applyDeviceState();
@@ -444,7 +470,7 @@ function bindRowGestures() {
   device.addEventListener("pointerdown", (event) => {
     const row = event.target.closest(".gesture-row");
 
-    if (!row || event.target.closest("button")) {
+    if (!row || event.target.closest("button") || row.dataset.rowLocked === "true") {
       return;
     }
 
@@ -514,6 +540,7 @@ function bindDrag() {
       pointerId: event.pointerId,
       offsetX: event.clientX - rect.left,
       offsetY: event.clientY - rect.top,
+      startX: event.clientX,
       startY: event.clientY,
       moved: false
     };
@@ -541,7 +568,16 @@ function bindDrag() {
 
   dragHandle.addEventListener("pointerup", (event) => {
     if (dragState?.pointerId === event.pointerId) {
-      if (state.device.view === "peek" && dragState.startY - event.clientY > 64) {
+      const deltaX = event.clientX - (dragState.startX ?? event.clientX);
+      const deltaY = event.clientY - dragState.startY;
+      const nearLeft = event.clientX < 42;
+      const nearRight = event.clientX > window.innerWidth - 42;
+      const shouldDock = nearLeft || nearRight || deltaY > 72;
+      const shouldExpand = deltaY < -64 || (Math.abs(deltaX) > 96 && !nearLeft && !nearRight);
+
+      if (shouldDock) {
+        dockDevice(nearLeft || deltaX < 0 ? "left" : "right");
+      } else if ((state.device.view === "peek" || state.device.view === "orb") && shouldExpand) {
         setDeviceView("full");
       }
       dragState = null;
