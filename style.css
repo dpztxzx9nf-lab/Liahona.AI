@@ -54,7 +54,7 @@ main {
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(24px, 6vw, 72px);
+  gap: clamp(12px, 4vw, 44px);
   align-items: center;
   justify-items: center;
   min-height: calc(100vh - 112px);
@@ -122,22 +122,30 @@ main {
   z-index: 2;
   max-width: 620px;
   text-align: center;
-  opacity: 0.92;
+  opacity: 0.72;
 }
 
 .cosmology-copy h1 {
   max-width: 760px;
   margin-right: auto;
   margin-left: auto;
-  font-size: clamp(2.6rem, 8vw, 7rem);
+  margin-bottom: 10px;
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
+  line-height: 1;
+}
+
+.cosmology-copy .lead {
+  max-width: none;
+  margin-bottom: 0;
+  font-size: clamp(0.92rem, 2vw, 1rem);
 }
 
 .artifact-world {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(100%, 760px);
-  min-height: min(72vw, 720px);
+  width: min(100%, 820px);
+  min-height: min(76vw, 760px);
   perspective: 1200px;
   transform: translate3d(calc(var(--world-x) * 0.28), calc(var(--world-y) * 0.28), 0);
   transition: transform 180ms ease-out;
@@ -174,7 +182,7 @@ main {
 
 .semantic-artifact {
   position: relative;
-  width: min(48vw, 520px);
+  width: min(56vw, 610px);
   max-width: 100%;
   aspect-ratio: 1;
   display: grid;
@@ -194,6 +202,10 @@ main {
 .semantic-artifact.is-focused {
   --artifact-focus-scale: 1.055;
   filter: saturate(1.08) brightness(1.05);
+}
+
+.semantic-artifact.is-flipped .artifact-vessel {
+  transform: rotateY(180deg);
 }
 
 .semantic-artifact::before,
@@ -221,6 +233,65 @@ main {
     0 0 96px rgba(216, 173, 103, 0.08),
     inset 0 0 44px rgba(216, 173, 103, 0.08);
   transform: translateZ(12px);
+}
+
+.artifact-vessel {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 720ms cubic-bezier(0.2, 0.84, 0.22, 1);
+}
+
+.artifact-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.artifact-front {
+  transform: translateZ(1px);
+}
+
+.artifact-back {
+  padding: 15%;
+  color: #ffffff;
+  text-align: center;
+  background:
+    radial-gradient(circle at center, rgba(127, 183, 166, 0.16), rgba(0, 0, 0, 0.9) 68%),
+    #000000;
+  border: 1px solid rgba(127, 183, 166, 0.34);
+  box-shadow:
+    inset 0 0 54px rgba(127, 183, 166, 0.12),
+    0 0 60px rgba(0, 0, 0, 0.48);
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+.artifact-back p {
+  max-width: 18rem;
+  margin: 0 auto;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  line-height: 1.38;
+}
+
+.artifact-back p:first-child {
+  margin-bottom: 14px;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+.artifact-back small {
+  display: block;
+  margin-top: 16px;
+  color: var(--accent);
+  font-size: clamp(0.72rem, 1.8vw, 0.9rem);
 }
 
 .semantic-artifact img {
@@ -366,9 +437,9 @@ main {
 }
 
 .continuity-device.is-orb {
-  width: 68px;
-  height: 68px;
-  max-height: 68px;
+  width: 42px;
+  height: 118px;
+  max-height: 118px;
   border-radius: 999px;
   cursor: pointer;
   overflow: hidden;
@@ -396,13 +467,13 @@ main {
 }
 
 .continuity-device.is-orb::before {
-  inset: 15px;
+  inset: 14px 11px;
   border: 1px solid rgba(127, 183, 166, 0.7);
   box-shadow: inset 0 0 18px rgba(127, 183, 166, 0.24);
 }
 
 .continuity-device.is-orb::after {
-  inset: 25px;
+  inset: 48px 16px;
   background: #d9fff6;
   box-shadow:
     0 0 18px rgba(127, 183, 166, 0.8),
@@ -416,8 +487,8 @@ main {
 }
 
 .continuity-device.is-orb .device-header {
-  width: 68px;
-  height: 68px;
+  width: 42px;
+  height: 118px;
   padding: 0;
   border: 0;
   opacity: 0;
@@ -1640,7 +1711,7 @@ code {
   }
 
   .semantic-artifact {
-    width: min(92vw, 460px);
+    width: min(96vw, 520px);
   }
 
   .orbit {
@@ -1673,22 +1744,22 @@ code {
   }
 
   .continuity-device.is-orb {
-    width: 62px;
-    height: 62px;
-    max-height: 62px;
+    width: 38px;
+    height: 104px;
+    max-height: 104px;
   }
 
   .continuity-device.is-orb.is-docked-left {
-    transform: translateX(-18px) scale(0.98);
+    transform: translateX(-16px) scale(0.98);
   }
 
   .continuity-device.is-orb.is-docked-right {
-    transform: translateX(18px) scale(0.98);
+    transform: translateX(16px) scale(0.98);
   }
 
   .continuity-device.is-orb .device-header {
-    width: 62px;
-    height: 62px;
+    width: 38px;
+    height: 104px;
   }
 
   .continuity-device.is-expanded {

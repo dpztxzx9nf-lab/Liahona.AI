@@ -32,6 +32,7 @@ let state = loadState();
 let dragState = null;
 let rowGesture = null;
 let artifactFocusTimer = null;
+let artifactPointerStart = null;
 
 function loadState() {
   try {
@@ -96,6 +97,15 @@ function focusArtifact(duration = 1400) {
   artifactFocusTimer = window.setTimeout(() => {
     artifact.classList.remove("is-focused");
   }, duration);
+}
+
+function flipArtifact() {
+  if (!artifact) {
+    return;
+  }
+
+  artifact.classList.toggle("is-flipped");
+  focusArtifact(1800);
 }
 
 function itemKey(type, id) {
@@ -356,9 +366,10 @@ function dockDevice(side = state.device.dockSide || "right") {
   state.device.minimized = true;
   state.device.expanded = false;
 
-  const orbWidth = isMobileViewport() ? 62 : 68;
-  state.device.x = side === "left" ? 10 : window.innerWidth - orbWidth - 10;
-  state.device.y = clamp(state.device.y ?? window.innerHeight - orbWidth - 22, 10, window.innerHeight - orbWidth - 10);
+  const dockWidth = isMobileViewport() ? 38 : 42;
+  const dockHeight = isMobileViewport() ? 104 : 118;
+  state.device.x = side === "left" ? 0 : window.innerWidth - dockWidth;
+  state.device.y = clamp(state.device.y ?? window.innerHeight - dockHeight - 22, 10, window.innerHeight - dockHeight - 10);
   saveState();
   applyDeviceState();
   pulseHaptic(10);
@@ -430,7 +441,32 @@ function bindInteractions() {
       return;
     }
 
+    artifactPointerStart = {
+      x: event.clientX,
+      y: event.clientY
+    };
     focusArtifact();
+  });
+
+  artifact?.addEventListener("pointerup", (event) => {
+    if (!artifactPointerStart || event.target.closest("[data-fragment-id]")) {
+      artifactPointerStart = null;
+      return;
+    }
+
+    const deltaX = event.clientX - artifactPointerStart.x;
+    const deltaY = event.clientY - artifactPointerStart.y;
+    const isIntentional = Math.abs(deltaX) < 18 && Math.abs(deltaY) < 18;
+
+    artifactPointerStart = null;
+
+    if (isIntentional) {
+      flipArtifact();
+    }
+  });
+
+  artifact?.addEventListener("pointercancel", () => {
+    artifactPointerStart = null;
   });
 
   document.querySelector("[data-save-return]")?.addEventListener("click", saveReturnPoint);
