@@ -55,7 +55,7 @@ function loadState() {
       nextState.returnPoints = [];
     }
 
-    if (!["orb", "peek", "full"].includes(nextState.device.view)) {
+    if (!["orb", "full"].includes(nextState.device.view)) {
       nextState.device.view = defaultState.device.view;
     }
 
@@ -355,14 +355,23 @@ function applyDeviceState() {
 
   if (state.device.minimized) {
     state.device.view = "orb";
+    state.device.expanded = false;
+  } else if (state.device.view !== "full") {
+    state.device.view = "full";
+    state.device.expanded = true;
+  }
+
+  if (!state.device.minimized) {
+    state.device.expanded = true;
   }
 
   device.classList.toggle("is-minimized", Boolean(state.device.minimized));
   device.classList.toggle("is-expanded", Boolean(state.device.expanded));
-  device.classList.toggle("is-peek", state.device.view === "peek" && !state.device.expanded && !state.device.minimized);
+  device.classList.toggle("is-peek", false);
   device.classList.toggle("is-orb", Boolean(state.device.minimized));
   device.classList.toggle("is-docked-left", state.device.dockSide === "left");
   device.classList.toggle("is-docked-right", state.device.dockSide !== "left");
+  document.body.classList.toggle("is-continuity-open", !state.device.minimized);
 
   if (state.device.view === "orb" || state.device.minimized) {
     const dockWidth = isMobileViewport() ? 38 : 42;
@@ -380,20 +389,15 @@ function applyDeviceState() {
 }
 
 function setDeviceView(view) {
-  state.device.view = view;
-  state.device.minimized = view === "orb";
-  state.device.expanded = view === "full";
-
-  if (view !== "orb") {
-    const targetWidth = view === "full" ? Math.min(640, window.innerWidth - 24) : Math.min(330, window.innerWidth - 24);
-    state.device.x = state.device.dockSide === "left" ? 12 : Math.max(12, window.innerWidth - targetWidth - 12);
-    state.device.y = clamp(state.device.y ?? window.innerHeight - 480, 12, Math.max(12, window.innerHeight - 160));
-  }
+  const nextView = view === "orb" ? "orb" : "full";
+  state.device.view = nextView;
+  state.device.minimized = nextView === "orb";
+  state.device.expanded = nextView === "full";
 
   saveState();
   applyDeviceState();
   keepDeviceInBounds();
-  pulseHaptic(view === "full" ? 18 : 10);
+  pulseHaptic(nextView === "full" ? 18 : 10);
 }
 
 function dockDevice(side = state.device.dockSide || "right") {
@@ -424,20 +428,6 @@ function keepDeviceInBounds() {
     dockDevice(state.device.dockSide);
     return;
   }
-
-  const rect = device.getBoundingClientRect();
-  const maxX = Math.max(8, window.innerWidth - Math.min(rect.width, window.innerWidth) - 8);
-  const maxY = Math.max(8, window.innerHeight - Math.min(rect.height, window.innerHeight) - 8);
-  const x = clamp(rect.left, 8, maxX);
-  const y = clamp(rect.top, 8, maxY);
-
-  state.device.x = x;
-  state.device.y = y;
-  device.style.left = `${x}px`;
-  device.style.top = `${y}px`;
-  device.style.right = "auto";
-  device.style.bottom = "auto";
-  saveState();
 }
 
 function updateParallax(event) {
@@ -543,7 +533,7 @@ function bindInteractions() {
   });
 
   document.querySelector("[data-device-expand]")?.addEventListener("click", () => {
-    setDeviceView(state.device.expanded ? "peek" : "full");
+    setDeviceView("full");
   });
 
   device.addEventListener("click", (event) => {
@@ -556,7 +546,7 @@ function bindInteractions() {
       return;
     }
 
-    setDeviceView("peek");
+    setDeviceView("full");
   });
 
   document.querySelector("[data-device-snap]")?.addEventListener("click", () => {
@@ -681,6 +671,10 @@ function bindDrag() {
       return;
     }
 
+    if (state.device.view !== "orb" && !state.device.minimized) {
+      return;
+    }
+
     const rect = device.getBoundingClientRect();
     dragState = {
       pointerId: event.pointerId,
@@ -727,10 +721,10 @@ function bindDrag() {
 
       if (shouldDock) {
         dockDevice(nearLeft || deltaX < 0 ? "left" : "right");
-      } else if ((state.device.view === "peek" || state.device.view === "orb") && shouldExpand) {
+      } else if ((state.device.view === "orb" || state.device.minimized) && shouldExpand) {
         setDeviceView("full");
       } else if (dragState.startedAsOrb && !dragState.moved) {
-        setDeviceView("peek");
+        setDeviceView("full");
       }
       dragState = null;
       saveState();

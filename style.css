@@ -36,6 +36,29 @@ body {
   line-height: 1.6;
 }
 
+body.is-continuity-open {
+  overflow: hidden;
+}
+
+body.is-continuity-open::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  pointer-events: auto;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(127, 183, 166, 0.1), transparent 34%),
+    rgba(0, 0, 0, 0.66);
+  backdrop-filter: blur(4px);
+}
+
+body.is-continuity-open main {
+  pointer-events: none;
+  filter: brightness(0.48) blur(1.5px);
+  transform: scale(0.992);
+  transition: filter 220ms ease, transform 220ms ease;
+}
+
 main {
   width: min(1120px, 100%);
   margin: 0 auto;
@@ -442,7 +465,16 @@ main {
 }
 
 .continuity-device.is-expanded {
-  width: min(640px, calc(100vw - 24px));
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: min(720px, calc(100vw - 32px));
+  height: min(760px, calc(100vh - 40px));
+  max-height: calc(100vh - 40px);
+  border-radius: 18px;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
 }
 
 .continuity-device.is-peek {
@@ -520,6 +552,16 @@ main {
   border-bottom: 1px solid rgba(127, 183, 166, 0.18);
 }
 
+.continuity-device.is-expanded .device-header {
+  cursor: default;
+  touch-action: auto;
+}
+
+.continuity-device.is-expanded [data-device-snap],
+.continuity-device.is-expanded [data-device-expand] {
+  display: none;
+}
+
 .device-header h2,
 .device-header p {
   margin: 0;
@@ -566,6 +608,11 @@ main {
   overflow-y: auto;
   padding: 14px;
   transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.continuity-device.is-expanded .device-body {
+  max-height: calc(100% - 73px);
+  overscroll-behavior: contain;
 }
 
 .continuity-device.is-peek .device-body {
@@ -1789,8 +1836,13 @@ code {
   }
 
   .continuity-device.is-expanded {
-    width: calc(100vw - 24px);
-    max-height: calc(100vh - 24px);
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw;
+    height: 100svh;
+    max-height: 100svh;
+    border-radius: 0;
+    transform: none;
   }
 
   .device-header {
@@ -1801,7 +1853,6 @@ code {
     padding: 6px 8px;
   }
 
-  [data-device-minimize],
   [data-device-expand] {
     display: none;
   }
