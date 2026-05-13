@@ -1,2 +1,5 @@
 # Liahona.AI
-Lightweight observability, documentation, and dashboard foundation for Liahona.
+
+Artifact-first GitHub Pages interface and continuity map for Liahona.
+
+Project documentation lives in `docs/`.
