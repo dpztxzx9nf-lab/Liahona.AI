@@ -31,6 +31,7 @@ const statusNode = document.querySelector("[data-device-status]");
 let state = loadState();
 let dragState = null;
 let rowGesture = null;
+let artifactFocusTimer = null;
 
 function loadState() {
   try {
@@ -81,6 +82,20 @@ function pulseHaptic(strength = 14) {
 function pulseArtifact() {
   artifact?.classList.remove("is-awake");
   window.requestAnimationFrame(() => artifact?.classList.add("is-awake"));
+}
+
+function focusArtifact(duration = 1400) {
+  if (!artifact) {
+    return;
+  }
+
+  artifact.classList.add("is-focused");
+  pulseArtifact();
+  pulseHaptic(12);
+  window.clearTimeout(artifactFocusTimer);
+  artifactFocusTimer = window.setTimeout(() => {
+    artifact.classList.remove("is-focused");
+  }, duration);
 }
 
 function itemKey(type, id) {
@@ -141,7 +156,7 @@ function unlockFragment(fragmentId) {
   state.lastViewedArtifact = fragmentId;
   saveState();
   renderDevice();
-  pulseArtifact();
+  focusArtifact(1800);
 }
 
 function unlockedChambers() {
@@ -382,13 +397,40 @@ function updateParallax(event) {
   cosmology.style.setProperty("--world-y", `${y * 18}px`);
   cosmology.style.setProperty("--artifact-tilt-x", `${clamp(y * -7, -7, 7)}deg`);
   cosmology.style.setProperty("--artifact-tilt-y", `${clamp(x * 9, -9, 9)}deg`);
+  cosmology.style.setProperty("--artifact-depth", String(1 + Math.min(Math.hypot(x, y), 1) * 0.035));
+  cosmology.style.setProperty("--artifact-shift-x", `${x * 7}px`);
+  cosmology.style.setProperty("--artifact-shift-y", `${y * 7}px`);
   cosmology.style.setProperty("--light-x", `${50 + x * 22}%`);
   cosmology.style.setProperty("--light-y", `${50 + y * 18}%`);
+}
+
+function resetArtifactMotion() {
+  if (!cosmology) {
+    return;
+  }
+
+  cosmology.style.setProperty("--world-x", "0px");
+  cosmology.style.setProperty("--world-y", "0px");
+  cosmology.style.setProperty("--artifact-tilt-x", "0deg");
+  cosmology.style.setProperty("--artifact-tilt-y", "0deg");
+  cosmology.style.setProperty("--artifact-depth", "1");
+  cosmology.style.setProperty("--artifact-shift-x", "0px");
+  cosmology.style.setProperty("--artifact-shift-y", "0px");
+  cosmology.style.setProperty("--light-x", "50%");
+  cosmology.style.setProperty("--light-y", "50%");
 }
 
 function bindInteractions() {
   document.querySelectorAll("[data-fragment-id]").forEach((button) => {
     button.addEventListener("click", () => unlockFragment(button.dataset.fragmentId));
+  });
+
+  artifact?.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("[data-fragment-id]")) {
+      return;
+    }
+
+    focusArtifact();
   });
 
   document.querySelector("[data-save-return]")?.addEventListener("click", saveReturnPoint);
@@ -458,6 +500,7 @@ function bindInteractions() {
 
   window.addEventListener("pointermove", updateParallax, { passive: true });
   window.addEventListener("touchmove", updateParallax, { passive: true });
+  cosmology.addEventListener("pointerleave", resetArtifactMotion);
   window.addEventListener("resize", keepDeviceInBounds);
   bindRowGestures();
 }
