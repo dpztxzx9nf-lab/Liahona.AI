@@ -19,6 +19,29 @@ For uncertain tasks:
 4. List files that would change.
 5. Wait for approval before editing/committing/pushing.
 
+# Concept Projection Workflow
+
+For new architectural, metaphysical, governance, source-layer, continuity, or major UX concepts:
+
+1. Document the concept first.
+2. Identify which layer it belongs to:
+   - Canonical
+   - Interpretive
+   - Runtime
+   - Projection
+   - Continuity
+3. Explain why it belongs there.
+4. State what should NOT be implemented yet.
+5. Propose the safest implementation path.
+6. Wait for approval before implementation.
+
+Do not implement major conceptual systems directly from first mention.
+
+- Prefer concept stabilization before runtime restructuring.
+- Preserve artifact-first architecture.
+- Prefer fewer features and higher quality interaction.
+- Avoid abstraction sprawl and premature system complexity.
+
 # Safe Change Levels
 
 Easy:
