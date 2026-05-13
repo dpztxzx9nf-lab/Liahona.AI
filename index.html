@@ -3,315 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liahona</title>
-  <meta name="description" content="Liahona is a grounded conversational system for KINDEX.">
+  <title>Liahona.AI</title>
+  <meta name="description" content="Liahona.AI is an artifact-first orientation surface for KINDEX, grounded in sourcefulness, continuity, and recoverable project memory.">
   <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
-  <script type="module" src="src/dashboard.js"></script>
-  <script type="module" src="src/cosmology.js"></script>
+  <script type="module" src="src/artifact.js"></script>
 </head>
 <body>
-  <main>
-    <section class="cosmology-hero" aria-labelledby="liahona-title" data-cosmology>
-      <div class="starfield" aria-hidden="true">
-        <span class="star-layer star-layer-one"></span>
-        <span class="star-layer star-layer-two"></span>
-        <span class="galaxy-core"></span>
+  <main class="void-interface" data-interface aria-labelledby="title">
+    <div class="void-field" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <section class="artifact-system" aria-label="Liahona artifact interface">
+      <header class="identity">
+        <p>Orientation artifact</p>
+        <h1 id="title">Liahona.AI</h1>
+      </header>
+
+      <button class="artifact-core" type="button" data-artifact aria-label="Cycle Liahona orientation state">
+        <span class="axis axis-one" aria-hidden="true"></span>
+        <span class="axis axis-two" aria-hidden="true"></span>
+        <span class="orbit orbit-one" aria-hidden="true"></span>
+        <span class="orbit orbit-two" aria-hidden="true"></span>
+        <span class="artifact-aura" aria-hidden="true"></span>
+        <span class="artifact-matte" aria-hidden="true"></span>
+        <img src="assets/liahona-artifact.jpeg" alt="Suspended brass Liahona artifact">
+      </button>
+
+      <div class="state-ring" aria-label="Orientation states">
+        <button type="button" data-state="orientation">Orientation</button>
+        <button type="button" data-state="grounding">Grounding</button>
+        <button type="button" data-state="continuity">Continuity</button>
+        <button type="button" data-state="recoverability">Recoverability</button>
       </div>
-      <div class="cosmology-copy">
-        <p class="eyebrow">Liahona</p>
-        <h1 id="liahona-title">Liahona</h1>
-        <p class="lead">
-          An orienting presence for KINDEX.
-        </p>
-      </div>
-      <div class="artifact-world" aria-label="Interactive Liahona artifact world">
-        <div class="orbit orbit-one" aria-hidden="true"></div>
-        <div class="orbit orbit-two" aria-hidden="true"></div>
-        <div class="orbit orbit-three" aria-hidden="true"></div>
-        <div class="semantic-artifact" data-artifact role="button" tabindex="0" aria-label="Flip Liahona artifact" aria-pressed="false">
-          <span class="artifact-aura" aria-hidden="true"></span>
-          <span class="artifact-ripple" aria-hidden="true"></span>
-          <div class="artifact-vessel" data-artifact-vessel>
-            <div class="artifact-face artifact-front">
-              <img src="assets/liahona-artifact.jpeg" alt="Suspended brass Liahona artifact">
-              <button class="artifact-hotspot hotspot-one" type="button" data-fragment-id="orientation" aria-label="Reveal orientation fragment"></button>
-              <button class="artifact-hotspot hotspot-two" type="button" data-fragment-id="memory" aria-label="Reveal memory fragment"></button>
-              <button class="artifact-hotspot hotspot-three" type="button" data-fragment-id="grounding" aria-label="Reveal grounding fragment"></button>
-              <button class="artifact-hotspot hotspot-four" type="button" data-fragment-id="judgment" aria-label="Reveal judgment fragment"></button>
-            </div>
-            <div class="artifact-face artifact-back" aria-label="Liahona grounding">
-              <div class="artifact-source-card">
-                <p class="artifact-source-title">Liahona</p>
-                <p class="artifact-source-note">Scripture grounding points outward. The artifact is not the authority itself.</p>
-                <nav class="artifact-source-links" aria-label="Liahona scripture references">
-                  <a href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/16?lang=eng" target="_blank" rel="noopener noreferrer">1 Nephi 16</a>
-                  <a href="https://www.churchofjesuschrist.org/study/scriptures/bofm/mosiah/1?lang=eng" target="_blank" rel="noopener noreferrer">Mosiah 1</a>
-                  <a href="https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/37?lang=eng" target="_blank" rel="noopener noreferrer">Alma 37</a>
-                  <a href="https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/17?lang=eng" target="_blank" rel="noopener noreferrer">Doctrine &amp; Covenants 17</a>
-                </nav>
-              </div>
-            </div>
-          </div>
+
+      <aside class="transmission" aria-live="polite">
+        <span class="transmission-rule" aria-hidden="true"></span>
+        <p class="transmission-kicker" data-kicker>Orientation</p>
+        <h2 data-title>Direction before output.</h2>
+        <p data-body>Liahona is a restrained public artifact for judgment, timing, and source-grounded direction.</p>
+      </aside>
+
+      <nav class="source-orbit" aria-label="Source grounding">
+        <a href="https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/16?lang=eng" target="_blank" rel="noopener noreferrer">1 Nephi 16</a>
+        <a href="https://www.churchofjesuschrist.org/study/scriptures/bofm/alma/37?lang=eng" target="_blank" rel="noopener noreferrer">Alma 37</a>
+        <a href="https://www.churchofjesuschrist.org/study/scriptures/gs/liahona?lang=eng" target="_blank" rel="noopener noreferrer">Source</a>
+      </nav>
+
+      <button class="continuity-trigger" type="button" data-continuity-toggle aria-expanded="false" aria-controls="continuity-device">
+        Continuity
+      </button>
+
+      <aside class="continuity-device" id="continuity-device" data-continuity-device hidden aria-label="Continuity device">
+        <div class="device-header">
+          <p>Continuity Device</p>
+          <button type="button" data-continuity-close aria-label="Close continuity device">Close</button>
         </div>
-      </div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="why-liahona">
-      <h2 id="why-liahona">Why Liahona?</h2>
-      <p class="section-intro">
-        Liahona is intended to be an orienting conversational presence for KINDEX.
-        The name is inspired by the symbolic meaning of the Liahona in scripture, not
-        by any claim that the system is divine, prophetic, authoritative, or revelatory.
-      </p>
-      <p class="section-intro">
-        For KINDEX, the name reflects direction, grounding, judgment, continuity, and
-        guidance through context rather than constant output. Liahona should remain
-        restrained, truthful, non-authoritative, and human-built.
-      </p>
-    </section>
-
-    <section class="site-archive" aria-labelledby="projects">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Continuity dashboard</p>
-          <h2 id="projects">Projects</h2>
+        <div class="device-records">
+          <article>
+            <span>Return point</span>
+            <p>Artifact-first surface. Canonical image preserved. Public UI remains reversible through Git.</p>
+          </article>
+          <article>
+            <span>Source boundary</span>
+            <p>Scripture stays external. Liahona points outward and does not impersonate authority.</p>
+          </article>
+          <article>
+            <span>Continuity spine</span>
+            <p>Durable memory belongs in docs, source-grounded records, and recoverable checkpoints.</p>
+          </article>
         </div>
-        <p>
-          A lightweight map for tracking project state across Liahona, KINDEX,
-          the website, Discord systems, and future applications.
-        </p>
-      </div>
-      <div class="project-grid" data-projects-list></div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="continuity-logs">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Continuity</p>
-          <h2 id="continuity-logs">Logs</h2>
-        </div>
-        <p>Meaningful changes across projects, grouped by project and area.</p>
-      </div>
-      <div class="filter-bar" data-log-filters>
-        <label>
-          Project
-          <select data-filter-project>
-            <option value="all">All projects</option>
-          </select>
-        </label>
-        <label>
-          Area
-          <select data-filter-area>
-            <option value="all">All areas</option>
-          </select>
-        </label>
-      </div>
-      <div class="timeline" data-log-list></div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="behavior-lab">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Observation</p>
-          <h2 id="behavior-lab">Behavior Lab</h2>
-        </div>
-        <p>Structured notes on real bot and system behavior.</p>
-      </div>
-      <div class="filter-bar" data-behavior-filters>
-        <label>
-          Project
-          <select data-filter-project>
-            <option value="all">All projects</option>
-          </select>
-        </label>
-        <label>
-          Area
-          <select data-filter-area>
-            <option value="all">All areas</option>
-          </select>
-        </label>
-      </div>
-      <div class="lab-grid" data-behavior-list></div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="versions">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Rollback map</p>
-          <h2 id="versions">Versions</h2>
-        </div>
-        <p>
-          Human-readable checkpoints. Git remains the technical rollback system.
-        </p>
-      </div>
-      <div class="version-list" data-version-list></div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="current-system">
-      <h2 id="current-system">Current System</h2>
-      <div class="grid">
-        <article>
-          <h3>Discord bot</h3>
-          <p>Receives messages, interprets intent, generates replies, and delivers responses.</p>
-        </article>
-        <article>
-          <h3>PM2 runtime</h3>
-          <p>Runs as a managed Node process with simple restart and log commands.</p>
-        </article>
-        <article>
-          <h3>Observability</h3>
-          <p>Structured lifecycle logs show where each message succeeds or fails.</p>
-        </article>
-        <article>
-          <h3>DM support</h3>
-          <p>Direct messages are part of the working surface and need clear diagnostics.</p>
-        </article>
-        <article>
-          <h3>Semantic retrieval direction</h3>
-          <p>Retrieval will become more precise as memory and source indexing mature.</p>
-        </article>
-        <article>
-          <h3>Source grounding direction</h3>
-          <p>Future answers should point back to trusted source material when possible.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="lifecycle">
-      <h2 id="lifecycle">Lifecycle</h2>
-      <ol class="lifecycle">
-        <li>MESSAGE_RECEIVED</li>
-        <li>INTERPRETATION_RESULT</li>
-        <li>GENERATION_RESULT</li>
-        <li>DELIVERY_RESULT</li>
-      </ol>
-    </section>
-
-    <section class="site-archive" aria-labelledby="operations">
-      <h2 id="operations">Operations</h2>
-      <pre><code>pm2 restart liahona --update-env
-pm2 logs liahona
-pm2 logs liahona --err
-pm2 logs liahona --out</code></pre>
-    </section>
-
-    <section class="site-archive" aria-labelledby="architecture-direction">
-      <h2 id="architecture-direction">Architecture Direction</h2>
-      <div class="stack">
-        <p><strong>KINDEX</strong> is the human archive.</p>
-        <p><strong>Database</strong> is memory and retrieval.</p>
-        <p><strong>Sources</strong> are grounding.</p>
-        <p><strong>Liahona</strong> is the judgment and interpretation layer.</p>
-      </div>
-    </section>
-
-    <section class="site-archive" aria-labelledby="grounding-sources">
-      <h2 id="grounding-sources">Grounding Sources</h2>
-      <p class="section-intro">
-        Sources are used for grounding, reference, and future retrieval planning.
-        This is an early source list, not a complete library or automated ingestion system.
-      </p>
-      <div class="source-list">
-        <a href="https://www.churchofjesuschrist.org/?lang=eng" target="_blank" rel="noopener noreferrer">
-          <span>Church of Jesus Christ</span>
-          <small>churchofjesuschrist.org</small>
-        </a>
-        <a href="https://www.churchofjesuschrist.org/study?lang=eng" target="_blank" rel="noopener noreferrer">
-          <span>Gospel Library Online</span>
-          <small>churchofjesuschrist.org/study</small>
-        </a>
-        <a href="https://plato.stanford.edu/" target="_blank" rel="noopener noreferrer">
-          <span>Stanford Encyclopedia of Philosophy</span>
-          <small>plato.stanford.edu</small>
-        </a>
-      </div>
-      <p class="section-intro">
-        Future sources may be grouped by type: Scripture / Church resources,
-        philosophy references, project documents, KINDEX memory, current/live sources,
-        and community archives.
-      </p>
-    </section>
-
-    <section class="site-archive" aria-labelledby="roadmap">
-      <h2 id="roadmap">Roadmap</h2>
-      <ul class="roadmap">
-        <li>Better observability</li>
-        <li>Retrieval refinement</li>
-        <li>Journal continuity</li>
-        <li>Weekly digest later</li>
-        <li>Lightweight dashboard later</li>
-      </ul>
+      </aside>
     </section>
   </main>
-  <aside class="continuity-device" data-continuity-device aria-label="Continuity device">
-    <header class="device-header" data-device-drag>
-      <div>
-        <p class="device-kicker">Continuity Device</p>
-        <h2>Personal Archive</h2>
-      </div>
-      <div class="device-actions">
-        <button type="button" data-device-snap aria-label="Snap continuity device to screen edge">Snap</button>
-        <button type="button" data-device-minimize aria-label="Return to Liahona artifact view">Return to Liahona</button>
-        <button type="button" data-device-expand aria-label="Expand continuity device">Expand</button>
-      </div>
-    </header>
-    <div class="device-body">
-      <nav class="device-tabs" aria-label="Continuity scopes">
-        <button type="button" class="is-active" data-device-tab="private">Private</button>
-        <button type="button" data-device-tab="shared">Shared</button>
-        <button type="button" data-device-tab="collective">Collective</button>
-        <button type="button" data-device-tab="decisions">Decisions</button>
-      </nav>
-      <section class="device-panel is-active" data-device-panel="private" aria-label="Private continuity">
-        <div class="device-section">
-          <div class="device-section-heading">
-            <h3>Return Points</h3>
-            <button type="button" data-save-return>Save</button>
-          </div>
-          <div class="device-list" data-return-points></div>
-          <button type="button" class="share-button" data-copy-return-link>Copy Shareable Return Link</button>
-        </div>
-        <div class="device-section">
-          <h3>Artifact Fragments</h3>
-          <div class="device-list fragment-list" data-fragment-list></div>
-        </div>
-      </section>
-      <section class="device-panel" data-device-panel="shared" aria-label="Shared continuity">
-        <div class="device-section">
-          <h3>Memory Echoes</h3>
-          <div class="device-list" data-memory-echoes></div>
-        </div>
-        <div class="device-section">
-          <h3>Continuity Logs</h3>
-          <div class="device-list" data-device-logs></div>
-        </div>
-      </section>
-      <section class="device-panel" data-device-panel="collective" aria-label="Collective continuity">
-        <div class="device-section">
-          <h3>Scripture Grounding</h3>
-          <div class="device-list">
-            <article class="device-item">
-              <span>Reference</span>
-              <h4>Liahona</h4>
-              <p>Guide to the Scriptures reference content and source links are kept here, outside the main immersive world.</p>
-              <a href="https://www.churchofjesuschrist.org/study/scriptures/gs/liahona?lang=eng" target="_blank" rel="noopener noreferrer">Open scripture reference</a>
-            </article>
-          </div>
-        </div>
-        <div class="device-section">
-          <h3>Dormant Chambers</h3>
-          <div class="device-list" data-chamber-list></div>
-        </div>
-      </section>
-      <section class="device-panel" data-device-panel="decisions" aria-label="Architectural decisions">
-        <div class="device-section">
-          <h3>Architectural Decisions</h3>
-          <div class="device-list" data-decision-list></div>
-        </div>
-      </section>
-      <p class="device-note" data-device-status>Discover fragments to unlock deeper chambers.</p>
-    </div>
-  </aside>
 </body>
 </html>

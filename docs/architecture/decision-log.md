@@ -16,13 +16,13 @@ Operational tools stay available, but the homepage should remain quiet, immersiv
 ## Continuity device as secondary overlay
 
 Decision:
-The continuity device is a secondary overlay for logs, sources, return points, fragments, and operational continuity.
+The Continuity Device is the canonical secondary interface layer for logs, sources, return points, fragments, and operational continuity.
 
 Why:
 Continuity matters, but it should not compete with the artifact as the primary world.
 
 Implication:
-The device should open intentionally, behave predictably, and return cleanly to the Liahona view.
+The device should open intentionally, behave predictably, and return cleanly to the Liahona view. Redesign work may simplify or restyle the device, but should not replace it with an unrelated secondary interface pattern.
 
 ## Fewer features, higher quality interaction
 
