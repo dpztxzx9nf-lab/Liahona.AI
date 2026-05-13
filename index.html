@@ -254,6 +254,7 @@ pm2 logs liahona --out</code></pre>
         <button type="button" class="is-active" data-device-tab="private">Private</button>
         <button type="button" data-device-tab="shared">Shared</button>
         <button type="button" data-device-tab="collective">Collective</button>
+        <button type="button" data-device-tab="decisions">Decisions</button>
       </nav>
       <section class="device-panel is-active" data-device-panel="private" aria-label="Private continuity">
         <div class="device-section">
@@ -294,6 +295,12 @@ pm2 logs liahona --out</code></pre>
         <div class="device-section">
           <h3>Dormant Chambers</h3>
           <div class="device-list" data-chamber-list></div>
+        </div>
+      </section>
+      <section class="device-panel" data-device-panel="decisions" aria-label="Architectural decisions">
+        <div class="device-section">
+          <h3>Architectural Decisions</h3>
+          <div class="device-list" data-decision-list></div>
         </div>
       </section>
       <p class="device-note" data-device-status>Discover fragments to unlock deeper chambers.</p>

@@ -1,4 +1,5 @@
 import { fragments, memoryEchoes, chambers } from "./data/cosmology.js";
+import { decisions } from "./data/decisions.js";
 import { logs } from "./data/logs.js";
 
 const storageKey = "liahonaCosmologyState";
@@ -258,6 +259,7 @@ function renderDevice() {
   const echoesList = document.querySelector("[data-memory-echoes]");
   const deviceLogs = document.querySelector("[data-device-logs]");
   const chamberList = document.querySelector("[data-chamber-list]");
+  const decisionsList = document.querySelector("[data-decision-list]");
 
   if (fragmentList) {
     fragmentList.innerHTML = fragments.filter((fragment) => !isDeleted("fragment", fragment.id)).map((fragment) => {
@@ -334,6 +336,18 @@ function renderDevice() {
         </button>
       `;
     }).join("");
+  }
+
+  if (decisionsList) {
+    decisionsList.innerHTML = decisions.map((entry) => `
+      <article class="device-item decision-card">
+        <span>Decision</span>
+        <h4>${entry.title}</h4>
+        <p><strong>Decision:</strong> ${entry.decision}</p>
+        <p><strong>Why:</strong> ${entry.why}</p>
+        <p><strong>Implication:</strong> ${entry.implication}</p>
+      </article>
+    `).join("");
   }
 }
 

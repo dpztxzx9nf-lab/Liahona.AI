@@ -627,7 +627,7 @@ main {
 
 .device-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   margin-bottom: 14px;
 }
@@ -1851,6 +1851,10 @@ code {
 
   .device-actions button {
     padding: 6px 8px;
+  }
+
+  .device-tabs {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   [data-device-expand] {
