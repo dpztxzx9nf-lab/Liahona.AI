@@ -490,7 +490,7 @@ function bindInteractions() {
       return;
     }
 
-    if (event.target.closest("[data-fragment-id]")) {
+    if (event.target.closest("[data-fragment-id], a")) {
       return;
     }
 
@@ -502,7 +502,7 @@ function bindInteractions() {
   });
 
   artifact?.addEventListener("pointerup", (event) => {
-    if (!artifactPointerStart || event.target.closest("[data-fragment-id]")) {
+    if (!artifactPointerStart || event.target.closest("[data-fragment-id], a")) {
       artifactPointerStart = null;
       return;
     }
