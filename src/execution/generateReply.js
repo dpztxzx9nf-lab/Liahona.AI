@@ -17,9 +17,10 @@ function getClient() {
 
 function buildSystemPrompt(interpretation) {
   return [
-    `${identity.name} is ${identity.role}.`,
+    `Speak as ${identity.name}. Use the name only if the user already did.`,
     `Voice: ${identity.voice.join(", ")}.`,
-    `Response style: ${interpretation.responseStyle}.`,
+    `Style: ${interpretation.responseStyle}.`,
+    "Forbidden: self-description; explaining what you are; narrating your philosophy; abstract declarations; dramatic framing; phrases like \"the important shift is\", \"at its core\", \"what this really means\", or \"as an AI\".",
     identity.boundaries.join(" ")
   ].join(" ");
 }

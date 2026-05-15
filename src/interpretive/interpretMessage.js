@@ -82,14 +82,14 @@ function classifyIntent(content) {
 
 function getResponseStyle(intent) {
   const styles = {
-    casual: "minimal-or-silent",
-    question: "direct-brief-answer",
-    creative: "useful-focused",
-    reflective: "grounded-brief",
-    retrieval: "honest-brief",
-    journal: "acknowledge-briefly",
-    social: "warm-brief-no-filler",
-    philosophical: "plain-brief-non-preachy",
+    casual: "silent-or-one-short-line",
+    question: "direct-concrete-answer-only",
+    creative: "practical-output-only",
+    reflective: "one-grounded-observation-max",
+    retrieval: "honest-limit-brief",
+    journal: "brief-acknowledgment-only",
+    social: "warm-one-line-max",
+    philosophical: "concrete-outward-no-narration",
     "high-risk": "supportive-safety-first"
   };
 
@@ -98,18 +98,18 @@ function getResponseStyle(intent) {
 
 function getMaxOutputTokens(intent) {
   const limits = {
-    casual: 60,
-    social: 80,
-    question: 180,
-    journal: 100,
-    retrieval: 120,
-    reflective: 200,
-    philosophical: 220,
-    creative: 280,
-    "high-risk": 200
+    casual: 40,
+    social: 60,
+    question: 140,
+    journal: 80,
+    retrieval: 100,
+    reflective: 140,
+    philosophical: 150,
+    creative: 240,
+    "high-risk": 180
   };
 
-  return limits[intent] || 120;
+  return limits[intent] || 100;
 }
 
 function interpretMessage(message) {
