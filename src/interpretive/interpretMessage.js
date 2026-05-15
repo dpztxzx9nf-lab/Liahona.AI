@@ -82,18 +82,34 @@ function classifyIntent(content) {
 
 function getResponseStyle(intent) {
   const styles = {
-    casual: "brief-natural",
-    question: "direct-answer-first",
-    creative: "useful-creative",
-    reflective: "grounded-reflective",
-    retrieval: "honest-retrieval",
+    casual: "minimal-or-silent",
+    question: "direct-brief-answer",
+    creative: "useful-focused",
+    reflective: "grounded-brief",
+    retrieval: "honest-brief",
     journal: "acknowledge-briefly",
-    social: "warm-brief",
-    philosophical: "plain-non-preachy",
+    social: "warm-brief-no-filler",
+    philosophical: "plain-brief-non-preachy",
     "high-risk": "supportive-safety-first"
   };
 
   return styles[intent] || styles.casual;
+}
+
+function getMaxOutputTokens(intent) {
+  const limits = {
+    casual: 60,
+    social: 80,
+    question: 180,
+    journal: 100,
+    retrieval: 120,
+    reflective: 200,
+    philosophical: 220,
+    creative: 280,
+    "high-risk": 200
+  };
+
+  return limits[intent] || 120;
 }
 
 function interpretMessage(message) {
@@ -110,11 +126,13 @@ function interpretMessage(message) {
     shouldRespond: hasContent,
     responseReason: hasContent ? "message-has-content" : "empty-message",
     responseStyle: getResponseStyle(intent),
+    maxOutputTokens: getMaxOutputTokens(intent),
     needsRetrieval: intent === "retrieval"
   };
 }
 
 module.exports = {
   INTENTS,
-  interpretMessage
+  interpretMessage,
+  getMaxOutputTokens
 };

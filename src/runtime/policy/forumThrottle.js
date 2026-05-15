@@ -51,5 +51,6 @@ function applyForumThrottle(message, interpretation, clientUserId) {
 
 module.exports = {
   applyForumThrottle,
-  isForumOrThread
+  isForumOrThread,
+  directlyMentionsLiahona
 };

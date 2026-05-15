@@ -30,14 +30,18 @@ function fallbackReply(content, interpretation) {
   }
 
   if (interpretation.needsRetrieval) {
-    return "I cannot look that up from memory right now.";
+    return "I don't hold that continuity here.";
   }
 
   if (content.trim() === "!ping") {
     return "pong";
   }
 
-  return "I hear you.";
+  if (interpretation.intent === "casual" || interpretation.intent === "social") {
+    return "";
+  }
+
+  return "";
 }
 
 async function generateReply({ content, interpretation }) {
@@ -59,7 +63,7 @@ async function generateReply({ content, interpretation }) {
         content
       }
     ],
-    max_output_tokens: 350
+    max_output_tokens: interpretation.maxOutputTokens || 120
   };
 
   const response = await client.responses.create(request);

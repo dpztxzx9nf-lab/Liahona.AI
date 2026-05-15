@@ -1,3 +1,4 @@
+const { applyChannelSilence } = require("../policy/channelSilence");
 const { applyForumThrottle } = require("../policy/forumThrottle");
 const {
   logDiagnostic,
@@ -26,11 +27,9 @@ async function handleMessage(message, { clientUserId, ports }) {
   }
 
   try {
-    const interpretation = applyForumThrottle(
-      message,
-      ports.interpretive.interpret(message),
-      clientUserId
-    );
+    let interpretation = ports.interpretive.interpret(message);
+    interpretation = applyChannelSilence(message, interpretation, clientUserId);
+    interpretation = applyForumThrottle(message, interpretation, clientUserId);
     const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
 
     logDiagnostic("INTERPRETATION_RESULT", {
