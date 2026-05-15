@@ -1,5 +1,6 @@
 const { applyChannelSilence } = require("../policy/channelSilence");
 const { applyForumThrottle } = require("../policy/forumThrottle");
+const { tryAcquireMessage, releaseMessage } = require("../policy/messageLock");
 const {
   logDiagnostic,
   logError,
@@ -23,6 +24,16 @@ async function handleMessage(message, { clientUserId, ports }) {
   logDiagnostic("MESSAGE_RECEIVED", messageDiagnostics);
 
   if (message.author.bot) {
+    return;
+  }
+
+  const lock = tryAcquireMessage(message.id);
+
+  if (!lock.acquired) {
+    logDiagnostic("MESSAGE_DEDUPED", {
+      messageId: message.id,
+      reason: lock.reason
+    });
     return;
   }
 
@@ -106,6 +117,8 @@ async function handleMessage(message, { clientUserId, ports }) {
       messageId: message.id,
       channelId: message.channel?.id
     }, error);
+  } finally {
+    releaseMessage(message.id, { markCompleted: true });
   }
 }
 

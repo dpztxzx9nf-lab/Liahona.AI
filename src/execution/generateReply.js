@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const { identity } = require("../interpretive/identity");
+const { extractResponseText } = require("./extractResponseText");
 
 let openai;
 
@@ -45,6 +46,18 @@ function fallbackReply(content, interpretation) {
   return "";
 }
 
+async function waitForCompletedResponse(client, response) {
+  let current = response;
+  const incompleteStatuses = new Set(["queued", "in_progress"]);
+
+  while (current?.id && incompleteStatuses.has(current.status)) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    current = await client.responses.retrieve(current.id);
+  }
+
+  return current;
+}
+
 async function generateReply({ content, interpretation }) {
   const client = getClient();
 
@@ -54,6 +67,7 @@ async function generateReply({ content, interpretation }) {
 
   const request = {
     model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+    stream: false,
     input: [
       {
         role: "system",
@@ -67,9 +81,14 @@ async function generateReply({ content, interpretation }) {
     max_output_tokens: interpretation.maxOutputTokens || 120
   };
 
-  const response = await client.responses.create(request);
+  let response = await client.responses.create(request);
+  response = await waitForCompletedResponse(client, response);
 
-  const text = response.output_text?.trim();
+  if (response.status && response.status !== "completed") {
+    return fallbackReply(content, interpretation);
+  }
+
+  const text = extractResponseText(response).trim();
 
   if (!text) {
     return fallbackReply(content, interpretation);
