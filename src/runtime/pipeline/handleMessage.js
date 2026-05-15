@@ -1,31 +1,22 @@
-const { ChannelType } = require("discord.js");
 const { applyForumThrottle } = require("../policy/forumThrottle");
-
-function getChannelTypeName(channelType) {
-  return ChannelType[channelType] || String(channelType ?? "unknown");
-}
-
-function getMessageDiagnostics(message) {
-  const isDM = !message.guild;
-
-  return {
-    messageId: message.id,
-    authorUsername: message.author?.username || "unknown",
-    isBot: Boolean(message.author?.bot),
-    guildName: message.guild?.name || "DM",
-    channelName: message.channel?.name || "DM",
-    channelId: message.channel?.id,
-    channelType: getChannelTypeName(message.channel?.type),
-    isDM,
-    contentLength: message.content?.length || 0
-  };
-}
-
-function logDiagnostic(event, details) {
-  console.log(event, details);
-}
+const {
+  logDiagnostic,
+  logError,
+  getMessageDiagnostics,
+  validateMessage
+} = require("../diagnostics");
 
 async function handleMessage(message, { clientUserId, ports }) {
+  const validation = validateMessage(message);
+
+  if (!validation.valid) {
+    logDiagnostic("MESSAGE_SKIPPED", {
+      reason: validation.reason,
+      messageId: message?.id
+    });
+    return;
+  }
+
   const messageDiagnostics = getMessageDiagnostics(message);
 
   logDiagnostic("MESSAGE_RECEIVED", messageDiagnostics);
@@ -34,79 +25,89 @@ async function handleMessage(message, { clientUserId, ports }) {
     return;
   }
 
-  const interpretation = applyForumThrottle(
-    message,
-    ports.interpretive.interpret(message),
-    clientUserId
-  );
-  const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
-
-  logDiagnostic("INTERPRETATION_RESULT", {
-    messageId: message.id,
-    intent: interpretation.intent,
-    responseStyle: interpretation.responseStyle,
-    needsRetrieval: interpretation.needsRetrieval,
-    shouldRespond: interpretation.shouldRespond,
-    responseReason: interpretation.responseReason,
-    deliveryStyle
-  });
-
-  if (!interpretation.shouldRespond) {
-    return;
-  }
-
-  let reply;
-  const generationStartedAt = Date.now();
-
   try {
-    reply = await ports.interpretive.generate({
-      content: message.content,
-      interpretation
-    });
-    logDiagnostic("GENERATION_RESULT", {
-      messageId: message.id,
-      success: true,
-      replyLength: reply?.length || 0,
-      latencyMs: Date.now() - generationStartedAt
-    });
-  } catch (error) {
-    logDiagnostic("GENERATION_RESULT", {
-      messageId: message.id,
-      success: false,
-      replyLength: 0,
-      errorMessage: error.message,
-      latencyMs: Date.now() - generationStartedAt
-    });
-    console.error("reply generation failed", error);
-    reply = "I had trouble answering that.";
-  }
+    const interpretation = applyForumThrottle(
+      message,
+      ports.interpretive.interpret(message),
+      clientUserId
+    );
+    const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
 
-  const deliveryStartedAt = Date.now();
-  let deliveryResult;
+    logDiagnostic("INTERPRETATION_RESULT", {
+      messageId: message.id,
+      intent: interpretation.intent,
+      responseStyle: interpretation.responseStyle,
+      needsRetrieval: interpretation.needsRetrieval,
+      shouldRespond: interpretation.shouldRespond,
+      responseReason: interpretation.responseReason,
+      deliveryStyle
+    });
 
-  try {
-    deliveryResult = await ports.projection.deliver(message, reply);
-  } catch (error) {
+    if (!interpretation.shouldRespond) {
+      return;
+    }
+
+    let reply;
+    const generationStartedAt = Date.now();
+
+    try {
+      reply = await ports.interpretive.generate({
+        content: message.content,
+        interpretation
+      });
+      logDiagnostic("GENERATION_RESULT", {
+        messageId: message.id,
+        success: true,
+        replyLength: reply?.length || 0,
+        latencyMs: Date.now() - generationStartedAt
+      });
+    } catch (error) {
+      logDiagnostic("GENERATION_RESULT", {
+        messageId: message.id,
+        success: false,
+        replyLength: 0,
+        errorMessage: error.message,
+        latencyMs: Date.now() - generationStartedAt
+      });
+      logError("GENERATION_FAILED", { messageId: message.id }, error);
+      reply = "I had trouble answering that.";
+    }
+
+    const deliveryStartedAt = Date.now();
+    let deliveryResult;
+
+    try {
+      deliveryResult = await ports.projection.deliver(message, reply);
+    } catch (error) {
+      logDiagnostic("DELIVERY_RESULT", {
+        messageId: message.id,
+        success: false,
+        deliveryStyle,
+        channelId: message.channel?.id,
+        errorCode: error.code,
+        errorMessage: error.message,
+        latencyMs: Date.now() - deliveryStartedAt
+      });
+      logError("DELIVERY_FAILED", {
+        messageId: message.id,
+        channelId: message.channel?.id
+      }, error);
+      return;
+    }
+
     logDiagnostic("DELIVERY_RESULT", {
       messageId: message.id,
-      success: false,
-      deliveryStyle,
+      success: true,
+      deliveryStyle: deliveryResult?.deliveryStyle || deliveryStyle,
       channelId: message.channel?.id,
-      errorCode: error.code,
-      errorMessage: error.message,
       latencyMs: Date.now() - deliveryStartedAt
     });
-    console.error("reply delivery failed", error);
-    return;
+  } catch (error) {
+    logError("PIPELINE_ERROR", {
+      messageId: message.id,
+      channelId: message.channel?.id
+    }, error);
   }
-
-  logDiagnostic("DELIVERY_RESULT", {
-    messageId: message.id,
-    success: true,
-    deliveryStyle: deliveryResult?.deliveryStyle || deliveryStyle,
-    channelId: message.channel?.id,
-    latencyMs: Date.now() - deliveryStartedAt
-  });
 }
 
 module.exports = {
