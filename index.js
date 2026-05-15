@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const crypto = require("crypto");
 const express = require("express");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { handleMessage } = require("./src/runtime/pipeline/handleMessage");
@@ -15,11 +16,19 @@ const {
   updateRuntimeState
 } = require("./src/runtime/diagnostics");
 
+const RUNTIME_SESSION_ID = crypto.randomUUID();
+let messageHandlerRegistered = false;
+
 const envValidation = validateEnvironment();
 
 updateRuntimeState({
   envValid: envValidation.valid,
   discordConfigured: envValidation.config.discordConfigured
+});
+
+logDiagnostic("RUNTIME_SESSION_START", {
+  runtime_session_id: RUNTIME_SESSION_ID,
+  pid: process.pid
 });
 
 logDiagnostic("STARTUP_VALIDATION", {
@@ -72,6 +81,8 @@ client.once("clientReady", () => {
   console.log(`Liahona online as ${client.user.tag}`);
   logDiagnostic("DISCORD_READY", {
     tag: client.user.tag,
+    runtime_session_id: RUNTIME_SESSION_ID,
+    pid: process.pid,
     healthy: isRuntimeHealthy().healthy
   });
 });
@@ -84,18 +95,23 @@ client.on("shardError", (error) => {
   logError("DISCORD_SHARD_ERROR", {}, error);
 });
 
-client.on("messageCreate", async (message) => {
-  try {
-    await handleMessage(message, {
-      clientUserId: client.user?.id,
-      ports
-    });
-  } catch (error) {
-    logError("MESSAGE_HANDLER_ERROR", {
-      messageId: message?.id
-    }, error);
-  }
-});
+if (!messageHandlerRegistered) {
+  client.on("messageCreate", async (message) => {
+    try {
+      await handleMessage(message, {
+        clientUserId: client.user?.id,
+        ports
+      });
+    } catch (error) {
+      logError("MESSAGE_HANDLER_ERROR", {
+        inbound_message_id: message?.id,
+        runtime_session_id: RUNTIME_SESSION_ID
+      }, error);
+    }
+  });
+
+  messageHandlerRegistered = true;
+}
 
 if (!process.env.DISCORD_TOKEN) {
   console.warn("DISCORD_TOKEN is not set. Discord client was not started.");

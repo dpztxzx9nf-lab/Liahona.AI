@@ -9,9 +9,9 @@ function createProjectionPort() {
     chooseDeliveryStyle(message) {
       return chooseDeliveryStyle(message);
     },
-    deliver(message, reply) {
+    deliver(message, reply, ctx) {
       const projection = createPlainReply({ text: reply });
-      return deliverDiscordMessage(message, projection);
+      return deliverDiscordMessage(message, projection, ctx);
     }
   };
 }

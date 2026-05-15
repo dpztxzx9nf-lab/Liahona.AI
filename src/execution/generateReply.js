@@ -43,7 +43,7 @@ function fallbackReply(content, interpretation) {
     return "";
   }
 
-  return "";
+  return "I don't have a clear answer for that right now.";
 }
 
 async function waitForCompletedResponse(client, response) {
@@ -58,11 +58,11 @@ async function waitForCompletedResponse(client, response) {
   return current;
 }
 
-async function generateReply({ content, interpretation }) {
+async function generateReply({ content, interpretation, ctx }) {
   const client = getClient();
 
   if (!client) {
-    return fallbackReply(content, interpretation);
+    return { text: fallbackReply(content, interpretation) };
   }
 
   const request = {
@@ -84,17 +84,32 @@ async function generateReply({ content, interpretation }) {
   let response = await client.responses.create(request);
   response = await waitForCompletedResponse(client, response);
 
-  if (response.status && response.status !== "completed") {
-    return fallbackReply(content, interpretation);
+  if (ctx && response?.id) {
+    ctx.openai_response_id = response.id;
   }
 
-  const text = extractResponseText(response).trim();
+  if (response.status && response.status !== "completed") {
+    return { text: fallbackReply(content, interpretation), openai_response_id: response?.id };
+  }
+
+  const rawText = extractResponseText(response);
+  const text = rawText.trim();
 
   if (!text) {
-    return fallbackReply(content, interpretation);
+    return {
+      text: fallbackReply(content, interpretation),
+      openai_response_id: response?.id,
+      raw_generation_text_length: rawText.length,
+      cleaned_text_length: 0
+    };
   }
 
-  return text;
+  return {
+    text,
+    openai_response_id: response?.id,
+    raw_generation_text_length: rawText.length,
+    cleaned_text_length: text.length
+  };
 }
 
 module.exports = {

@@ -1,4 +1,4 @@
-const inFlight = new Set();
+const inFlight = new Map();
 const completed = new Map();
 const COMPLETED_TTL_MS = 5 * 60 * 1000;
 
@@ -12,30 +12,35 @@ function pruneCompleted() {
   }
 }
 
-function tryAcquireMessage(messageId) {
+async function runOncePerMessage(messageId, handler) {
+  if (!messageId) {
+    return { executed: false, reason: "missing-message-id" };
+  }
+
   pruneCompleted();
 
   if (completed.has(messageId)) {
-    return { acquired: false, reason: "already-completed" };
+    return { executed: false, reason: "already-completed" };
   }
 
   if (inFlight.has(messageId)) {
-    return { acquired: false, reason: "in-flight" };
+    await inFlight.get(messageId);
+    return { executed: false, reason: "coalesced" };
   }
 
-  inFlight.add(messageId);
-  return { acquired: true };
-}
+  const run = (async () => handler())();
 
-function releaseMessage(messageId, { markCompleted = false } = {}) {
-  inFlight.delete(messageId);
+  inFlight.set(messageId, run);
 
-  if (markCompleted) {
+  try {
+    const result = await run;
     completed.set(messageId, Date.now());
+    return { executed: true, result };
+  } finally {
+    inFlight.delete(messageId);
   }
 }
 
 module.exports = {
-  tryAcquireMessage,
-  releaseMessage
+  runOncePerMessage
 };

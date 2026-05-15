@@ -1,6 +1,13 @@
 const { applyChannelSilence } = require("../policy/channelSilence");
 const { applyForumThrottle } = require("../policy/forumThrottle");
-const { tryAcquireMessage, releaseMessage } = require("../policy/messageLock");
+const { runOncePerMessage } = require("../policy/messageLock");
+const {
+  createInvocationContext,
+  correlationFields,
+  terminateInvocation,
+  canContinue
+} = require("./invocation");
+const { prepareReplyText } = require("../../execution/prepareReply");
 const {
   logDiagnostic,
   logError,
@@ -8,120 +15,191 @@ const {
   validateMessage
 } = require("../diagnostics");
 
+function isIgnoredMessage(message, clientUserId) {
+  if (!message?.author) {
+    return true;
+  }
+
+  if (message.author.bot) {
+    return true;
+  }
+
+  if (clientUserId && message.author.id === clientUserId) {
+    return true;
+  }
+
+  return false;
+}
+
+async function processMessage(message, { clientUserId, ports }) {
+  const ctx = createInvocationContext(message);
+  const correlation = () => correlationFields(ctx);
+
+  logDiagnostic("MESSAGE_RECEIVED", {
+    ...getMessageDiagnostics(message),
+    ...correlation()
+  });
+
+  if (isIgnoredMessage(message, clientUserId)) {
+    logDiagnostic("MESSAGE_IGNORED", {
+      ...correlation(),
+      reason: "bot-or-self"
+    });
+    terminateInvocation(ctx, "ignored");
+    return;
+  }
+
+  let interpretation = ports.interpretive.interpret(message);
+  interpretation = applyChannelSilence(message, interpretation, clientUserId);
+  interpretation = applyForumThrottle(message, interpretation, clientUserId);
+  const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
+
+  logDiagnostic("INTERPRETATION_RESULT", {
+    ...correlation(),
+    intent: interpretation.intent,
+    responseStyle: interpretation.responseStyle,
+    needsRetrieval: interpretation.needsRetrieval,
+    shouldRespond: interpretation.shouldRespond,
+    responseReason: interpretation.responseReason,
+    deliveryStyle
+  });
+
+  if (!interpretation.shouldRespond) {
+    terminateInvocation(ctx, "no-response");
+    return;
+  }
+
+  if (!canContinue(ctx)) {
+    return;
+  }
+
+  let reply;
+  const generationStartedAt = Date.now();
+
+  try {
+    const generation = await ports.interpretive.generate({
+      content: message.content,
+      interpretation,
+      ctx
+    });
+
+    if (generation?.openai_response_id) {
+      ctx.openai_response_id = generation.openai_response_id;
+    }
+
+    const prepared = prepareReplyText(generation);
+    ctx.raw_generation_text_length = prepared.raw_generation_text_length;
+    ctx.cleaned_text_length = prepared.cleaned_text_length;
+    ctx.delivery_text = prepared.cleanedText;
+    reply = prepared.cleanedText;
+
+    logDiagnostic("GENERATION_RESULT", {
+      ...correlation(),
+      openai_response_id: ctx.openai_response_id,
+      success: true,
+      raw_generation_text_length: ctx.raw_generation_text_length,
+      cleaned_text_length: ctx.cleaned_text_length,
+      replyLength: ctx.cleaned_text_length,
+      latencyMs: Date.now() - generationStartedAt
+    });
+  } catch (error) {
+    logDiagnostic("GENERATION_RESULT", {
+      ...correlation(),
+      success: false,
+      replyLength: 0,
+      errorMessage: error.message,
+      latencyMs: Date.now() - generationStartedAt
+    });
+    logError("GENERATION_FAILED", correlation(), error);
+    reply = "I had trouble answering that.";
+  }
+
+  if (!canContinue(ctx)) {
+    return;
+  }
+
+  if (!reply && ctx.cleaned_text_length > 0) {
+    reply = ctx.delivery_text;
+  }
+
+  logDiagnostic("PROJECTION_PREPARED", {
+    ...correlation(),
+    raw_generation_text_length: ctx.raw_generation_text_length,
+    cleaned_text_length: ctx.cleaned_text_length,
+    final_projection_text_length: reply?.length || 0
+  });
+
+  const deliveryStartedAt = Date.now();
+  let deliveryResult;
+
+  try {
+    deliveryResult = await ports.projection.deliver(message, reply, ctx);
+  } catch (error) {
+    logDiagnostic("DELIVERY_RESULT", {
+      ...correlation(),
+      success: false,
+      deliveryStyle,
+      channelId: message.channel?.id,
+      errorCode: error.code,
+      errorMessage: error.message,
+      latencyMs: Date.now() - deliveryStartedAt
+    });
+    logError("DELIVERY_FAILED", correlation(), error);
+    return;
+  }
+
+  if (deliveryResult?.skipped) {
+    logDiagnostic("DELIVERY_SKIPPED", {
+      ...correlation(),
+      reason: deliveryResult.reason,
+      delivery_count: deliveryResult.delivery_count || ctx.delivery_count,
+      raw_generation_text_length: deliveryResult.raw_generation_text_length ?? ctx.raw_generation_text_length,
+      cleaned_text_length: deliveryResult.cleaned_text_length ?? ctx.cleaned_text_length,
+      final_projection_text_length: deliveryResult.final_projection_text_length ?? 0
+    });
+    terminateInvocation(ctx, deliveryResult.reason || "delivery-skipped");
+    return;
+  }
+
+  terminateInvocation(ctx, "delivered");
+
+  logDiagnostic("DELIVERY_RESULT", {
+    ...correlation(),
+    success: true,
+    outbound_message_id: deliveryResult?.outbound_message_id || ctx.outbound_message_id,
+    deliveryStyle: deliveryResult?.deliveryStyle || deliveryStyle,
+    channelId: message.channel?.id,
+    raw_generation_text_length: deliveryResult?.raw_generation_text_length ?? ctx.raw_generation_text_length,
+    cleaned_text_length: deliveryResult?.cleaned_text_length ?? ctx.cleaned_text_length,
+    final_projection_text_length: deliveryResult?.final_projection_text_length ?? 0,
+    latencyMs: Date.now() - deliveryStartedAt
+  });
+}
+
 async function handleMessage(message, { clientUserId, ports }) {
   const validation = validateMessage(message);
 
   if (!validation.valid) {
     logDiagnostic("MESSAGE_SKIPPED", {
       reason: validation.reason,
-      messageId: message?.id
+      inbound_message_id: message?.id
     });
     return;
   }
 
-  const messageDiagnostics = getMessageDiagnostics(message);
+  const run = await runOncePerMessage(message.id, () =>
+    processMessage(message, { clientUserId, ports })
+  );
 
-  logDiagnostic("MESSAGE_RECEIVED", messageDiagnostics);
-
-  if (message.author.bot) {
-    return;
-  }
-
-  const lock = tryAcquireMessage(message.id);
-
-  if (!lock.acquired) {
+  if (!run.executed) {
     logDiagnostic("MESSAGE_DEDUPED", {
-      messageId: message.id,
-      reason: lock.reason
+      inbound_message_id: message.id,
+      reason: run.reason
     });
-    return;
-  }
-
-  try {
-    let interpretation = ports.interpretive.interpret(message);
-    interpretation = applyChannelSilence(message, interpretation, clientUserId);
-    interpretation = applyForumThrottle(message, interpretation, clientUserId);
-    const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
-
-    logDiagnostic("INTERPRETATION_RESULT", {
-      messageId: message.id,
-      intent: interpretation.intent,
-      responseStyle: interpretation.responseStyle,
-      needsRetrieval: interpretation.needsRetrieval,
-      shouldRespond: interpretation.shouldRespond,
-      responseReason: interpretation.responseReason,
-      deliveryStyle
-    });
-
-    if (!interpretation.shouldRespond) {
-      return;
-    }
-
-    let reply;
-    const generationStartedAt = Date.now();
-
-    try {
-      reply = await ports.interpretive.generate({
-        content: message.content,
-        interpretation
-      });
-      logDiagnostic("GENERATION_RESULT", {
-        messageId: message.id,
-        success: true,
-        replyLength: reply?.length || 0,
-        latencyMs: Date.now() - generationStartedAt
-      });
-    } catch (error) {
-      logDiagnostic("GENERATION_RESULT", {
-        messageId: message.id,
-        success: false,
-        replyLength: 0,
-        errorMessage: error.message,
-        latencyMs: Date.now() - generationStartedAt
-      });
-      logError("GENERATION_FAILED", { messageId: message.id }, error);
-      reply = "I had trouble answering that.";
-    }
-
-    const deliveryStartedAt = Date.now();
-    let deliveryResult;
-
-    try {
-      deliveryResult = await ports.projection.deliver(message, reply);
-    } catch (error) {
-      logDiagnostic("DELIVERY_RESULT", {
-        messageId: message.id,
-        success: false,
-        deliveryStyle,
-        channelId: message.channel?.id,
-        errorCode: error.code,
-        errorMessage: error.message,
-        latencyMs: Date.now() - deliveryStartedAt
-      });
-      logError("DELIVERY_FAILED", {
-        messageId: message.id,
-        channelId: message.channel?.id
-      }, error);
-      return;
-    }
-
-    logDiagnostic("DELIVERY_RESULT", {
-      messageId: message.id,
-      success: true,
-      deliveryStyle: deliveryResult?.deliveryStyle || deliveryStyle,
-      channelId: message.channel?.id,
-      latencyMs: Date.now() - deliveryStartedAt
-    });
-  } catch (error) {
-    logError("PIPELINE_ERROR", {
-      messageId: message.id,
-      channelId: message.channel?.id
-    }, error);
-  } finally {
-    releaseMessage(message.id, { markCompleted: true });
   }
 }
 
 module.exports = {
-  handleMessage
+  handleMessage,
+  isIgnoredMessage
 };
