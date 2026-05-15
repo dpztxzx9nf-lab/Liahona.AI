@@ -1,4 +1,8 @@
-const { chooseDeliveryStyle, sendMessage } = require("../delivery/sendMessage");
+const { createPlainReply } = require("../projection/types");
+const {
+  chooseDeliveryStyle,
+  deliverDiscordMessage
+} = require("../projection/discord");
 
 function createProjectionPort() {
   return {
@@ -6,7 +10,8 @@ function createProjectionPort() {
       return chooseDeliveryStyle(message);
     },
     deliver(message, reply) {
-      return sendMessage(message, reply);
+      const projection = createPlainReply({ text: reply });
+      return deliverDiscordMessage(message, projection);
     }
   };
 }
