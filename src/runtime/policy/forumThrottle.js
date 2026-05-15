@@ -1,5 +1,5 @@
 const { ChannelType } = require("discord.js");
-const { channelBehavior } = require("../config/channelBehavior");
+const { channelBehavior } = require("../../interpretive/channelBehavior");
 
 const threadMessageCounts = new Map();
 const threadChannelTypes = new Set([

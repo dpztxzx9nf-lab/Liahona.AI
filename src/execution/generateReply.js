@@ -1,5 +1,5 @@
 const OpenAI = require("openai");
-const { identity } = require("../foundation/identity");
+const { identity } = require("../interpretive/identity");
 
 let openai;
 

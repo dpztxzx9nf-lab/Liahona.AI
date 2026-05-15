@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const { ChannelType, Client, GatewayIntentBits, Partials } = require("discord.js");
-const { interpretMessage } = require("./src/judgment/interpretMessage");
-const { applyForumThrottle } = require("./src/judgment/forumThrottle");
+const { interpretMessage } = require("./src/interpretive/interpretMessage");
+const { applyForumThrottle } = require("./src/runtime/policy/forumThrottle");
 const { generateReply } = require("./src/execution/generateReply");
 const { chooseDeliveryStyle, sendMessage } = require("./src/delivery/sendMessage");
 
