@@ -59,6 +59,7 @@ async function processMessage(message, { clientUserId, ports }) {
     intent: interpretation.intent,
     responseStyle: interpretation.responseStyle,
     needsRetrieval: interpretation.needsRetrieval,
+    needsLiveSource: interpretation.needsLiveSource,
     shouldRespond: interpretation.shouldRespond,
     responseReason: interpretation.responseReason,
     deliveryStyle

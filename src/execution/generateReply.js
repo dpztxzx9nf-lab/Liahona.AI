@@ -16,14 +16,29 @@ function getClient() {
   return openai;
 }
 
+function buildStyleGuidance(interpretation) {
+  if (interpretation.needsLiveSource) {
+    return "This asks about current or live events. You cannot access live news. Say that plainly in one or two sentences and point to Reuters or AP. Do not guess at current facts.";
+  }
+
+  if (interpretation.intent === "question" || interpretation.intent === "philosophical") {
+    return "Give a direct, plain educational answer in two to four short sentences. Define the topic and one key point. Do not refuse. Do not say you lack a clear answer.";
+  }
+
+  return "";
+}
+
 function buildSystemPrompt(interpretation) {
+  const styleGuidance = buildStyleGuidance(interpretation);
+
   return [
     `Speak as ${identity.name}. Use the name only if the user already did.`,
     `Voice: ${identity.voice.join(", ")}.`,
     `Style: ${interpretation.responseStyle}.`,
-    "Forbidden: self-description; explaining what you are; narrating your philosophy; abstract declarations; dramatic framing; phrases like \"the important shift is\", \"at its core\", \"what this really means\", or \"as an AI\".",
+    styleGuidance,
+    "Forbidden: self-description; explaining what you are; narrating your philosophy; abstract declarations; dramatic framing; phrases like \"the important shift is\", \"at its core\", \"what this really means\", \"I don't have a clear answer\", or \"as an AI\".",
     identity.boundaries.join(" ")
-  ].join(" ");
+  ].filter(Boolean).join(" ");
 }
 
 function fallbackReply(content, interpretation) {
@@ -35,6 +50,10 @@ function fallbackReply(content, interpretation) {
     return "I don't hold that continuity here.";
   }
 
+  if (interpretation.needsLiveSource) {
+    return "I can't see live news. For what's current, check Reuters or AP.";
+  }
+
   if (content.trim() === "!ping") {
     return "pong";
   }
@@ -43,7 +62,7 @@ function fallbackReply(content, interpretation) {
     return "";
   }
 
-  return "I don't have a clear answer for that right now.";
+  return "";
 }
 
 async function waitForCompletedResponse(client, response) {
@@ -113,5 +132,7 @@ async function generateReply({ content, interpretation, ctx }) {
 }
 
 module.exports = {
-  generateReply
+  generateReply,
+  buildSystemPrompt,
+  fallbackReply
 };
