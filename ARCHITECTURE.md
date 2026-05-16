@@ -34,6 +34,40 @@ Liahona/
 
 Placeholder directories under `src/` (e.g. `frontier/`, `sources/`, empty `.gitkeep` folders) are reserved for future work and are not on the active path.
 
+## Stability Levels
+
+### Stable Backbone
+
+These folders express the core ontology and should not be renamed casually:
+
+- `src/canonical`
+- `src/interpretive`
+- `src/runtime`
+- `src/projection`
+- `src/continuity`
+
+### Active Supporting Systems
+
+These folders are part of the current runtime path or near-runtime architecture:
+
+- `src/judgment`
+- `src/conduct`
+- `src/delivery`
+- `src/execution`
+- `src/sources`
+
+### Reserved / Experimental
+
+These folders may support future direction but should not drive architecture yet:
+
+- `src/frontier`
+- `src/orientation`
+- placeholder `.gitkeep` folders
+
+### Rule
+
+Clarify folder meaning before moving, merging, or deleting anything.
+
 ## Folder responsibilities
 
 ### `index.js`
