@@ -48,8 +48,8 @@ Planned systems should not be described as current runtime behavior until implem
 
 ## ARCHIVED / LEGACY
 
-- `legacy archive/` contains preserved historical continuity, prior foundation drafts, exploratory notes, source stubs, and reference material.
-- `legacy archive/foundation/` is superseded by `core/` for active governance.
+- `legacy-archive/` contains preserved historical continuity, prior foundation drafts, exploratory notes, source stubs, and reference material.
+- `legacy-archive/foundation/` is superseded by `core/` for active governance.
 - Legacy material may explain why the project evolved, but it does not define current runtime behavior.
 
 ## DO NOT TOUCH CASUALLY
@@ -63,7 +63,7 @@ Planned systems should not be described as current runtime behavior until implem
 - `package-lock.json`
 - `.env`
 - `docs/Eternal Sources/`
-- `legacy archive/`
+- `legacy-archive/`
 - PM2 scripts and deployment assumptions
 - Runtime data under `data/`, if present
 

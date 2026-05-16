@@ -1,206 +1,142 @@
 # Runtime Source Architecture
 
-This directory contains the primary runtime implementation for Liahona.AI.
+This directory contains the active Liahona.AI runtime code plus scaffolding for future source, projection, and continuity systems.
 
-The runtime is organized around explicit conceptual boundaries rather than purely technical categories.
+The current implementation is a lightweight Discord/OpenAI bot. It is not yet a semantic memory system, source retrieval system, database-backed runtime, or frontend artifact UI.
 
-The structure attempts to preserve:
-- epistemic clarity
-- modularity
-- continuity coherence
-- rebuildability
-- restrained complexity
+## Current Runtime Flow
 
-The runtime exists to support orientation and meaningful continuity — not merely message generation.
+The active message flow is:
 
----
+```text
+Discord message
+-> runtime/pipeline/handleMessage
+-> interpretive classification
+-> runtime policy gates
+-> OpenAI generation or local fallback
+-> plain projection
+-> Discord delivery
+-> diagnostics and local JSONL observability
+```
 
-# Core Ontological Layers
+## Implemented
 
-## canonical/
+### `runtime/`
 
-Grounding and authoritative source retrieval.
+Operational runtime infrastructure.
 
-Intended responsibilities:
-- scripture retrieval
-- canonical sourcing
-- source manifests
-- citations
-- grounding systems
+Implemented areas:
+- `pipeline/` for message orchestration
+- `policy/` for channel silence, forum throttling, and duplicate-message guards
+- `diagnostics/` for health checks, console diagnostics, and minimal JSONL logging
 
-Canonical sources remain external to the system itself.
+### `interpretive/`
 
----
+Message interpretation and response orientation.
 
-## interpretive/
+Implemented areas:
+- intent classification
+- live/current-event detection
+- response style selection
+- identity and voice boundaries
+- planning notes for channel behavior
 
-Meaning and orientation layer.
+### `execution/`
 
-Responsible for:
-- symbolic interpretation
-- interaction philosophy
-- orientation behavior
-- reflective systems
-- contextual understanding
+Model execution and reply preparation.
 
-Interpretive systems shape meaning,
-but are not authoritative truth.
+Implemented areas:
+- OpenAI Responses API calls
+- local fallback replies
+- response text extraction
+- reply text cleanup
 
----
+### `projection/`
 
-## projection/
+Reply shaping and Discord delivery support.
 
-Human-facing surfacing layer.
+Implemented areas:
+- plain reply projection types
+- Discord delivery style selection
+- Discord message delivery
+- duplicate-delivery guard
 
-Responsible for:
-- interface projection
-- source cards
-- fragments
-- continuity surfacing
-- symbolic interaction
-- reflective dashboards
+Artifact and sourced projection types exist, but richer projection behavior is scaffolded.
 
-Projection translates deeper architecture into experience.
+### `ports/`
 
----
+Boundary adapters between runtime layers.
 
-## runtime/
+Implemented areas:
+- interpretive port for interpretation and generation
+- projection port for plain Discord delivery
+- canonical and continuity ports as thin scaffolded adapters
 
-Operational orchestration layer.
+Some ports exist to preserve future boundaries and are not fully used by the active message pipeline.
 
-Responsible for:
-- pipelines
-- lifecycle management
-- runtime policy
-- orchestration
-- process coordination
+### `delivery/`
 
-Runtime systems are infrastructure,
-not meaning itself.
+Thin compatibility wrapper around Discord projection delivery.
 
----
+Primary active delivery behavior lives in `projection/discord/`.
 
-## continuity/
+## Scaffolded
 
-Semantic continuity systems.
+### `canonical/`
 
-Intended responsibilities:
-- memory
+Contains canonical corpus manifest records.
+
+Current behavior is manifest metadata only. It does not retrieve, ingest, cite, or search canonical content.
+
+### `sources/`
+
+Defines source layers and source records.
+
+Current behavior is manifest/scaffold only:
+- canonical sources are manifest-backed
+- philosophical and live sources are marked `not-implemented`
+- continuity and runtime sources are currently empty
+
+There is no source ingestion or retrieval pipeline yet.
+
+### `continuity/`
+
+Defines continuity scope metadata.
+
+Current behavior is scope planning only. There is no durable memory, recall, embeddings, semantic indexing, or continuity retrieval.
+
+### `projection/artifact/`
+
+Defines artifact fragment types and factories.
+
+These are scaffolds for future richer projections. The active Discord bot currently delivers plain text replies.
+
+## Planned / Future
+
+Future systems may expand into:
+- semantic memory
 - embeddings
-- scoped retrieval
-- continuity preservation
-- semantic indexing
-- continuity compression
+- source ingestion
+- canonical/philosophical/live/continuity retrieval
+- durable continuity recall
+- richer source cards or artifact projections
+- fuller test coverage
+- dev continuity portal integration
 
-Continuity preserves meaningful evolution across time.
+These systems should remain clearly marked as planned until implemented and verified.
 
----
+## Nonexistent Folders
 
-# Supporting Systems
+The following concepts have appeared in earlier planning but are not current folders in `src/`:
+- `judgment/`
+- `conduct/`
+- `orientation/`
+- `frontier/`
 
-## execution/
+If those concepts are needed later, add them only with a concrete implementation reason.
 
-Model execution and generation systems.
+## Governing Principle
 
-Examples:
-- OpenAI calls
-- generation pipelines
-- fallback systems
-- execution adapters
+Runtime code should stay understandable, modular, observable, and aligned with the governance boundaries in `core/`.
 
----
-
-## delivery/
-
-Transport and response delivery systems.
-
-Examples:
-- Discord delivery
-- reply handling
-- formatting
-- transport-specific behavior
-
----
-
-## ports/
-
-Boundary interfaces between layers.
-
-Ports help preserve:
-- modularity
-- replaceability
-- architectural clarity
-
----
-
-## sources/
-
-Source ingestion and retrieval systems.
-
-Examples:
-- source parsing
-- retrieval indexing
-- manifests
-- source metadata
-- retrieval adapters
-
----
-
-## judgment/
-
-Behavioral and response-worthiness systems.
-
-Examples:
-- shouldRespond logic
-- restraint systems
-- contextual weighting
-- confidence routing
-
----
-
-## conduct/
-
-Behavioral governance systems.
-
-Examples:
-- tone constraints
-- anti-manipulation systems
-- behavioral safeguards
-- interaction boundaries
-
----
-
-# Experimental Systems
-
-## orientation/
-
-Emerging orienting systems and interaction experiments.
-
-May include:
-- symbolic interaction
-- artifact orientation
-- reflective navigation
-- experiential systems
-
----
-
-## frontier/
-
-Reserved for exploratory or unstable future systems.
-
-Not all experiments should survive long-term.
-
----
-
-# Governing Principle
-
-The runtime should remain:
-- understandable
-- modular
-- rebuildable
-- continuity-aware
-- human-governed
-
-Orientation over complexity.
-Meaning over accumulation.
-Continuity over noise.
+Do not blur canonical sources, interpretive behavior, runtime infrastructure, projection, or continuity.

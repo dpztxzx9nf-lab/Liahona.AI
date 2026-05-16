@@ -4,6 +4,14 @@ This folder preserves historical continuity and reference material for Liahona.A
 
 It is not active governance and should not be treated as the current source of runtime truth.
 
+## Canonical Path
+
+`legacy-archive/` is the canonical historical archive path.
+
+Old references to `legacy archive/` are deprecated and should not be used by active documentation.
+
+Archive contents are preserved reference, not active governance.
+
 ## Purpose
 
 The archive keeps prior foundation drafts, exploratory notes, historical source stubs, continuity summaries, and product-direction artifacts available for reference.

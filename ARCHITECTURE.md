@@ -101,7 +101,7 @@ Liahona/
 ├── continuity/              # Curated semantic checkpoints
 ├── dev-portal/              # Early operational continuity placeholders
 ├── docs/                    # Supporting implementation and source docs
-├── legacy archive/          # Historical reference, not active governance
+├── legacy-archive/          # Historical reference, not active governance
 ├── prototypes/              # Non-production prototypes
 ├── scripts/                 # Operational and test scripts
 ├── src/                     # Active runtime and scaffolding
@@ -130,7 +130,7 @@ Planned or optional areas:
 
 `.cursor/rules/` contains active agent guidance derived from the same governance distinctions.
 
-`legacy archive/` is preserved reference material. It can explain project history, but it is not active governance.
+`legacy-archive/` is preserved reference material. It can explain project history, but it is not active governance.
 
 ## Continuity Boundaries
 

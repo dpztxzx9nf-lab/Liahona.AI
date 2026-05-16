@@ -4,7 +4,7 @@ This repository currently contains a lightweight Discord/OpenAI runtime for Liah
 
 Today, the active runtime is a Node.js Discord bot with an Express keepalive endpoint, OpenAI response generation, message interpretation, delivery guards, channel/forum policy, and diagnostic logging.
 
-This repository also contains active governance documents in `core/`, supporting implementation docs in `docs/`, early continuity/source scaffolding in `src/`, and historical reference material in `legacy archive/`.
+This repository also contains active governance documents in `core/`, supporting implementation docs in `docs/`, early continuity/source scaffolding in `src/`, and historical reference material in `legacy-archive/`.
 
 ## Current Scope
 
@@ -41,4 +41,4 @@ Use `core/` for active governance and ontology.
 
 Use `continuity/` for curated semantic checkpoints.
 
-Use `legacy archive/` only as preserved historical reference, not active governance.
+Use `legacy-archive/` only as preserved historical reference, not active governance.
