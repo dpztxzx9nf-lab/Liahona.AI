@@ -133,11 +133,12 @@ a {
   top: clamp(18px, 4vw, 42px);
   left: clamp(16px, 4vw, 44px);
   z-index: 5;
-  max-width: 22rem;
+  max-width: 28rem;
 }
 
 .identity p,
-.identity h1 {
+.identity h1,
+.identity span {
   margin: 0;
 }
 
@@ -152,11 +153,20 @@ a {
 
 .identity h1 {
   color: rgba(244, 239, 229, 0.92);
-  font-size: clamp(2.4rem, 5.6vw, 6rem);
+  font-size: clamp(2.6rem, 6.2vw, 6.4rem);
   line-height: 0.92;
   text-shadow:
     0 0 38px rgba(139, 222, 212, 0.16),
     0 0 88px rgba(214, 173, 105, 0.12);
+}
+
+.identity span {
+  display: block;
+  max-width: 24rem;
+  margin-top: 12px;
+  color: rgba(244, 239, 229, 0.58);
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+  line-height: 1.42;
 }
 
 .artifact-core {
@@ -449,6 +459,44 @@ a {
   line-height: 1.45;
 }
 
+.ecosystem-map {
+  position: absolute;
+  left: clamp(16px, 4vw, 44px);
+  bottom: clamp(94px, 12vw, 142px);
+  z-index: 7;
+  display: grid;
+  gap: 8px;
+  width: min(330px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.ecosystem-map article {
+  padding: 10px 12px;
+  color: rgba(244, 239, 229, 0.68);
+  background:
+    linear-gradient(145deg, rgba(139, 222, 212, 0.055), transparent 58%),
+    rgba(3, 6, 7, 0.58);
+  border: 1px solid rgba(244, 239, 229, 0.095);
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.ecosystem-map span {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(214, 173, 105, 0.82);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ecosystem-map p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .source-orbit {
   position: absolute;
   left: clamp(16px, 4vw, 44px);
@@ -457,7 +505,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  max-width: 250px;
+  max-width: 330px;
 }
 
 .source-orbit a {
@@ -636,6 +684,11 @@ a {
     font-size: clamp(2.1rem, 12vw, 3.7rem);
   }
 
+  .identity span {
+    max-width: 16rem;
+    font-size: 0.82rem;
+  }
+
   .artifact-core {
     width: min(98vw, 540px);
   }
@@ -669,10 +722,31 @@ a {
     overflow-y: auto;
   }
 
-  .source-orbit {
+  .ecosystem-map {
     left: 12px;
     right: 12px;
     bottom: 194px;
+    width: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .ecosystem-map article {
+    padding: 8px;
+  }
+
+  .ecosystem-map span {
+    font-size: 0.62rem;
+  }
+
+  .ecosystem-map p {
+    font-size: 0.72rem;
+  }
+
+  .source-orbit {
+    left: 12px;
+    right: 12px;
+    bottom: 308px;
     max-width: none;
     justify-content: center;
   }
