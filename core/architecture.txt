@@ -1,0 +1,170 @@
+# Liahona Architecture
+
+## Purpose
+
+Architecture defines how Liahona.AI is structured.
+
+It establishes:
+- system layers
+- responsibility boundaries
+- information flow
+- continuity organization
+- separation of concerns
+
+Architecture should preserve clarity across time.
+
+The goal is not complexity.
+
+The goal is coherent structure.
+
+---
+
+# Core Layers
+
+Liahona.AI operates through several distinct layers.
+
+Each layer has different responsibilities.
+
+---
+
+# Canonical Layer
+
+The canonical layer contains authoritative grounding sources.
+
+Examples:
+- Bible
+- Book of Mormon
+- Doctrine and Covenants
+- Pearl of Great Price
+- Gospel Library
+- Guide to the Scriptures
+- sourced scripture references
+
+Purpose:
+- grounding
+- doctrinal orientation
+- sacred reference
+- external authority
+
+Canonical sources remain external to the system itself.
+
+Liahona points toward them.
+It does not replace them.
+
+---
+
+# Interpretive Layer
+
+The interpretive layer contains:
+- symbolism
+- continuity metaphors
+- experiential meaning
+- interaction philosophy
+- architectural reflection
+- orienting systems
+
+Purpose:
+- interpretation
+- orientation
+- experiential coherence
+- symbolic interaction
+
+Interpretive systems are human-built and non-canonical.
+
+---
+
+# Runtime Layer
+
+The runtime layer contains:
+- code
+- rendering systems
+- interaction logic
+- memory systems
+- APIs
+- databases
+- state management
+- deployment/runtime behavior
+
+Purpose:
+- deliver the experience
+- operate the system
+- manage interaction/state
+
+Examples:
+- frontend UI
+- backend services
+- localStorage
+- semantic retrieval
+- embeddings
+- Discord integrations
+
+---
+
+# Projection Layer
+
+The projection layer surfaces deeper systems into human experience.
+
+Examples:
+- artifact interactions
+- scripture grounding cards
+- continuity logs
+- source displays
+- symbolic navigation
+- reflective prompts
+
+Purpose:
+- translate deeper structures into understandable orientation
+
+This is the human-facing layer.
+
+---
+
+# Continuity Layer
+
+The continuity layer preserves meaningful evolution through time.
+
+It should preserve:
+- architectural transitions
+- major decisions
+- meaningful shifts
+- governance changes
+- semantic continuity
+
+It should avoid:
+- noise
+- clutter
+- meaningless logs
+- excessive fragmentation
+
+Continuity should remain:
+- readable
+- semantic
+- restrained
+- coherent
+
+---
+
+# Structural Principle
+
+Every system should have:
+- clear responsibility
+- bounded scope
+- understandable purpose
+
+Avoid:
+- unnecessary overlap
+- ontology drift
+- feature sprawl
+- blurred source authority
+
+---
+
+# Architectural Goal
+
+The goal is not merely building software.
+
+The goal is building:
+- coherent orientation
+- grounded continuity
+- restrained interaction
+- meaningful structure across time

@@ -11,12 +11,14 @@ const { createProjectionPort } = require("./src/ports/ProjectionPort");
 const {
   logDiagnostic,
   logError,
+  setRuntimeSessionId,
   validateEnvironment,
   isRuntimeHealthy,
   updateRuntimeState
 } = require("./src/runtime/diagnostics");
 
 const RUNTIME_SESSION_ID = crypto.randomUUID();
+setRuntimeSessionId(RUNTIME_SESSION_ID);
 let messageHandlerRegistered = false;
 
 const envValidation = validateEnvironment();

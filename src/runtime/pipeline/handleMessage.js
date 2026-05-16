@@ -66,6 +66,10 @@ async function processMessage(message, { clientUserId, ports }) {
   });
 
   if (!interpretation.shouldRespond) {
+    logDiagnostic("MESSAGE_IGNORED", {
+      ...correlation(),
+      reason: interpretation.responseReason || "no-response"
+    });
     terminateInvocation(ctx, "no-response");
     return;
   }

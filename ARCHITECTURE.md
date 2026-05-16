@@ -1,184 +1,158 @@
 # Liahona Runtime Architecture
 
-Factual description of the codebase after Phase 1 (folder split) and Phase 2 (pipeline + ports). For philosophical and governance context, see `foundation/`.
+This document describes the current implementation reality of this repository.
 
-## Layer model
+For governing ontology, source principles, continuity philosophy, and system boundaries, see `core/`. For current implementation status, see `STATUS.md`.
 
-The project distinguishes five conceptual layers (`foundation/ontology.md`). The running Discord bot implements a subset of them today:
+## Current Repository Role
 
-| Layer | Role | In code today |
+This repository is currently a lightweight Discord/OpenAI runtime with supporting governance, documentation, source manifests, and continuity scaffolding.
+
+It is not yet:
+- a full artifact-first frontend UI
+- a semantic memory system
+- a SQLite-backed persistence system
+- a source-ingestion or retrieval system
+- a durable continuity recall system
+
+## Five-Layer Model
+
+The project keeps five conceptual layers. Some are implemented; others are scaffolded or planned.
+
+| Layer | Role | Current Status |
 | --- | --- | --- |
-| **Canonical** | Outward authoritative grounding (scripture, Church sources) | Port stub only; source text in `docs/Eternal Sources/` is not wired to runtime |
-| **Interpretive** | Intent, voice, response style, generation | `src/interpretive/`, `src/execution/`, `InterpretivePort` |
-| **Runtime** | Orchestration, adapters, policy, process lifecycle | `index.js`, `src/runtime/` |
-| **Projection** | How replies surface to the user | `src/delivery/`, `ProjectionPort` |
-| **Continuity** | Scoped memory and semantic preservation | Port stub only; `better-sqlite3` is a dependency but unused |
+| Canonical | Outward grounding sources and source boundaries | Scaffolded through manifests and docs |
+| Interpretive | Message interpretation, identity, response style, orientation | Implemented for Discord replies |
+| Runtime | Process startup, orchestration, policy, diagnostics | Implemented |
+| Projection | Human-facing reply shape and Discord delivery | Partly implemented; richer projections planned |
+| Continuity | Meaningful preservation across time | Implemented as docs/checkpoints; runtime recall planned |
 
-**KINDEX** (human continuity archive) is described in foundation docs and is not implemented in this repository.
+KINDEX remains the human continuity/archive context outside this runtime. Liahona is the orienting interpretive layer around that broader continuity.
 
-## Repository layout
+## What Currently Runs
+
+`index.js` starts the active runtime:
+- loads environment variables
+- validates runtime configuration
+- starts an Express keepalive endpoint
+- creates the Discord client
+- wires runtime ports
+- registers the Discord message handler
+- logs startup and runtime diagnostics
+
+The active message flow is:
+
+```text
+Discord message
+-> runtime pipeline
+-> interpretive classification
+-> channel/forum policy
+-> OpenAI generation or local fallback
+-> plain projection
+-> Discord delivery
+-> diagnostics
+```
+
+Implemented runtime modules:
+- `src/runtime/pipeline/` for message orchestration
+- `src/runtime/policy/` for channel silence, forum throttle, and duplicate-message guards
+- `src/runtime/diagnostics/` for runtime health and structured logs
+- `src/interpretive/` for identity, channel behavior notes, and intent classification
+- `src/execution/` for OpenAI generation, response extraction, and fallback handling
+- `src/projection/discord/` for Discord delivery style and delivery guards
+- `src/ports/` for current layer boundaries
+
+## What Is Scaffolded
+
+Scaffolded means the structure exists, but full behavior is not implemented.
+
+Current scaffolding:
+- `src/sources/` defines source layers and manifests.
+- `src/canonical/corpora/manifest.js` lists canonical source records.
+- `src/continuity/scopes/manifest.js` defines planned continuity scopes.
+- `src/projection/` defines projection object types beyond plain replies.
+- `src/ports/` provides boundary adapters, though some ports are thin and not fully used by the message pipeline.
+- `docs/DATA.md` describes future data scopes without implementing storage.
+
+## What Is Planned
+
+These systems are architectural direction, not current runtime behavior:
+- semantic memory
+- embeddings
+- SQLite-backed persistence
+- source ingestion
+- canonical/philosophical/live/continuity retrieval
+- durable continuity recall
+- richer source cards or artifact projections
+- full artifact-first frontend UI
+- broader automated test coverage
+- mature operational records in `dev-portal/`
+
+Planned systems should stay clearly labeled until implemented and verified.
+
+## Repository Organization
+
+Existing top-level areas:
 
 ```text
 Liahona/
-├── index.js                 # Bootstrap: env, Express keepalive, Discord client, ports
-├── foundation/              # Human-readable governance (not imported by runtime)
-├── docs/                    # Operator guide, data planning, Eternal Sources (static)
-├── scripts/                 # resetData.js (data tooling placeholder)
-└── src/
-    ├── interpretive/        # Meaning and classification
-    ├── runtime/             # Orchestration and runtime policy
-    ├── execution/           # OpenAI reply generation
-    ├── delivery/            # Discord send/reply behavior
-    └── ports/               # Layer boundaries (default implementations + stubs)
+├── .cursor/rules/           # Active agent guidance
+├── core/                    # Active governance and ontology
+├── continuity/              # Curated semantic checkpoints
+├── dev-portal/              # Early operational continuity placeholders
+├── docs/                    # Supporting implementation and source docs
+├── legacy archive/          # Historical reference, not active governance
+├── prototypes/              # Non-production prototypes
+├── scripts/                 # Operational and test scripts
+├── src/                     # Active runtime and scaffolding
+├── ARCHITECTURE.md          # This implementation-reality document
+├── README.md                # Repository orientation
+├── STATUS.md                # Implemented/scaffolded/planned status
+├── index.js                 # Runtime entrypoint
+└── package.json             # Node scripts and dependencies
 ```
 
-Placeholder directories under `src/` (e.g. `frontier/`, `sources/`, empty `.gitkeep` folders) are reserved for future work and are not on the active path.
+Planned or optional areas:
+- `data/` may be used later for runtime data, caches, SQLite, or embeddings. It is not currently an implemented persistence layer.
+- `tests/` may be added later for broader automated coverage. Current interpretation checks live in `scripts/test-interpretMessage.js`.
 
-## Stability Levels
+## Governance and Runtime Separation
 
-### Stable Backbone
+`core/` defines active governance:
+- identity boundaries
+- canonical vs interpretive distinctions
+- source hierarchy
+- continuity principles
+- runtime philosophy
+- tooling principles
 
-These folders express the core ontology and should not be renamed casually:
+`src/` contains runtime implementation. Runtime code should serve the governance layer, but it should not redefine governance by accident.
 
-- `src/canonical`
-- `src/interpretive`
-- `src/runtime`
-- `src/projection`
-- `src/continuity`
+`.cursor/rules/` contains active agent guidance derived from the same governance distinctions.
 
-### Active Supporting Systems
+`legacy archive/` is preserved reference material. It can explain project history, but it is not active governance.
 
-These folders are part of the current runtime path or near-runtime architecture:
+## Continuity Boundaries
 
-- `src/judgment`
-- `src/conduct`
-- `src/delivery`
-- `src/execution`
-- `src/sources`
+Continuity currently exists in three forms:
+- `continuity/` for curated semantic checkpoints
+- `dev-portal/` for early operational notes and placeholders
+- Git history for code and document evolution
 
-### Reserved / Experimental
+Runtime continuity recall, embeddings, scoped memory, and semantic indexing are planned, not implemented.
 
-These folders may support future direction but should not drive architecture yet:
+## Runtime Principles
 
-- `src/frontier`
-- `src/orientation`
-- placeholder `.gitkeep` folders
+The runtime should remain:
+- understandable
+- modular
+- observable
+- rebuildable
+- restrained
+- aligned with source and governance boundaries
 
-### Rule
-
-Clarify folder meaning before moving, merging, or deleting anything.
-
-## Folder responsibilities
-
-### `index.js`
-
-- Loads environment (`dotenv`)
-- Starts Express keepalive on `PORT` (default 3000)
-- Creates Discord client and default ports
-- Delegates each `messageCreate` event to `handleMessage()`
-
-### `src/runtime/`
-
-| Path | Responsibility |
-| --- | --- |
-| `pipeline/handleMessage.js` | Message orchestration: diagnostics, interpret, throttle, generate, deliver |
-| `policy/forumThrottle.js` | Forum/thread response interval; uses `channelBehavior` config |
-
-### `src/interpretive/`
-
-| Path | Responsibility |
-| --- | --- |
-| `interpretMessage.js` | Rule-based intent classification and `shouldRespond` / `needsRetrieval` flags |
-| `identity.js` | Name, voice, and boundary strings for system prompts |
-| `channelBehavior.js` | Planning notes and `forumResponseIntervalMessages` (used by throttle) |
-
-### `src/execution/`
-
-| Path | Responsibility |
-| --- | --- |
-| `generateReply.js` | OpenAI `responses.create` call, system prompt assembly, fallbacks when API key is missing |
-
-### `src/delivery/`
-
-| Path | Responsibility |
-| --- | --- |
-| `sendMessage.js` | Chooses reply vs channel send; truncates to 2000 characters |
-
-### `src/ports/`
-
-Thin facades used by the pipeline. Default factories are called from `index.js`.
-
-### `foundation/`
-
-Ontology, governance, canonical-source philosophy, continuity principles. Not required by Node at runtime.
-
-## Message flow
-
-```text
-Discord messageCreate
-  → index.js (bootstrap)
-  → handleMessage(message, { clientUserId, ports })
-       → log MESSAGE_RECEIVED
-       → skip if author is bot
-       → ports.interpretive.interpret(message)
-       → applyForumThrottle(message, interpretation, clientUserId)   [runtime policy]
-       → ports.projection.chooseDeliveryStyle(message)
-       → log INTERPRETATION_RESULT
-       → if !shouldRespond: return
-       → ports.interpretive.generate({ content, interpretation })
-       → log GENERATION_RESULT (or error → fixed fallback string)
-       → ports.projection.deliver(message, reply)
-       → log DELIVERY_RESULT
-```
-
-Generation uses `OPENAI_API_KEY` and `OPENAI_MODEL` (default `gpt-4.1-mini`). Without an API key, `generateReply` returns deterministic fallbacks (safety, retrieval stub, `!ping`, generic acknowledgment).
-
-## Ports
-
-Created once at startup in `index.js` and passed into `handleMessage`.
-
-| Port | Factory | Methods | Status |
-| --- | --- | --- | --- |
-| **InterpretivePort** | `createInterpretivePort()` | `interpret(message)`, `generate({ content, interpretation })` | Active; delegates to `interpretMessage` and `generateReply` |
-| **ProjectionPort** | `createProjectionPort()` | `chooseDeliveryStyle(message)`, `deliver(message, reply)` | Active; delegates to `sendMessage` |
-| **CanonicalPort** | `createCanonicalPort()` | `retrieve()` → `null` | Stub; not called by pipeline |
-| **ContinuityPort** | `createContinuityPort()` | `recall()` → `null` | Stub; not called by pipeline |
-
-Forum throttling remains in the runtime layer (`applyForumThrottle`), not behind a port.
-
-## Intentionally not implemented
-
-- Canonical retrieval, citation, or ingestion from `docs/Eternal Sources/`
-- Continuity / memory (SQLite, embeddings, scoped recall)
-- Wiring `canonical` or `continuity` ports into `handleMessage`
-- Channel-specific behavior beyond forum throttle (`channelBehavior` future notes)
-- KINDEX integration
-- Artifact / web UI projection (Discord-only delivery today)
-- PM2, database schemas, and behaviors described only in `docs/DATA.md` and `docs/GUIDE.md`
-
-`interpretMessage` sets `needsRetrieval` for retrieval intent; `generateReply` still answers with a static fallback string, not port-backed recall.
-
-## Next safe phases
-
-Suggested order; each phase should keep behavior explicit and testable (`npm run dev`).
-
-1. **Phase 3 — Canonical module**  
-   Manifest for Eternal Sources, read-only corpora, implement `CanonicalPort.retrieve`, call from pipeline only when grounding is required; surface citations via projection.
-
-2. **Phase 4 — Continuity module**  
-   SQLite scopes per `docs/DATA.md`, implement `ContinuityPort.recall`, connect `needsRetrieval` to real scoped recall; keep DM vs community separation.
-
-3. **Phase 5 — Projection**  
-   Richer delivery (source cards, thread synthesis); optional split of `src/delivery/` under `src/projection/`.
-
-4. **Runtime hardening**  
-   Optional `src/runtime/bootstrap.js`, Discord adapter split, injectable `logDiagnostic` for tests—without changing reply behavior.
-
-## Related docs
-
-| Document | Purpose |
-| --- | --- |
-| `foundation/ontology.md` | Full five-layer ontology |
-| `foundation/architecture.md` | Product/stack philosophy (KINDEX, retrieval principles) |
-| `docs/GUIDE.md` | Operator workflow, PM2, diagnostics log events |
-| `docs/DATA.md` | Planned memory scopes (not implemented) |
+Avoid:
+- implying planned systems already exist
+- hiding operational behavior behind abstract language
+- coupling current Discord delivery to future UI assumptions
+- expanding memory or retrieval before data boundaries are clear

@@ -1,0 +1,168 @@
+# Liahona Continuity
+
+## Purpose
+
+Continuity preserves meaningful evolution through time.
+
+Its purpose is not to archive everything.
+
+Its purpose is to preserve:
+- identity
+- direction
+- major transitions
+- architectural meaning
+- coherent progression
+
+Continuity should remain semantic, not noisy.
+
+---
+
+# Core Principle
+
+Continuity is preserved meaning across time.
+
+Not:
+- endless logs
+- every tiny change
+- operational clutter
+- redundant snapshots
+
+The system should remember what mattered.
+
+---
+
+# What Should Be Preserved
+
+Examples:
+- foundational shifts
+- architecture decisions
+- ontology refinement
+- governance changes
+- major implementation milestones
+- meaningful experiential transitions
+- source-layer evolution
+- deployment breakthroughs
+- behavioral improvements
+
+Preserve:
+- significance
+- direction
+- evolution
+
+Not:
+- noise accumulation
+
+---
+
+# Continuity Layers
+
+## Human Continuity
+
+Preserved through:
+- KINDEX
+- Discord discussions
+- journals
+- development history
+- conversations
+- chronology
+
+This preserves:
+- people
+- meaning
+- lived evolution
+
+---
+
+## System Continuity
+
+Preserved through:
+- Git history
+- architecture docs
+- deployment history
+- runtime evolution
+- governance refinement
+- semantic memory systems
+
+This preserves:
+- implementation evolution
+- structural coherence
+- technical progression
+
+---
+
+## Experiential Continuity
+
+Preserved through:
+- artifact symbolism
+- interface evolution
+- interaction philosophy
+- continuity fragments
+- orienting metaphors
+
+This preserves:
+- experiential identity
+- emotional coherence
+- symbolic consistency
+
+---
+
+# Compression
+
+As systems mature, continuity should compress.
+
+The goal is:
+- higher signal
+- lower noise
+- clearer structure
+- preserved meaning
+
+A mature continuity system becomes:
+- readable
+- understandable
+- navigable
+
+not overwhelming.
+
+---
+
+# Continuity vs Memory
+
+Memory stores information.
+
+Continuity preserves meaning.
+
+These are not identical.
+
+The goal is not infinite accumulation.
+
+The goal is coherent identity across time.
+
+---
+
+# Governance
+
+Continuity should be:
+- intentional
+- curated
+- restrained
+- semantic
+
+Avoid:
+- duplicate concepts
+- fragmented ontology
+- uncontrolled document growth
+- meaningless operational history
+
+Not everything deserves permanence.
+
+---
+
+# Final Principle
+
+A healthy continuity system should allow someone to understand:
+- what changed
+- why it changed
+- what remained true
+- how the system evolved
+
+without drowning in noise.

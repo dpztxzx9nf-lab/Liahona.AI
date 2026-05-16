@@ -1,0 +1,23 @@
+1. Establish modular project structure
+2. Establish continuity/version foundation
+3. Keep folder clean
+4. Keep Git disciplined
+5. THEN redesign aggressively
+
+Projects
+↓
+Areas
+↓
+Continuity history
+↓
+Behavior evidence
+↓
+Version checkpoints
+↓
+Operational commands
+↓
+Architecture direction
+↓
+Grounding sources
+↓
+Roadmap

@@ -1,4 +1,4 @@
-const { logDiagnostic, logError } = require("./logger");
+const { logDiagnostic, logError, setRuntimeSessionId } = require("./logger");
 const { getMessageDiagnostics, validateMessage } = require("./messageContext");
 const {
   validateEnvironment,
@@ -10,6 +10,7 @@ const {
 module.exports = {
   logDiagnostic,
   logError,
+  setRuntimeSessionId,
   getMessageDiagnostics,
   validateMessage,
   validateEnvironment,

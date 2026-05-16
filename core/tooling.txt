@@ -1,0 +1,214 @@
+# Liahona Tooling
+
+## Purpose
+
+The tooling layer contains external systems used to assist development, implementation, research, synthesis, and operation.
+
+Tools are accelerators.
+
+They are not the foundation.
+
+The foundation must remain:
+- the architecture
+- the ontology
+- the governance
+- the continuity
+- the source structure
+- the repositories
+- the deployments
+- the human judgment layer
+
+Tools may change over time.
+
+The system should remain understandable without any single tool.
+
+---
+
+# Core Principle
+
+AI tools assist.
+
+Humans orient.
+
+Human responsibility remains central for:
+- judgment
+- governance
+- interpretation
+- architecture
+- restraint
+- continuity
+- final decision-making
+
+AI should function as:
+- operators
+- assistants
+- accelerators
+- synthesis systems
+
+Not:
+- authorities
+- canonical truth
+- autonomous identity
+
+---
+
+# Current Stack
+
+## ChatGPT
+
+Role:
+- systems integrator
+- ideation
+- multimodal reasoning
+- workflow design
+- broad synthesis
+
+Best for:
+- strategy
+- architecture thinking
+- troubleshooting
+- cross-domain reasoning
+- planning
+- conceptual clarification
+
+---
+
+## Cursor
+
+Role:
+- implementation environment
+
+Best for:
+- editing code
+- repo navigation
+- live implementation
+- refactoring
+- debugging
+- project structure visibility
+
+Cursor functions as the primary workshop.
+
+---
+
+## Claude
+
+Role:
+- architectural synthesizer
+
+Best for:
+- ontology refinement
+- governance
+- long-form reasoning
+- architecture cleanup
+- continuity coherence
+- conceptual synthesis
+
+Claude is strongest in deep structural reasoning.
+
+---
+
+## Codex
+
+Role:
+- engineering operator
+
+Best for:
+- delegated implementation
+- repo-wide changes
+- bug fixing
+- repetitive engineering tasks
+- autonomous coding flows
+- testing/refactoring
+
+Codex performs bounded engineering labor.
+
+---
+
+# Continuity Tooling
+
+## Git & GitHub
+
+Purpose:
+- version continuity
+- rollback
+- repo history
+- architecture evolution
+- implementation preservation
+
+Git is one of the primary continuity systems.
+
+---
+
+## PM2 / Hosting
+
+Purpose:
+- runtime continuity
+- persistent deployment
+- uptime management
+- process restoration
+- operational stability
+
+---
+
+## Discord / KINDEX
+
+Purpose:
+- human continuity
+- discussion history
+- chronology
+- memory
+- social grounding
+- evolving project context
+
+KINDEX grounds continuity through real human interaction.
+
+---
+
+# Autonomy
+
+Autonomy is preserved through:
+- documentation
+- version control
+- governance
+- observability
+- modular architecture
+- source grounding
+- bounded systems
+- human review
+
+People lose autonomy when they:
+- outsource judgment
+- rely only on prompting
+- fail to document architecture
+- depend entirely on AI memory
+- lose continuity ownership
+
+---
+
+# Tooling Restraint
+
+Do not build the system around:
+- subscriptions
+- providers
+- prompts
+- temporary tools
+
+Build around:
+- structure
+- continuity
+- governance
+- ontology
+- source architecture
+- repos
+- deployments
+- human orientation
+
+---
+
+# Final Principle
+
+The tooling layer exists to accelerate meaningful work.
+
+The tools assist the architecture.
+
+They should never become the architecture itself.

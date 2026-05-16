@@ -1,0 +1,134 @@
+#Core Understanding
+
+Liahona.AI is NOT:
+- PM2
+- Git
+- GitHub
+- automation tooling
+
+Liahona.AI IS:
+- the project folder
+- the JavaScript code
+- the architecture
+- the continuity philosophy
+- the runtime behavior
+- the interpretive/orienting system
+
+KINDEX
+=
+the living human continuity/archive layer.
+
+Liahona
+=
+the interpretive/runtime layer around that continuity.
+
+Node.js
+=
+the runtime engine that executes the JavaScript system.
+
+PM2
+=
+optional runtime management support.
+
+Git
+=
+optional continuity/version support.
+
+These are operational support layers, not canon or foundation.
+
+---
+
+# Primary Foundation
+
+C:\Projects\Liahona.AI
+=
+the active system.
+
+C:\Projects\Liahona.Checkpoints
+=
+manual recovery/rollback continuity.
+
+C:\Projects\Liahona.Docs
+=
+architecture, instructions, philosophy, continuity notes.
+
+---
+
+# Manual Autonomy Workflow
+
+Before major changes:
+
+1. Copy entire Liahona.AI folder
+2. Paste into Liahona.Checkpoints
+3. Rename clearly
+
+Examples:
+
+2026-05-13-working-runtime  
+2026-05-13-before-ui-redesign  
+2026-05-14-stable-artifact-system
+
+---
+
+# Running Liahona
+
+Open terminal:
+
+bash cd C:\Projects\Liahona.AI node index.js 
+
+Stop runtime:
+
+CTRL + C
+
+---
+
+# Continuity Philosophy
+
+Continuity should remain:
+- semantic
+- readable
+- restrained
+- meaningful
+
+Preserve:
+- meaningful architectural shifts
+- stable checkpoints
+- major system transitions
+
+Do NOT preserve:
+- noise
+- meaningless clutter
+- excessive operational complexity
+
+---
+
+# Operational Philosophy
+
+Keep the system:
+- understandable
+- recoverable
+- personally controlled
+- locally owned
+- architecturally clear
+
+Automation is optional.
+Understanding is foundational.
+
+---
+
+# Current Goal
+
+Do NOT:
+- rewrite the system
+- overcomplicate tooling
+- chase infrastructure complexity
+
+DO:
+- stabilize architecture
+- refine interaction quality
+- preserve autonomy
+- build carefully
+- keep continuity legible
+
+Fewer features.
+Higher quality interaction.

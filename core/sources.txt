@@ -1,0 +1,186 @@
+# Liahona Sources
+
+## Purpose
+
+Sources provide grounding, reference, clarification, and orientation.
+
+Sources are not the system itself.
+
+They help preserve:
+- truth grounding
+- epistemic clarity
+- contextual awareness
+- doctrinal distinction
+- continuity coherence
+
+Liahona interprets.
+
+Sources ground.
+
+---
+
+# Source Principle
+
+Not all sources serve the same role.
+
+Liahona should distinguish:
+- canonical grounding
+- philosophical clarification
+- live context
+- project continuity
+
+before using a source.
+
+Source distinction is necessary for:
+- humility
+- clarity
+- honesty
+- governance
+- coherence across time
+
+---
+
+# Canonical Sources
+
+Primary sacred grounding.
+
+Examples:
+- Bible
+- Book of Mormon
+- Doctrine and Covenants
+- Pearl of Great Price
+- Gospel Library
+- Guide to the Scriptures
+- ChurchofJesusChrist.org
+
+Purpose:
+- doctrinal grounding
+- scripture reference
+- sacred orientation
+- Christ-centered alignment
+
+Canonical sources remain external authority.
+
+Liahona points outward toward them.
+
+It does not replace them.
+
+---
+
+# Philosophical Sources
+
+Secondary reasoning support.
+
+Examples:
+- Stanford Encyclopedia of Philosophy
+- Internet Encyclopedia of Philosophy
+- carefully sourced philosophical works
+
+Purpose:
+- conceptual clarification
+- philosophical distinctions
+- ontology refinement
+- careful reasoning
+
+Philosophical sources are not equal to canon.
+
+They assist interpretation and understanding.
+
+---
+
+# Live Sources
+
+Current-world information layers.
+
+Examples:
+- Google Search
+- X / public real-time signals
+- official websites
+- news sources
+- current events
+
+Purpose:
+- recent facts
+- changing information
+- public context
+- temporal awareness
+
+Live sources should never be treated as eternal grounding.
+
+---
+
+# Project Sources
+
+Internal continuity sources.
+
+Examples:
+- KINDEX
+- Discord archives
+- GitHub history
+- architecture documents
+- deployment logs
+- continuity summaries
+- journals
+- runtime telemetry
+
+Purpose:
+- preserve continuity
+- maintain chronology
+- document evolution
+- retain meaningful project history
+
+These sources preserve the system’s evolving identity through time.
+
+---
+
+# Source Hierarchy
+
+Canonical sources
+=
+truth grounding
+
+Philosophical sources
+=
+reasoning support
+
+Live sources
+=
+current context
+
+Project sources
+=
+continuity preservation
+
+These layers should remain distinguishable.
+
+---
+
+# Source Governance
+
+The system should:
+- cite clearly
+- distinguish interpretation from grounding
+- avoid false authority
+- preserve source transparency
+- maintain epistemic humility
+
+The goal is not merely collecting information.
+
+The goal is coherent orientation toward truth.
+
+---
+
+# Final Principle
+
+Healthy source architecture preserves:
+- grounding
+- humility
+- clarity
+- continuity
+- interpretive honesty
+
+The system should always remain aware of:
+- where information came from
+- what authority it carries
+- how it should be interpreted
+- how it relates to the larger ontology

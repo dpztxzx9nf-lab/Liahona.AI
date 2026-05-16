@@ -1,0 +1,180 @@
+# Liahona Runtime
+
+## Purpose
+
+The runtime layer defines how Liahona.AI operates technically.
+
+It contains:
+- execution systems
+- interaction systems
+- rendering systems
+- state systems
+- retrieval systems
+- deployment systems
+- runtime behavior
+
+The runtime exists to deliver the experience.
+
+It is not the identity of the system itself.
+
+---
+
+# Core Principle
+
+Runtime systems should serve:
+- clarity
+- stability
+- coherence
+- responsiveness
+- continuity
+- grounded interaction
+
+The runtime should remain restrained and understandable.
+
+Avoid unnecessary complexity.
+
+---
+
+# Runtime Responsibilities
+
+The runtime layer manages:
+- frontend rendering
+- backend execution
+- APIs
+- databases
+- memory systems
+- embeddings
+- retrieval
+- interaction logic
+- animation systems
+- deployment state
+- persistence
+- observability
+
+---
+
+# Frontend Runtime
+
+The frontend runtime contains:
+- artifact rendering
+- interaction systems
+- navigation
+- transitions
+- motion systems
+- responsive behavior
+- continuity device UI
+- symbolic projection
+
+Purpose:
+- deliver coherent human interaction
+
+The interface should remain:
+- calm
+- spatially coherent
+- restrained
+- emotionally centered
+
+The artifact should remain visually central.
+
+---
+
+# Backend Runtime
+
+The backend runtime contains:
+- APIs
+- databases
+- embeddings
+- semantic retrieval
+- orchestration logic
+- Discord integrations
+- source systems
+- runtime memory/state
+
+Purpose:
+- coordinate system behavior
+- preserve continuity
+- manage retrieval/orientation
+
+---
+
+# Memory & Retrieval
+
+Runtime memory systems should prioritize:
+- relevance
+- semantic meaning
+- continuity usefulness
+- restraint
+
+Avoid:
+- excessive accumulation
+- noisy retrieval
+- over-contextualization
+- memory spam
+
+Memory should support orientation,
+not overwhelm interaction.
+
+---
+
+# Observability
+
+Runtime systems should preserve:
+- logs
+- debugging visibility
+- rollback capability
+- deployment awareness
+- monitoring
+- error visibility
+
+AI systems are probabilistic.
+
+Never confuse:
+- confidence
+with
+- correctness
+
+Human judgment remains necessary.
+
+---
+
+# Performance
+
+The runtime should prioritize:
+- smooth interaction
+- low friction
+- responsiveness
+- GPU-friendly rendering
+- mobile stability
+- battery awareness
+- minimal layout shift
+
+The experience should feel stable and grounded.
+
+---
+
+# Runtime Restraint
+
+Avoid:
+- feature sprawl
+- excessive UI chrome
+- over-animation
+- unnecessary interaction complexity
+- meaningless systems
+
+Prefer:
+- fewer systems
+- higher quality interaction
+- stronger coherence
+
+---
+
+# Final Principle
+
+The runtime layer should quietly support:
+- orientation
+- continuity
+- reflection
+- interaction
+- grounding
+
+without becoming the focus itself.

@@ -1,0 +1,29 @@
+Good next refinement categories:
+
+Artifact motion
+smoother easing
+subtle inertia
+stronger but restrained parallax
+cleaner flip animation
+Touch interaction
+ripple/glimmer on touch
+subtle haptic feel (mobile)
+responsive press states
+Spatial coherence
+continuity device opens from tab naturally
+return transition feels spatially connected
+no abrupt UI jumps
+Visual restraint
+less UI chrome
+fewer visible controls
+artifact remains emotionally central
+Performance polish
+eliminate jitter
+prevent layout shifts
+keep animations GPU-friendly
+preserve battery/performance on mobile
+
+You now want:
+
+fewer features
+higher quality interaction

@@ -1,0 +1,190 @@
+# Canonical vs Interpretive Architecture
+
+## Core Distinction
+
+One of the most important architectural distinctions in Liahona.AI is:
+
+```text
+Canonical
+vs
+Interpretive
+```
+
+This distinction protects:
+
+* humility
+* clarity
+* theological grounding
+* architectural honesty
+* sourcefulness
+* continuity coherence
+
+Liahona should not blur:
+
+* canonical scripture
+  with
+* project interpretation.
+
+---
+
+# Canonical Layer
+
+The canonical layer contains authoritative grounding sources.
+
+Examples:
+
+* Bible
+* Book of Mormon
+* Doctrine and Covenants
+* Pearl of Great Price
+* Gospel Library links
+* Guide to the Scriptures
+* sourced scripture references
+
+Canonical sources should remain:
+
+* outward-facing
+* clearly sourced
+* non-modified
+* authoritative outside the system itself
+
+Liahona is not the authority.
+It points outward toward authoritative sources.
+
+---
+
+# Interpretive Layer
+
+The interpretive layer contains:
+
+* artifact symbolism
+* continuity metaphors
+* experiential design
+* architectural philosophy
+* cosmology systems
+* interface meaning
+* interaction philosophy
+
+These are:
+
+* human-built
+* architectural
+* experiential
+* symbolic
+* interpretive
+
+Interpretive systems should never pretend to be canon.
+
+---
+
+# Runtime Layer
+
+The runtime layer contains:
+
+* code
+* localStorage state
+* UI behavior
+* rendering systems
+* interaction logic
+* navigation systems
+* deployment/runtime behavior
+
+Examples:
+
+* cosmology.js
+* dashboard.js
+* modal systems
+* artifact interactions
+* continuity device state
+
+This layer exists to deliver the experience.
+
+---
+
+# Projection Layer
+
+The projection layer surfaces canonical and interpretive information into the actual experience.
+
+Examples:
+
+* scripture grounding on the back of the artifact
+* Decisions tab
+* continuity logs
+* source cards
+* architectural reflections
+* artifact fragments
+
+This layer translates deeper structures into human-facing orientation.
+
+---
+
+# Continuity Layer
+
+The continuity layer preserves meaningful evolution through time.
+
+It should preserve:
+
+* major architectural decisions
+* meaningful checkpoints
+* experiential transitions
+* foundational shifts
+* governance principles
+
+It should NOT preserve:
+
+* noise
+* every tiny tweak
+* meaningless logs
+* excessive operational clutter
+
+Continuity should remain:
+
+* semantic
+* readable
+* restrained
+* meaningful
+
+---
+
+# Suggested Data Philosophy
+
+```text
+Canonical layer
+=
+authoritative grounding sources
+
+Interpretive layer
+=
+Liahona continuity/interface/experience
+
+Runtime layer
+=
+code/state/interaction
+
+Projection layer
+=
+how meaning is surfaced through the interface
+```
+
+---
+
+# Architectural Importance
+
+This distinction may become one of the most important organizing principles in the entire system.
+
+It can help structure:
+
+* sources
+* governance
+* continuity
+* decisions
+* artifact symbolism
+* backend data organization
+* runtime projection
+* AI behavior
+* outward linking
+* mobile continuity architecture
+
+The goal is not merely folder organization.
+
+The goal is epistemic clarity across time.

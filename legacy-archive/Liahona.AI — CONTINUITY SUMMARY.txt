@@ -1,0 +1,256 @@
+Liahona.AI evolved from a conversational AI project into an orienting artifact-first continuity system.
+
+Core realization:
+The project should not feel like a dashboard, productivity app, or assistant UI.
+It should feel like an orienting experience across time.  [oai_citation:0‡projection-framework.txt](sediment://file_00000000b948722f8147e36da210bd76)
+
+FOUNDATIONAL DIRECTION
+
+Front-end
+=
+void-space + artifact experience
+
+KINDEX
+=
+human continuity/archive/community layer
+
+Continuity portal
+=
+lightweight floating backend/governance interface
+
+Git
+=
+continuity spine preserving recoverable states across time
+
+Canonical sources
+=
+authoritative outward grounding
+
+Interpretive architecture
+=
+symbolic/experiential interface layer
+
+The public surface was intentionally reduced from:
+- dashboard structures
+- cards
+- hero layouts
+- explanatory UI
+- visible frontend scaffolding
+
+toward:
+- pitch-black void-space
+- centered artifact
+- minimal UI
+- immersive orientation
+- interaction-first experience
+
+The artifact itself became the interface.
+
+INTERACTION LANGUAGE
+
+Tap / Flip
+=
+symbol ↔ source grounding
+
+Press / Hold
+=
+artifact awakening / orientation activation
+
+Return
+=
+silence / contemplation
+
+The goal became:
+fewer features,
+higher quality interaction. 
+
+The artifact now exists as:
+- canonical visual anchor
+- orienting object
+- symbolic interface
+- continuity center
+
+The project intentionally avoided:
+- feature overload
+- dashboard clutter
+- excessive abstraction
+- pseudo-authoritative spirituality
+- engagement optimization
+
+ONTOLOGY / ARCHITECTURE
+
+The architecture stabilized into:
+
+Canonical
+Interpretive
+Runtime
+Projection
+Continuity 
+
+Canonical layer
+=
+scripture, sourced doctrine, Gospel Library, outward grounding
+
+Interpretive layer
+=
+artifact symbolism, continuity metaphors, experiential design
+
+Runtime layer
+=
+code, interactions, rendering, deployment behavior
+
+Projection layer
+=
+how meaning/sources surface through the experience
+
+Continuity layer
+=
+meaningful evolution preserved across time
+
+The project intentionally distinguishes:
+canonical authority
+from
+interpretive architecture.  [oai_citation:1‡Canonical.txt](sediment://file_000000009cb471f5b5a0b03cf15c8152)
+
+Liahona does not become authority itself.
+It points outward toward authoritative grounding. 
+
+GROUNDING SOURCES
+
+Primary grounding sources include:
+- Bible
+- Book of Mormon
+- Doctrine and Covenants
+- Pearl of Great Price
+- Gospel Library
+- Guide to the Scriptures
+- Study Helps
+- ChurchOfJesusChrist.org
+
+References:
+[Church of Jesus Christ Homepage](https://www.churchofjesuschrist.org/?lang=eng&utm_source=chatgpt.com) 
+
+[Guide to the Scriptures](https://www.churchofjesuschrist.org/study/scriptures/gs?lang=eng&utm_source=chatgpt.com)  [oai_citation:2‡Guide-to-the-Scriptures.txt](sediment://file_00000000862c720c83bbca7f6aaf573b)
+
+[Study Helps](https://www.churchofjesuschrist.org/study/scriptures/study-helps?lang=eng&utm_source=chatgpt.com)  [oai_citation:3‡Study-Helps.txt](sediment://file_000000005d9071f584a2ce6807e1abaf)
+
+[Scripture Study Library](https://www.churchofjesuschrist.org/study?lang=eng&utm_source=chatgpt.com)  [oai_citation:4‡Library.txt](sediment://file_00000000a530722f8d363874f1efc652)
+
+[Urim and Thummim — Gospel Topics](https://www.churchofjesuschrist.org/study/manual/gospel-topics/urim-and-thummim?lang=eng&utm_source=chatgpt.com)
+
+The “orbs” on the artifact became symbolic orientation points:
+not doctrinal claims,
+but interpretive interaction anchors potentially linking outward toward:
+- scripture
+- Gospel Topics
+- study helps
+- canonical resources
+
+Mystery was intentionally preserved instead of over-defining symbolic systems.
+
+CONTINUITY / GIT PHILOSOPHY
+
+Git became the continuity spine of the project.
+
+Git is not merely code storage.
+It preserves meaningful project states across time.
+
+Git history
+=
+runtime continuity and recoverable states
+
+Docs
+=
+architectural continuity and decision memory
+
+KINDEX
+=
+human continuity/archive/community
+
+Artifacts/assets
+=
+experiential continuity
+
+This enabled:
+- aggressive experimentation
+- safe reversibility
+- readable continuity history
+- recoverable checkpoints
+- semantic architectural memory
+
+Core workflow:
+Experiment
+→ checkpoint
+→ review
+→ keep / refine / revert
+→ continuity preserved
+
+The preferred philosophy became:
+continuity without forgetting.
+
+Checkpoint discipline included:
+- meaningful commit messages
+- GitHub-backed recovery
+- operational readability
+- rollback safety
+- recoverable experimentation  [oai_citation:5‡Checkpoint commit flow.txt](sediment://file_0000000047d0722f8510feccf8d7dbc6)
+
+PROJECT PHILOSOPHY
+
+The project converged toward:
+- restraint
+- clarity
+- orientation
+- continuity
+- outward grounding
+- lightweight architecture
+- immersive presence
+- recoverable evolution
+
+Avoiding:
+- feature soup
+- assistant over-engagement
+- corporate UI feel
+- artificial complexity
+- pseudo-mysticism
+- noisy dashboards
+
+The public experience should feel like:
+arrival,
+not navigation.
+
+A quiet canvas.
+A suspended artifact.
+A symbolic orienting center in void-space.
+
+CURRENT STATE
+
+Current live surface:
+[Liahona.AI](https://dpztxzx9nf-lab.github.io/Liahona.AI/?utm_source=chatgpt.com)  [oai_citation:6‡Dashboard.txt](sediment://file_000000000c2871fdb88bbed8cb9a7b7b)
+
+The repo is now:
+- Git-backed
+- checkpointable
+- continuity-aware
+- ontology-aware
+- recoverable
+- artifact-first
+- mobile-orchestratable
+
+The project is no longer merely:
+“building a website.”
+
+It is becoming:
+- an orienting system
+- continuity architecture
+- artifact-centered interaction design
+- reflective governance infrastructure
+- symbolic experiential interface
+- human continuity projection across time
+
+while preserving:
+- canonical humility
+- outward grounding
+- operational recoverability
+- semantic continuity
+- truthful architectural distinctions. 
