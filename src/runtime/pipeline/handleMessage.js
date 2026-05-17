@@ -130,6 +130,26 @@ async function storeContinuityEntry({ message, ports, classification, ctx }) {
   }
 }
 
+async function retrieveCanonicalSources({ message, ports, canonicalContext, ctx }) {
+  if (canonicalContext?.canonical_mode !== "DIRECT") {
+    return [];
+  }
+
+  if (typeof ports.canonical?.retrieve !== "function") {
+    return [];
+  }
+
+  try {
+    return await ports.canonical.retrieve({
+      content: message.content || "",
+      canonicalContext
+    });
+  } catch (error) {
+    logError("CANONICAL_RETRIEVAL_FAILED", correlationFields(ctx), error);
+    return [];
+  }
+}
+
 async function processMessage(message, { clientUserId, ports }) {
   const ctx = createInvocationContext(message);
   const correlation = () => correlationFields(ctx);
@@ -226,6 +246,7 @@ async function processMessage(message, { clientUserId, ports }) {
   let retrievedContext = null;
   let recurringThemes = [];
   let canonical_context = canonicalContext;
+  let canonicalSources = [];
   let finalPrompt = null;
   let generatedResponse = null;
   const generationStartedAt = Date.now();
@@ -243,19 +264,28 @@ async function processMessage(message, { clientUserId, ports }) {
       recurringThemes = synthesizeRecurringThemes(retrievedContext);
     }
 
+    canonicalSources = await retrieveCanonicalSources({
+      message,
+      ports,
+      canonicalContext: canonical_context,
+      ctx
+    });
+
     const generation = await ports.interpretive.generate({
       content: message.content,
       interpretation,
       ctx,
       retrievedContext,
       recurringThemes,
-      canonicalContext: canonical_context
+      canonicalContext: canonical_context,
+      canonicalSources
     });
 
     finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
     retrievedContext = generation?.retrieved_context ?? retrievedContext;
     recurringThemes = generation?.recurring_themes ?? recurringThemes;
     canonical_context = generation?.canonical_context ?? canonical_context;
+    canonicalSources = generation?.canonical_sources ?? canonicalSources;
 
     if (generation?.openai_response_id) {
       ctx.openai_response_id = generation.openai_response_id;
@@ -275,6 +305,7 @@ async function processMessage(message, { clientUserId, ports }) {
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
       canonical_context,
+      canonical_sources: canonicalSources,
       final_prompt: finalPrompt,
       generated_response: generatedResponse
     });
@@ -293,6 +324,7 @@ async function processMessage(message, { clientUserId, ports }) {
     retrievedContext = ctx.retrieved_context ?? retrievedContext;
     recurringThemes = ctx.recurring_themes ?? recurringThemes;
     canonical_context = ctx.canonical_context ?? canonical_context;
+    canonicalSources = ctx.canonical_sources ?? canonicalSources;
 
     logDiagnostic("MODEL_TRACE", {
       ...correlation(),
@@ -301,6 +333,7 @@ async function processMessage(message, { clientUserId, ports }) {
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
       canonical_context,
+      canonical_sources: canonicalSources,
       final_prompt: finalPrompt,
       generated_response: null,
       errorMessage: error.message
@@ -338,6 +371,7 @@ async function processMessage(message, { clientUserId, ports }) {
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
       canonical_context,
+      canonical_sources: canonicalSources,
       final_prompt: finalPrompt,
       generated_response: reply,
       coherence

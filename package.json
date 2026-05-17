@@ -17,7 +17,8 @@
     "test:interpret": "node scripts/test-interpretMessage.js",
     "test:continuity": "node scripts/test-continuity.js",
     "test:themes": "node scripts/test-themeSynthesis.js",
-    "test:canonical": "node scripts/test-canonicalGrounding.js"
+    "test:canonical": "node scripts/test-canonicalGrounding.js",
+    "test:canonical-sources": "node scripts/test-canonicalSources.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

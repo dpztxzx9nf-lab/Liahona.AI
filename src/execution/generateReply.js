@@ -46,7 +46,8 @@ function buildInputMessages({
   interpretation,
   retrievedContext,
   recurringThemes = [],
-  canonicalContext = null
+  canonicalContext = null,
+  canonicalSources = []
 }) {
   const input = [
     {
@@ -86,6 +87,18 @@ function buildInputMessages({
         modeGuidance,
         "Guardrails: never pretend revelation; never claim divine authority; distinguish interpretation from doctrine; avoid manipulative spirituality; avoid forced scripture injection.",
         "Aim for natural spiritual orientation, not religious performance."
+      ].join(" ")
+    });
+  }
+
+  if (Array.isArray(canonicalSources) && canonicalSources.length > 0) {
+    input.push({
+      role: "system",
+      content: [
+        `Canonical sources: ${JSON.stringify(canonicalSources)}`,
+        "These are grounding references, not final authority over the user's life.",
+        "Use at most one or two references when helpful. Avoid excessive scripture dumping.",
+        "Never claim revelation; never present interpretation as doctrine; preserve humility and restraint."
       ].join(" ")
     });
   }
@@ -140,7 +153,8 @@ async function generateReply({
   ctx,
   retrievedContext = null,
   recurringThemes = [],
-  canonicalContext = null
+  canonicalContext = null,
+  canonicalSources = []
 }) {
   const client = getClient();
   const input = buildInputMessages({
@@ -148,7 +162,8 @@ async function generateReply({
     interpretation,
     retrievedContext,
     recurringThemes,
-    canonicalContext
+    canonicalContext,
+    canonicalSources
   });
 
   if (ctx) {
@@ -156,6 +171,7 @@ async function generateReply({
     ctx.retrieved_context = retrievedContext;
     ctx.recurring_themes = recurringThemes;
     ctx.canonical_context = canonicalContext;
+    ctx.canonical_sources = canonicalSources;
   }
 
   if (!client) {
@@ -164,7 +180,8 @@ async function generateReply({
       final_prompt: input,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
-      canonical_context: canonicalContext
+      canonical_context: canonicalContext,
+      canonical_sources: canonicalSources
     };
   }
 
@@ -189,7 +206,8 @@ async function generateReply({
       final_prompt: input,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
-      canonical_context: canonicalContext
+      canonical_context: canonicalContext,
+      canonical_sources: canonicalSources
     };
   }
 
@@ -205,7 +223,8 @@ async function generateReply({
       final_prompt: input,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
-      canonical_context: canonicalContext
+      canonical_context: canonicalContext,
+      canonical_sources: canonicalSources
     };
   }
 
@@ -217,7 +236,8 @@ async function generateReply({
     final_prompt: input,
     retrieved_context: retrievedContext,
     recurring_themes: recurringThemes,
-    canonical_context: canonicalContext
+    canonical_context: canonicalContext,
+    canonical_sources: canonicalSources
   };
 }
 

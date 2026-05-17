@@ -6,14 +6,23 @@ function createInterpretivePort() {
     interpret(message) {
       return interpretMessage(message);
     },
-    generate({ content, interpretation, ctx, retrievedContext, recurringThemes, canonicalContext }) {
+    generate({
+      content,
+      interpretation,
+      ctx,
+      retrievedContext,
+      recurringThemes,
+      canonicalContext,
+      canonicalSources
+    }) {
       return generateReply({
         content,
         interpretation,
         ctx,
         retrievedContext,
         recurringThemes,
-        canonicalContext
+        canonicalContext,
+        canonicalSources
       });
     }
   };
