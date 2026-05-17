@@ -4,6 +4,8 @@ const crypto = require("crypto");
 const express = require("express");
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const { handleMessage } = require("./src/runtime/pipeline/handleMessage");
+const { registerDevPortal } = require("./src/runtime/devPortal");
+const { registerPublicContinuity } = require("./src/runtime/publicContinuity");
 const { createCanonicalPort } = require("./src/ports/CanonicalPort");
 const { createContinuityPort } = require("./src/ports/ContinuityPort");
 const { createInterpretivePort } = require("./src/ports/InterpretivePort");
@@ -54,6 +56,9 @@ const port = envValidation.config.port;
 app.get("/", (req, res) => {
   res.send("Liahona is alive.");
 });
+
+registerPublicContinuity(app);
+registerDevPortal(app);
 
 app.listen(port, () => {
   updateRuntimeState({ httpListening: true });
