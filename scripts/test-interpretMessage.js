@@ -4,7 +4,12 @@ const {
   classifyIntent,
   classifyNeedsLiveSource
 } = require("../src/interpretive/interpretMessage");
+const {
+  classifyMessage,
+  MESSAGE_CLASSIFICATIONS
+} = require("../src/interpretive/classifyMessage");
 const { fallbackReply } = require("../src/execution/generateReply");
+const { checkResponseCoherence } = require("../src/execution/coherenceCheck");
 
 const educationalCases = [
   "What's game theory?",
@@ -46,5 +51,33 @@ for (const input of liveCases) {
 
 assert.strictEqual(classifyIntent("Hello?"), "social");
 assert.strictEqual(classifyNeedsLiveSource("What is game theory?"), false);
+assert.strictEqual(
+  classifyMessage("Today I noticed I was calmer after prayer."),
+  MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY
+);
+assert.strictEqual(
+  classifyMessage("System update: restarted the bot."),
+  MESSAGE_CLASSIFICATIONS.SYSTEM_UPDATE
+);
+assert.strictEqual(
+  classifyMessage("What is game theory?"),
+  MESSAGE_CLASSIFICATIONS.QUESTION
+);
+assert.strictEqual(
+  checkResponseCoherence({
+    originalMessage: "What is game theory?",
+    generatedResponse: "Game theory studies strategic decisions between people or systems.",
+    interpretation: interpretMessage("What is game theory?")
+  }).coherent,
+  true
+);
+assert.strictEqual(
+  checkResponseCoherence({
+    originalMessage: "What is game theory?",
+    generatedResponse: "Napoleon was a French military leader.",
+    interpretation: interpretMessage("What is game theory?")
+  }).coherent,
+  false
+);
 
 console.log("interpretMessage tests passed");

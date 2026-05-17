@@ -1,5 +1,5 @@
 const { applyChannelSilence } = require("../policy/channelSilence");
-const { applyForumThrottle } = require("../policy/forumThrottle");
+const { applyForumThrottle, directlyMentionsLiahona } = require("../policy/forumThrottle");
 const { runOncePerMessage } = require("../policy/messageLock");
 const {
   createInvocationContext,
@@ -14,6 +14,12 @@ const {
   getMessageDiagnostics,
   validateMessage
 } = require("../diagnostics");
+const {
+  classifyMessage,
+  MESSAGE_CLASSIFICATIONS,
+  isQuestionLike
+} = require("../../interpretive/classifyMessage");
+const { checkResponseCoherence } = require("../../execution/coherenceCheck");
 
 function isIgnoredMessage(message, clientUserId) {
   if (!message?.author) {
@@ -29,6 +35,56 @@ function isIgnoredMessage(message, clientUserId) {
   }
 
   return false;
+}
+
+function isReplyToBot(message, clientUserId) {
+  return Boolean(
+    clientUserId &&
+    message.mentions?.repliedUser?.id === clientUserId
+  );
+}
+
+function directlyAsksLiahonaQuestion(message, clientUserId) {
+  const content = message.content || "";
+
+  if (!isQuestionLike(content)) {
+    return false;
+  }
+
+  if (!message.guild) {
+    return true;
+  }
+
+  return directlyMentionsLiahona(message, clientUserId) ||
+    isReplyToBot(message, clientUserId) ||
+    /\bliahona\b/i.test(content);
+}
+
+function shouldStoreWithoutReply({ classification, message, clientUserId, interpretation }) {
+  const storableClassification = classification === MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY ||
+    classification === MESSAGE_CLASSIFICATIONS.SYSTEM_UPDATE;
+
+  return storableClassification &&
+    interpretation.intent !== "high-risk" &&
+    !directlyAsksLiahonaQuestion(message, clientUserId);
+}
+
+async function retrieveContext({ message, ports, classification, interpretation, ctx }) {
+  if (typeof ports.continuity?.recall !== "function") {
+    return null;
+  }
+
+  try {
+    return await ports.continuity.recall({
+      message,
+      classification,
+      interpretation,
+      ctx
+    });
+  } catch (error) {
+    logError("CONTEXT_RETRIEVAL_FAILED", correlationFields(ctx), error);
+    return null;
+  }
 }
 
 async function processMessage(message, { clientUserId, ports }) {
@@ -49,7 +105,35 @@ async function processMessage(message, { clientUserId, ports }) {
     return;
   }
 
+  const classification = classifyMessage(message.content);
+  ctx.message_classification = classification;
+
+  logDiagnostic("MESSAGE_CLASSIFIED", {
+    ...getMessageDiagnostics(message),
+    ...correlation(),
+    original_message: message.content || "",
+    classification,
+    directly_asks_liahona_question: directlyAsksLiahonaQuestion(message, clientUserId)
+  });
+
   let interpretation = ports.interpretive.interpret(message);
+
+  if (shouldStoreWithoutReply({ classification, message, clientUserId, interpretation })) {
+    logDiagnostic("MESSAGE_STORED", {
+      ...correlation(),
+      original_message: message.content || "",
+      classification,
+      reason: "store_without_assistant_reply"
+    });
+    logDiagnostic("MESSAGE_IGNORED", {
+      ...correlation(),
+      reason: "stored_without_assistant_reply",
+      classification
+    });
+    terminateInvocation(ctx, "stored-without-reply");
+    return;
+  }
+
   interpretation = applyChannelSilence(message, interpretation, clientUserId);
   interpretation = applyForumThrottle(message, interpretation, clientUserId);
   const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
@@ -57,6 +141,7 @@ async function processMessage(message, { clientUserId, ports }) {
   logDiagnostic("INTERPRETATION_RESULT", {
     ...correlation(),
     intent: interpretation.intent,
+    classification,
     responseStyle: interpretation.responseStyle,
     needsRetrieval: interpretation.needsRetrieval,
     needsLiveSource: interpretation.needsLiveSource,
@@ -79,14 +164,29 @@ async function processMessage(message, { clientUserId, ports }) {
   }
 
   let reply;
+  let retrievedContext = null;
+  let finalPrompt = null;
+  let generatedResponse = null;
   const generationStartedAt = Date.now();
 
   try {
-    const generation = await ports.interpretive.generate({
-      content: message.content,
+    retrievedContext = await retrieveContext({
+      message,
+      ports,
+      classification,
       interpretation,
       ctx
     });
+
+    const generation = await ports.interpretive.generate({
+      content: message.content,
+      interpretation,
+      ctx,
+      retrievedContext
+    });
+
+    finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
+    retrievedContext = generation?.retrieved_context ?? retrievedContext;
 
     if (generation?.openai_response_id) {
       ctx.openai_response_id = generation.openai_response_id;
@@ -97,6 +197,16 @@ async function processMessage(message, { clientUserId, ports }) {
     ctx.cleaned_text_length = prepared.cleaned_text_length;
     ctx.delivery_text = prepared.cleanedText;
     reply = prepared.cleanedText;
+    generatedResponse = prepared.cleanedText;
+
+    logDiagnostic("MODEL_TRACE", {
+      ...correlation(),
+      original_message: message.content || "",
+      classification,
+      retrieved_context: retrievedContext,
+      final_prompt: finalPrompt,
+      generated_response: generatedResponse
+    });
 
     logDiagnostic("GENERATION_RESULT", {
       ...correlation(),
@@ -108,6 +218,18 @@ async function processMessage(message, { clientUserId, ports }) {
       latencyMs: Date.now() - generationStartedAt
     });
   } catch (error) {
+    finalPrompt = finalPrompt || ctx.final_prompt || null;
+    retrievedContext = ctx.retrieved_context ?? retrievedContext;
+
+    logDiagnostic("MODEL_TRACE", {
+      ...correlation(),
+      original_message: message.content || "",
+      classification,
+      retrieved_context: retrievedContext,
+      final_prompt: finalPrompt,
+      generated_response: null,
+      errorMessage: error.message
+    });
     logDiagnostic("GENERATION_RESULT", {
       ...correlation(),
       success: false,
@@ -125,6 +247,31 @@ async function processMessage(message, { clientUserId, ports }) {
 
   if (!reply && ctx.cleaned_text_length > 0) {
     reply = ctx.delivery_text;
+  }
+
+  const coherence = checkResponseCoherence({
+    originalMessage: message.content,
+    generatedResponse: reply,
+    interpretation
+  });
+
+  if (!coherence.coherent) {
+    logDiagnostic("CONTEXT_DETACHMENT", {
+      ...correlation(),
+      original_message: message.content || "",
+      classification,
+      retrieved_context: retrievedContext,
+      final_prompt: finalPrompt,
+      generated_response: reply,
+      coherence
+    });
+    logDiagnostic("MESSAGE_IGNORED", {
+      ...correlation(),
+      reason: "CONTEXT_DETACHMENT",
+      classification
+    });
+    terminateInvocation(ctx, "context-detachment");
+    return;
   }
 
   logDiagnostic("PROJECTION_PREPARED", {

@@ -41,6 +41,29 @@ function buildSystemPrompt(interpretation) {
   ].filter(Boolean).join(" ");
 }
 
+function buildInputMessages({ content, interpretation, retrievedContext }) {
+  const input = [
+    {
+      role: "system",
+      content: buildSystemPrompt(interpretation)
+    }
+  ];
+
+  if (retrievedContext) {
+    input.push({
+      role: "system",
+      content: `Retrieved context: ${JSON.stringify(retrievedContext)}`
+    });
+  }
+
+  input.push({
+    role: "user",
+    content
+  });
+
+  return input;
+}
+
 function fallbackReply(content, interpretation) {
   if (interpretation.intent === "high-risk") {
     return "I'm sorry you're dealing with that. If you're in immediate danger, call emergency services now. If you're in the U.S. or Canada, call or text 988 for immediate crisis support.";
@@ -77,26 +100,27 @@ async function waitForCompletedResponse(client, response) {
   return current;
 }
 
-async function generateReply({ content, interpretation, ctx }) {
+async function generateReply({ content, interpretation, ctx, retrievedContext = null }) {
   const client = getClient();
+  const input = buildInputMessages({ content, interpretation, retrievedContext });
+
+  if (ctx) {
+    ctx.final_prompt = input;
+    ctx.retrieved_context = retrievedContext;
+  }
 
   if (!client) {
-    return { text: fallbackReply(content, interpretation) };
+    return {
+      text: fallbackReply(content, interpretation),
+      final_prompt: input,
+      retrieved_context: retrievedContext
+    };
   }
 
   const request = {
     model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
     stream: false,
-    input: [
-      {
-        role: "system",
-        content: buildSystemPrompt(interpretation)
-      },
-      {
-        role: "user",
-        content
-      }
-    ],
+    input,
     max_output_tokens: interpretation.maxOutputTokens || 120
   };
 
@@ -108,7 +132,12 @@ async function generateReply({ content, interpretation, ctx }) {
   }
 
   if (response.status && response.status !== "completed") {
-    return { text: fallbackReply(content, interpretation), openai_response_id: response?.id };
+    return {
+      text: fallbackReply(content, interpretation),
+      openai_response_id: response?.id,
+      final_prompt: input,
+      retrieved_context: retrievedContext
+    };
   }
 
   const rawText = extractResponseText(response);
@@ -119,7 +148,9 @@ async function generateReply({ content, interpretation, ctx }) {
       text: fallbackReply(content, interpretation),
       openai_response_id: response?.id,
       raw_generation_text_length: rawText.length,
-      cleaned_text_length: 0
+      cleaned_text_length: 0,
+      final_prompt: input,
+      retrieved_context: retrievedContext
     };
   }
 
@@ -127,12 +158,15 @@ async function generateReply({ content, interpretation, ctx }) {
     text,
     openai_response_id: response?.id,
     raw_generation_text_length: rawText.length,
-    cleaned_text_length: text.length
+    cleaned_text_length: text.length,
+    final_prompt: input,
+    retrieved_context: retrievedContext
   };
 }
 
 module.exports = {
   generateReply,
   buildSystemPrompt,
+  buildInputMessages,
   fallbackReply
 };

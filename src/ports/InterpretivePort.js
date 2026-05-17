@@ -6,8 +6,8 @@ function createInterpretivePort() {
     interpret(message) {
       return interpretMessage(message);
     },
-    generate({ content, interpretation, ctx }) {
-      return generateReply({ content, interpretation, ctx });
+    generate({ content, interpretation, ctx, retrievedContext }) {
+      return generateReply({ content, interpretation, ctx, retrievedContext });
     }
   };
 }

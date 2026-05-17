@@ -7,9 +7,19 @@ const OBSERVABILITY_EVENTS = new Set([
   "RUNTIME_SESSION_START",
   "DISCORD_READY",
   "MESSAGE_RECEIVED",
+  "MESSAGE_CLASSIFIED",
+  "MESSAGE_STORED",
   "MESSAGE_IGNORED",
   "GENERATION_RESULT",
+  "MODEL_TRACE",
+  "CONTEXT_DETACHMENT",
   "DELIVERY_RESULT"
+]);
+const VERBOSE_OBSERVABILITY_EVENTS = new Set([
+  "MESSAGE_CLASSIFIED",
+  "MESSAGE_STORED",
+  "MODEL_TRACE",
+  "CONTEXT_DETACHMENT"
 ]);
 
 let runtimeSessionId = null;
@@ -69,6 +79,18 @@ function writeObservableEvent(event, fields) {
 
   if (fields.errorMessage) {
     record.error_message = fields.errorMessage;
+  }
+
+  if (VERBOSE_OBSERVABILITY_EVENTS.has(event)) {
+    const {
+      ts,
+      level,
+      event: ignoredEvent,
+      runtime_session_id,
+      success,
+      ...details
+    } = fields;
+    Object.assign(record, details);
   }
 
   writeRuntimeLog(record);
