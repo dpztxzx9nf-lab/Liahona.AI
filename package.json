@@ -14,7 +14,8 @@
     "pm2:save": "pm2 save",
     "pm2:status": "pm2 status",
     "data:reset": "node scripts/resetData.js",
-    "test:interpret": "node scripts/test-interpretMessage.js"
+    "test:interpret": "node scripts/test-interpretMessage.js",
+    "test:continuity": "node scripts/test-continuity.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -87,6 +87,26 @@ async function retrieveContext({ message, ports, classification, interpretation,
   }
 }
 
+async function storeContinuityEntry({ message, ports, classification, ctx }) {
+  if (typeof ports.continuity?.store !== "function") {
+    return null;
+  }
+
+  try {
+    return await ports.continuity.store({
+      ts: message.createdAt?.toISOString?.() || new Date().toISOString(),
+      author_user_id: message.author?.id || null,
+      channel_id: message.channel?.id || null,
+      channel_name: message.channel?.name || null,
+      classification,
+      original_message: message.content || ""
+    });
+  } catch (error) {
+    logError("CONTINUITY_STORE_FAILED", correlationFields(ctx), error);
+    return null;
+  }
+}
+
 async function processMessage(message, { clientUserId, ports }) {
   const ctx = createInvocationContext(message);
   const correlation = () => correlationFields(ctx);
@@ -119,10 +139,19 @@ async function processMessage(message, { clientUserId, ports }) {
   let interpretation = ports.interpretive.interpret(message);
 
   if (shouldStoreWithoutReply({ classification, message, clientUserId, interpretation })) {
+    const storedEntry = await storeContinuityEntry({
+      message,
+      ports,
+      classification,
+      ctx
+    });
+
     logDiagnostic("MESSAGE_STORED", {
       ...correlation(),
       original_message: message.content || "",
       classification,
+      stored_entry_id: storedEntry?.id || null,
+      summary: storedEntry?.summary || message.content || "",
       reason: "store_without_assistant_reply"
     });
     logDiagnostic("MESSAGE_IGNORED", {
