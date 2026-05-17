@@ -41,7 +41,13 @@ function buildSystemPrompt(interpretation) {
   ].filter(Boolean).join(" ");
 }
 
-function buildInputMessages({ content, interpretation, retrievedContext, recurringThemes = [] }) {
+function buildInputMessages({
+  content,
+  interpretation,
+  retrievedContext,
+  recurringThemes = [],
+  canonicalContext = null
+}) {
   const input = [
     {
       role: "system",
@@ -64,6 +70,22 @@ function buildInputMessages({ content, interpretation, retrievedContext, recurri
         "Use these only for reflection-oriented replies when directly helpful.",
         "Be careful and non-certain: say \"you've returned to this tension several times\" rather than making hidden-truth, mystical, symbolic, or diagnostic claims.",
         "Do not over-psychoanalyze or force a pattern."
+      ].join(" ")
+    });
+  }
+
+  if (canonicalContext?.canonical_mode && canonicalContext.canonical_mode !== "NONE") {
+    const modeGuidance = canonicalContext.canonical_mode === "DIRECT"
+      ? "Direct scripture or doctrinal grounding is allowed only if it naturally answers the user. Do not quote scripture unless it is clearly useful and you can keep it brief."
+      : "Use only subtle spiritual orientation language. Do not quote scripture or introduce explicit doctrinal claims.";
+
+    input.push({
+      role: "system",
+      content: [
+        `Canonical context: ${JSON.stringify(canonicalContext)}`,
+        modeGuidance,
+        "Guardrails: never pretend revelation; never claim divine authority; distinguish interpretation from doctrine; avoid manipulative spirituality; avoid forced scripture injection.",
+        "Aim for natural spiritual orientation, not religious performance."
       ].join(" ")
     });
   }
@@ -117,15 +139,23 @@ async function generateReply({
   interpretation,
   ctx,
   retrievedContext = null,
-  recurringThemes = []
+  recurringThemes = [],
+  canonicalContext = null
 }) {
   const client = getClient();
-  const input = buildInputMessages({ content, interpretation, retrievedContext, recurringThemes });
+  const input = buildInputMessages({
+    content,
+    interpretation,
+    retrievedContext,
+    recurringThemes,
+    canonicalContext
+  });
 
   if (ctx) {
     ctx.final_prompt = input;
     ctx.retrieved_context = retrievedContext;
     ctx.recurring_themes = recurringThemes;
+    ctx.canonical_context = canonicalContext;
   }
 
   if (!client) {
@@ -133,7 +163,8 @@ async function generateReply({
       text: fallbackReply(content, interpretation),
       final_prompt: input,
       retrieved_context: retrievedContext,
-      recurring_themes: recurringThemes
+      recurring_themes: recurringThemes,
+      canonical_context: canonicalContext
     };
   }
 
@@ -157,7 +188,8 @@ async function generateReply({
       openai_response_id: response?.id,
       final_prompt: input,
       retrieved_context: retrievedContext,
-      recurring_themes: recurringThemes
+      recurring_themes: recurringThemes,
+      canonical_context: canonicalContext
     };
   }
 
@@ -172,7 +204,8 @@ async function generateReply({
       cleaned_text_length: 0,
       final_prompt: input,
       retrieved_context: retrievedContext,
-      recurring_themes: recurringThemes
+      recurring_themes: recurringThemes,
+      canonical_context: canonicalContext
     };
   }
 
@@ -183,7 +216,8 @@ async function generateReply({
     cleaned_text_length: text.length,
     final_prompt: input,
     retrieved_context: retrievedContext,
-    recurring_themes: recurringThemes
+    recurring_themes: recurringThemes,
+    canonical_context: canonicalContext
   };
 }
 

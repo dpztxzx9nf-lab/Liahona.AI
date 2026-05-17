@@ -21,6 +21,7 @@ const {
 } = require("../../interpretive/classifyMessage");
 const { checkResponseCoherence } = require("../../execution/coherenceCheck");
 const { synthesizeRecurringThemes } = require("../../continuity/themeSynthesis");
+const { detectCanonicalContext } = require("../../canonical/grounding");
 
 function isIgnoredMessage(message, clientUserId) {
   if (!message?.author) {
@@ -159,6 +160,7 @@ async function processMessage(message, { clientUserId, ports }) {
   });
 
   let interpretation = ports.interpretive.interpret(message);
+  const directQuestion = directlyAsksLiahonaQuestion(message, clientUserId);
 
   if (shouldStoreWithoutReply({ classification, message, clientUserId, interpretation })) {
     const storedEntry = await storeContinuityEntry({
@@ -188,6 +190,11 @@ async function processMessage(message, { clientUserId, ports }) {
   interpretation = applyChannelSilence(message, interpretation, clientUserId);
   interpretation = applyForumThrottle(message, interpretation, clientUserId);
   const deliveryStyle = ports.projection.chooseDeliveryStyle(message);
+  const canonicalContext = detectCanonicalContext({
+    content: message.content,
+    classification,
+    directQuestion
+  });
 
   logDiagnostic("INTERPRETATION_RESULT", {
     ...correlation(),
@@ -198,6 +205,7 @@ async function processMessage(message, { clientUserId, ports }) {
     needsLiveSource: interpretation.needsLiveSource,
     shouldRespond: interpretation.shouldRespond,
     responseReason: interpretation.responseReason,
+    canonical_context: canonicalContext,
     deliveryStyle
   });
 
@@ -217,6 +225,7 @@ async function processMessage(message, { clientUserId, ports }) {
   let reply;
   let retrievedContext = null;
   let recurringThemes = [];
+  let canonical_context = canonicalContext;
   let finalPrompt = null;
   let generatedResponse = null;
   const generationStartedAt = Date.now();
@@ -239,12 +248,14 @@ async function processMessage(message, { clientUserId, ports }) {
       interpretation,
       ctx,
       retrievedContext,
-      recurringThemes
+      recurringThemes,
+      canonicalContext: canonical_context
     });
 
     finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
     retrievedContext = generation?.retrieved_context ?? retrievedContext;
     recurringThemes = generation?.recurring_themes ?? recurringThemes;
+    canonical_context = generation?.canonical_context ?? canonical_context;
 
     if (generation?.openai_response_id) {
       ctx.openai_response_id = generation.openai_response_id;
@@ -263,6 +274,7 @@ async function processMessage(message, { clientUserId, ports }) {
       classification,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
+      canonical_context,
       final_prompt: finalPrompt,
       generated_response: generatedResponse
     });
@@ -280,6 +292,7 @@ async function processMessage(message, { clientUserId, ports }) {
     finalPrompt = finalPrompt || ctx.final_prompt || null;
     retrievedContext = ctx.retrieved_context ?? retrievedContext;
     recurringThemes = ctx.recurring_themes ?? recurringThemes;
+    canonical_context = ctx.canonical_context ?? canonical_context;
 
     logDiagnostic("MODEL_TRACE", {
       ...correlation(),
@@ -287,6 +300,7 @@ async function processMessage(message, { clientUserId, ports }) {
       classification,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
+      canonical_context,
       final_prompt: finalPrompt,
       generated_response: null,
       errorMessage: error.message
@@ -323,6 +337,7 @@ async function processMessage(message, { clientUserId, ports }) {
       classification,
       retrieved_context: retrievedContext,
       recurring_themes: recurringThemes,
+      canonical_context,
       final_prompt: finalPrompt,
       generated_response: reply,
       coherence
