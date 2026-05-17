@@ -20,6 +20,7 @@ const {
   isQuestionLike
 } = require("../../interpretive/classifyMessage");
 const { checkResponseCoherence } = require("../../execution/coherenceCheck");
+const { synthesizeRecurringThemes } = require("../../continuity/themeSynthesis");
 
 function isIgnoredMessage(message, clientUserId) {
   if (!message?.author) {
@@ -67,6 +68,27 @@ function shouldStoreWithoutReply({ classification, message, clientUserId, interp
   return storableClassification &&
     interpretation.intent !== "high-risk" &&
     !directlyAsksLiahonaQuestion(message, clientUserId);
+}
+
+function isDeeperPersonalDiscussion(content) {
+  return /\b(i|me|my|myself)\b/i.test(content || "") &&
+    /\b(meaning|purpose|faith|identity|fear|afraid|worried|anxious|relationship|family|growth|becoming|trying to understand|help me process)\b/i.test(content || "");
+}
+
+function shouldSynthesizeThemes({ classification, message, clientUserId, interpretation }) {
+  if (classification === MESSAGE_CLASSIFICATIONS.REFLECTION) {
+    return true;
+  }
+
+  if (
+    classification === MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY &&
+    directlyAsksLiahonaQuestion(message, clientUserId)
+  ) {
+    return true;
+  }
+
+  return interpretation.intent === "reflective" ||
+    isDeeperPersonalDiscussion(message.content);
 }
 
 async function retrieveContext({ message, ports, classification, interpretation, ctx }) {
@@ -194,6 +216,7 @@ async function processMessage(message, { clientUserId, ports }) {
 
   let reply;
   let retrievedContext = null;
+  let recurringThemes = [];
   let finalPrompt = null;
   let generatedResponse = null;
   const generationStartedAt = Date.now();
@@ -207,15 +230,21 @@ async function processMessage(message, { clientUserId, ports }) {
       ctx
     });
 
+    if (shouldSynthesizeThemes({ classification, message, clientUserId, interpretation })) {
+      recurringThemes = synthesizeRecurringThemes(retrievedContext);
+    }
+
     const generation = await ports.interpretive.generate({
       content: message.content,
       interpretation,
       ctx,
-      retrievedContext
+      retrievedContext,
+      recurringThemes
     });
 
     finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
     retrievedContext = generation?.retrieved_context ?? retrievedContext;
+    recurringThemes = generation?.recurring_themes ?? recurringThemes;
 
     if (generation?.openai_response_id) {
       ctx.openai_response_id = generation.openai_response_id;
@@ -233,6 +262,7 @@ async function processMessage(message, { clientUserId, ports }) {
       original_message: message.content || "",
       classification,
       retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes,
       final_prompt: finalPrompt,
       generated_response: generatedResponse
     });
@@ -249,12 +279,14 @@ async function processMessage(message, { clientUserId, ports }) {
   } catch (error) {
     finalPrompt = finalPrompt || ctx.final_prompt || null;
     retrievedContext = ctx.retrieved_context ?? retrievedContext;
+    recurringThemes = ctx.recurring_themes ?? recurringThemes;
 
     logDiagnostic("MODEL_TRACE", {
       ...correlation(),
       original_message: message.content || "",
       classification,
       retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes,
       final_prompt: finalPrompt,
       generated_response: null,
       errorMessage: error.message
@@ -290,6 +322,7 @@ async function processMessage(message, { clientUserId, ports }) {
       original_message: message.content || "",
       classification,
       retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes,
       final_prompt: finalPrompt,
       generated_response: reply,
       coherence

@@ -41,7 +41,7 @@ function buildSystemPrompt(interpretation) {
   ].filter(Boolean).join(" ");
 }
 
-function buildInputMessages({ content, interpretation, retrievedContext }) {
+function buildInputMessages({ content, interpretation, retrievedContext, recurringThemes = [] }) {
   const input = [
     {
       role: "system",
@@ -53,6 +53,18 @@ function buildInputMessages({ content, interpretation, retrievedContext }) {
     input.push({
       role: "system",
       content: `Retrieved context: ${JSON.stringify(retrievedContext)}`
+    });
+  }
+
+  if (Array.isArray(recurringThemes) && recurringThemes.length > 0) {
+    input.push({
+      role: "system",
+      content: [
+        `Recurring themes: ${JSON.stringify(recurringThemes)}`,
+        "Use these only for reflection-oriented replies when directly helpful.",
+        "Be careful and non-certain: say \"you've returned to this tension several times\" rather than making hidden-truth, mystical, symbolic, or diagnostic claims.",
+        "Do not over-psychoanalyze or force a pattern."
+      ].join(" ")
     });
   }
 
@@ -100,20 +112,28 @@ async function waitForCompletedResponse(client, response) {
   return current;
 }
 
-async function generateReply({ content, interpretation, ctx, retrievedContext = null }) {
+async function generateReply({
+  content,
+  interpretation,
+  ctx,
+  retrievedContext = null,
+  recurringThemes = []
+}) {
   const client = getClient();
-  const input = buildInputMessages({ content, interpretation, retrievedContext });
+  const input = buildInputMessages({ content, interpretation, retrievedContext, recurringThemes });
 
   if (ctx) {
     ctx.final_prompt = input;
     ctx.retrieved_context = retrievedContext;
+    ctx.recurring_themes = recurringThemes;
   }
 
   if (!client) {
     return {
       text: fallbackReply(content, interpretation),
       final_prompt: input,
-      retrieved_context: retrievedContext
+      retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes
     };
   }
 
@@ -136,7 +156,8 @@ async function generateReply({ content, interpretation, ctx, retrievedContext = 
       text: fallbackReply(content, interpretation),
       openai_response_id: response?.id,
       final_prompt: input,
-      retrieved_context: retrievedContext
+      retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes
     };
   }
 
@@ -150,7 +171,8 @@ async function generateReply({ content, interpretation, ctx, retrievedContext = 
       raw_generation_text_length: rawText.length,
       cleaned_text_length: 0,
       final_prompt: input,
-      retrieved_context: retrievedContext
+      retrieved_context: retrievedContext,
+      recurring_themes: recurringThemes
     };
   }
 
@@ -160,7 +182,8 @@ async function generateReply({ content, interpretation, ctx, retrievedContext = 
     raw_generation_text_length: rawText.length,
     cleaned_text_length: text.length,
     final_prompt: input,
-    retrieved_context: retrievedContext
+    retrieved_context: retrievedContext,
+    recurring_themes: recurringThemes
   };
 }
 
