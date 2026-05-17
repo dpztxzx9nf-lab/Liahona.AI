@@ -669,98 +669,352 @@ a {
 }
 
 @media (max-width: 760px) {
-  .artifact-system {
+  html,
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  body {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .void-interface {
+    display: block;
     min-height: 100svh;
-    padding: 86px 12px 202px;
+    overflow: visible;
+  }
+
+  .artifact-system {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    min-height: 100svh;
+    padding: 18px 14px 34px;
     transform: none;
   }
 
   .identity {
-    top: 14px;
-    left: 12px;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    order: 1;
+    align-self: stretch;
+    max-width: none;
+    padding-right: 88px;
   }
 
   .identity h1 {
-    font-size: clamp(2.1rem, 12vw, 3.7rem);
+    font-size: clamp(2.45rem, 13vw, 4.1rem);
   }
 
   .identity span {
-    max-width: 16rem;
-    font-size: 0.82rem;
+    max-width: 20rem;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    line-height: 1.48;
   }
 
   .artifact-core {
-    width: min(98vw, 540px);
+    order: 2;
+    width: min(92vw, 480px);
+    margin-top: clamp(30px, 8vh, 64px);
+    margin-bottom: clamp(22px, 6vh, 46px);
   }
 
   .state-ring {
+    order: 4;
     position: relative;
     inset: auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
-    width: min(100%, 23rem);
+    gap: 9px;
+    width: min(100%, 24rem);
     aspect-ratio: auto;
-    margin-top: -18px;
+    margin-top: 14px;
     transform: none;
   }
 
   .state-ring button {
     position: static;
     transform: none !important;
-    min-height: 34px;
-    padding: 7px 10px;
-    font-size: 0.78rem;
+    min-height: 38px;
+    padding: 8px 11px;
+    font-size: 0.8rem;
   }
 
   .transmission {
-    right: 12px;
-    bottom: 12px;
-    width: calc(100vw - 24px);
-    max-height: 168px;
-    overflow-y: auto;
+    position: relative;
+    order: 6;
+    right: auto;
+    bottom: auto;
+    width: min(100%, 31rem);
+    max-height: none;
+    margin-top: 14px;
+    padding: 12px 14px 12px 18px;
+    background:
+      linear-gradient(145deg, rgba(139, 222, 212, 0.045), transparent 48%),
+      rgba(4, 7, 8, 0.58);
+    border-color: rgba(139, 222, 212, 0.15);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.36);
+    overflow: visible;
+  }
+
+  .transmission-kicker {
+    font-size: 0.66rem;
+  }
+
+  .transmission h2 {
+    margin-bottom: 6px;
+    font-size: clamp(1rem, 5.4vw, 1.28rem);
+  }
+
+  .transmission p:last-child {
+    font-size: 0.8rem;
+    line-height: 1.42;
   }
 
   .ecosystem-map {
-    left: 12px;
-    right: 12px;
-    bottom: 194px;
-    width: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    position: relative;
+    order: 5;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: min(100%, 31rem);
+    margin-top: 14px;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .ecosystem-map article {
-    padding: 8px;
+    padding: 9px 11px;
+    background:
+      linear-gradient(145deg, rgba(139, 222, 212, 0.045), transparent 58%),
+      rgba(3, 6, 7, 0.48);
+    border-color: rgba(244, 239, 229, 0.08);
   }
 
   .ecosystem-map span {
-    font-size: 0.62rem;
+    font-size: 0.65rem;
   }
 
   .ecosystem-map p {
-    font-size: 0.72rem;
+    font-size: 0.76rem;
+    line-height: 1.38;
   }
 
   .source-orbit {
-    left: 12px;
-    right: 12px;
-    bottom: 308px;
-    max-width: none;
-    justify-content: center;
+    position: relative;
+    order: 3;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    align-self: stretch;
+    max-width: 100%;
+    margin-top: 0;
+    padding: 0 2px 4px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .source-orbit::-webkit-scrollbar {
+    display: none;
+  }
+
+  .source-orbit a {
+    flex: 0 0 auto;
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    color: rgba(244, 239, 229, 0.6);
+    background: rgba(3, 6, 7, 0.42);
+    border-color: rgba(244, 239, 229, 0.1);
   }
 
   .continuity-trigger {
-    top: 14px;
-    right: 12px;
+    top: 18px;
+    right: 16px;
+    min-height: 38px;
   }
 
   .continuity-device {
-    top: 58px;
-    right: 12px;
-    width: calc(100vw - 24px);
-    max-height: min(54vh, 420px);
+    position: fixed;
+    top: 68px;
+    right: 14px;
+    width: calc(100vw - 28px);
+    max-height: min(62vh, 460px);
     overflow-y: auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .artifact-system {
+    padding-top: 18px;
+    padding-bottom: 34px;
+  }
+
+  .identity {
+    padding-right: 82px;
+  }
+
+  .identity span {
+    max-width: 15.5rem;
+    font-size: 0.82rem;
+  }
+
+  .artifact-core {
+    width: min(100vw, 410px);
+    margin-top: clamp(36px, 9vh, 70px);
+    margin-bottom: clamp(24px, 7vh, 52px);
+  }
+
+  .ecosystem-map {
+    gap: 7px;
+  }
+
+  .ecosystem-map article {
+    padding: 9px 11px;
+  }
+
+  .ecosystem-map p {
+    font-size: 0.78rem;
+  }
+
+  .source-orbit {
+    margin-left: -2px;
+    margin-right: -2px;
+  }
+
+  .transmission {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 820px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .void-interface {
+    display: block !important;
+    min-height: 100svh !important;
+    overflow: visible !important;
+  }
+
+  .artifact-system {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    height: auto !important;
+    min-height: 100svh !important;
+    padding: 18px 14px calc(34px + env(safe-area-inset-bottom)) !important;
+    transform: none !important;
+  }
+
+  .identity {
+    position: relative !important;
+    inset: auto !important;
+    order: 1 !important;
+    align-self: stretch !important;
+    padding-right: 86px !important;
+  }
+
+  .artifact-core {
+    position: relative !important;
+    order: 2 !important;
+    width: min(94vw, 440px) !important;
+    margin: clamp(42px, 9vh, 76px) auto clamp(30px, 7vh, 58px) !important;
+    transform: none !important;
+  }
+
+  .source-orbit {
+    position: relative !important;
+    inset: auto !important;
+    order: 3 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-self: stretch !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 2px 6px !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .source-orbit::-webkit-scrollbar {
+    display: none;
+  }
+
+  .source-orbit a {
+    position: static !important;
+    flex: 0 0 auto !important;
+    min-height: 30px !important;
+    padding: 6px 10px !important;
+    font-size: 0.7rem !important;
+    color: rgba(244, 239, 229, 0.62) !important;
+    background: rgba(3, 6, 7, 0.42) !important;
+    border-color: rgba(244, 239, 229, 0.1) !important;
+  }
+
+  .state-ring {
+    position: relative !important;
+    inset: auto !important;
+    order: 4 !important;
+    width: min(100%, 24rem) !important;
+    aspect-ratio: auto !important;
+    margin: 12px auto 0 !important;
+    transform: none !important;
+  }
+
+  .state-ring button {
+    position: static !important;
+    transform: none !important;
+  }
+
+  .ecosystem-map {
+    position: relative !important;
+    inset: auto !important;
+    order: 5 !important;
+    width: min(100%, 31rem) !important;
+    margin: 14px auto 0 !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .ecosystem-map article {
+    padding: 9px 11px !important;
+  }
+
+  .transmission {
+    position: relative !important;
+    inset: auto !important;
+    order: 6 !important;
+    width: min(100%, 31rem) !important;
+    margin: 14px auto 0 !important;
+    padding: 11px 13px 11px 17px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  .transmission h2 {
+    font-size: clamp(0.98rem, 5vw, 1.22rem) !important;
+  }
+
+  .transmission p:last-child {
+    font-size: 0.78rem !important;
+    line-height: 1.4 !important;
   }
 }
