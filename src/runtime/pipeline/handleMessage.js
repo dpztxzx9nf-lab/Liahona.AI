@@ -403,6 +403,13 @@ async function processMessage(message, { clientUserId, ports }) {
       success: false,
       deliveryStyle,
       channelId: message.channel?.id,
+      outbound_method: error.outbound_method,
+      attempted_outbound_method: error.attempted_outbound_method,
+      channel_type: error.channel_type,
+      is_thread: error.is_thread,
+      is_forum_post: error.is_forum_post,
+      archived: error.archived,
+      locked: error.locked,
       errorCode: error.code,
       errorMessage: error.message,
       latencyMs: Date.now() - deliveryStartedAt
@@ -416,6 +423,18 @@ async function processMessage(message, { clientUserId, ports }) {
       ...correlation(),
       reason: deliveryResult.reason,
       delivery_count: deliveryResult.delivery_count || ctx.delivery_count,
+      outbound_method: deliveryResult.outbound_method,
+      attempted_outbound_method: deliveryResult.attempted_outbound_method,
+      channel_type: deliveryResult.channel_type,
+      is_thread: deliveryResult.is_thread,
+      is_forum_post: deliveryResult.is_forum_post,
+      archived: deliveryResult.archived,
+      locked: deliveryResult.locked,
+      fallback_used: deliveryResult.fallback_used,
+      fallback_reason: deliveryResult.fallback_reason,
+      permission_error_suppressed: deliveryResult.permission_error_suppressed,
+      error_code: deliveryResult.error_code,
+      error_message: deliveryResult.error_message,
       raw_generation_text_length: deliveryResult.raw_generation_text_length ?? ctx.raw_generation_text_length,
       cleaned_text_length: deliveryResult.cleaned_text_length ?? ctx.cleaned_text_length,
       final_projection_text_length: deliveryResult.final_projection_text_length ?? 0
@@ -426,12 +445,42 @@ async function processMessage(message, { clientUserId, ports }) {
 
   terminateInvocation(ctx, "delivered");
 
+  if (deliveryResult?.fallback_used) {
+    logDiagnostic("PROJECTION_FALLBACK", {
+      ...correlation(),
+      success: true,
+      reason: deliveryResult.fallback_reason,
+      outbound_method: deliveryResult.outbound_method,
+      attempted_outbound_method: deliveryResult.attempted_outbound_method,
+      channel_id: deliveryResult.channel_id || message.channel?.id,
+      channel_name: deliveryResult.channel_name,
+      channel_type: deliveryResult.channel_type,
+      is_thread: deliveryResult.is_thread,
+      is_forum_post: deliveryResult.is_forum_post,
+      archived: deliveryResult.archived,
+      locked: deliveryResult.locked,
+      initial_error_code: deliveryResult.initial_error_code,
+      initial_error_message: deliveryResult.initial_error_message,
+      outbound_message_id: deliveryResult.outbound_message_id || ctx.outbound_message_id
+    });
+  }
+
   logDiagnostic("DELIVERY_RESULT", {
     ...correlation(),
     success: true,
     outbound_message_id: deliveryResult?.outbound_message_id || ctx.outbound_message_id,
     deliveryStyle: deliveryResult?.deliveryStyle || deliveryStyle,
     channelId: message.channel?.id,
+    outbound_method: deliveryResult?.outbound_method,
+    attempted_outbound_method: deliveryResult?.attempted_outbound_method,
+    channel_type: deliveryResult?.channel_type,
+    is_thread: deliveryResult?.is_thread,
+    is_forum_post: deliveryResult?.is_forum_post,
+    archived: deliveryResult?.archived,
+    locked: deliveryResult?.locked,
+    fallback_used: deliveryResult?.fallback_used,
+    fallback_reason: deliveryResult?.fallback_reason,
+    permission_error_suppressed: deliveryResult?.permission_error_suppressed,
     raw_generation_text_length: deliveryResult?.raw_generation_text_length ?? ctx.raw_generation_text_length,
     cleaned_text_length: deliveryResult?.cleaned_text_length ?? ctx.cleaned_text_length,
     final_projection_text_length: deliveryResult?.final_projection_text_length ?? 0,
