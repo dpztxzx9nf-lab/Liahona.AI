@@ -6,6 +6,20 @@ Today, the active runtime is a Node.js Discord bot with an Express keepalive end
 
 This repository also contains active governance documents in `core/`, supporting implementation docs in `docs/`, early continuity/source scaffolding in `src/`, and historical reference material in `legacy-archive/`.
 
+## Operational Summary
+
+| Item | Value |
+| --- | --- |
+| Entrypoint | `index.js` |
+| Development command | `npm run dev` |
+| Production command | `npm start` |
+| PM2 process | `liahona` |
+| PM2 ecosystem file | `ecosystem.config.cjs` |
+| Default port | `3000`, unless `PORT` is set |
+| Runtime logs | `logs/runtime.jsonl` |
+
+Use `docs/OPERATIONS.md` for PM2 layout, Windows reboot persistence, verification commands, and handoff notes.
+
 ## Current Scope
 
 Implemented today:

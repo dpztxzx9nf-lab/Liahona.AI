@@ -3,3 +3,6 @@ node_modules
 data/*.db
 data/*.jsonl
 logs/*.jsonl
+.obsidian/
+.verb.md
+*.canvas
