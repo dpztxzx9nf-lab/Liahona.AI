@@ -118,12 +118,12 @@ function renderPublicContinuityPage() {
   <header>
     <div class="eyebrow">Public Continuity</div>
     <h1>Liahona.AI</h1>
-    <p class="lead">An orienting system under development: KINDEX grounds human continuity; Liahona orients, reflects, and points outward toward source-grounded understanding.</p>
+    <p class="lead">A quiet orientation layer under development: KINDEX grounds human continuity; Liahona reflects, remembers selectively, and points outward toward source-grounded understanding.</p>
   </header>
 
   <section>
     <h2>1. What Liahona Is</h2>
-    <p>Liahona.AI is currently a lightweight Discord/OpenAI runtime, a public projection direction, and a set of governance and continuity documents. It is not divine, prophetic, authoritative, or a replacement for scripture, conscience, community, or human judgment.</p>
+    <p>Liahona.AI is currently a lightweight Discord/OpenAI runtime, a public artifact direction, and a set of governance and continuity documents. It is not divine, prophetic, authoritative, operational command software, or a replacement for scripture, conscience, community, or human judgment.</p>
   </section>
 
   <section>
@@ -147,7 +147,7 @@ function renderPublicContinuityPage() {
       </div>
       <div class="split-card">
         <h3>Discord Runtime</h3>
-        <p>The live runtime is a restrained Discord/OpenAI bot with interpretation, policy gates, generation, delivery, and diagnostics.</p>
+        <p>The live runtime is a restrained Discord/OpenAI bot with interpretation, policy gates, generation, delivery, and private diagnostics.</p>
       </div>
       <div class="split-card">
         <h3>Private Dev Portal</h3>
@@ -164,7 +164,7 @@ function renderPublicContinuityPage() {
 
   <section>
     <h2>5. Runtime vs Artifact</h2>
-    <p>The runtime currently answers and delivers messages. The artifact direction explores how orientation might feel as a public experience. They are related, but not the same system.</p>
+    <p>The runtime currently answers and delivers messages. The artifact direction explores how orientation might feel as a public experience. They are related, but not the same layer.</p>
     <p>The runtime must stay understandable and governed. The artifact must stay public-safe, restrained, and source-humble.</p>
   </section>
 
@@ -194,7 +194,7 @@ function renderPublicContinuityPage() {
 
   <section class="notice">
     <h2>8. Restraint And Governance</h2>
-    <p>Liahona should preserve clarity over complexity, grounding over performance, continuity over noise, and human judgment over automation.</p>
+    <p>Liahona should preserve clarity over complexity, grounding over performance, continuity over noise, reflection over productivity, and human judgment over automation.</p>
     <p class="muted">This public page intentionally does not expose logs, IDs, raw diagnostics, private Discord content, environment details, admin controls, or private operational notes.</p>
   </section>
 </main>
