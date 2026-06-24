@@ -1,10 +1,12 @@
 # Liahona.AI
 
-This repository currently contains a lightweight Discord/OpenAI runtime for Liahona.AI, plus governance, ontology, continuity, and source documentation.
+This repository contains the Liahona.AI orientation layer: a quiet symbolic interface direction, source-grounded governance, curated continuity checkpoints, and a lightweight Discord/OpenAI runtime that currently delivers the experience.
 
 Today, the active runtime is a Node.js Discord bot with an Express keepalive endpoint, OpenAI response generation, message interpretation, delivery guards, channel/forum policy, and diagnostic logging.
 
 This repository also contains active governance documents in `core/`, supporting implementation docs in `docs/`, early continuity/source scaffolding in `src/`, and historical reference material in `legacy-archive/`.
+
+Liahona should remain distinct from the rest of the ThinkCore ecosystem. ThinkCore is the public lab/studio identity. CCC is the command-center and telemetry layer. Liahona is the reflective artifact and orientation surface; it should not become productivity software or an operations dashboard.
 
 ## Operational Summary
 

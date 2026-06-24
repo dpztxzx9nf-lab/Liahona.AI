@@ -8,12 +8,16 @@ For governing ontology, source principles, continuity philosophy, and system bou
 
 This repository is currently a lightweight Discord/OpenAI runtime with supporting governance, documentation, source manifests, and continuity scaffolding.
 
+Its product role is narrower than ThinkCore and quieter than CCC: Liahona is an orientation layer and symbolic artifact surface, not the umbrella ecosystem identity or the operational command center.
+
 It is not yet:
 - a full artifact-first frontend UI
 - a semantic memory system
 - a SQLite-backed persistence system
 - a source-ingestion or retrieval system
 - a durable continuity recall system
+- a productivity dashboard
+- a telemetry command surface
 
 ## Five-Layer Model
 
