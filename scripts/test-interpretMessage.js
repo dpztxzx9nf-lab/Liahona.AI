@@ -2,6 +2,7 @@ const assert = require("assert");
 const {
   interpretMessage,
   classifyIntent,
+  classifyProjectStatusQuestion,
   classifyNeedsLiveSource
 } = require("../src/interpretive/interpretMessage");
 const {
@@ -49,8 +50,28 @@ for (const input of liveCases) {
   );
 }
 
+const projectStatusCases = [
+  "What's new with your code?",
+  "Any updates on your architecture?",
+  "What is Liahona?"
+];
+
+for (const input of projectStatusCases) {
+  const result = interpretMessage(input);
+  assert.strictEqual(result.intent, "project_status", `${input} should be project status`);
+  assert.strictEqual(result.needsLiveSource, false, `${input} should not need live source`);
+  assert.strictEqual(result.needsProjectStatus, true, `${input} should need project status`);
+  assert.strictEqual(classifyProjectStatusQuestion(input), true, `${input} should match project status`);
+  assert.strictEqual(
+    fallbackReply(input, result).includes("live repo access"),
+    true,
+    `${input} should get honest repo-access fallback`
+  );
+}
+
 assert.strictEqual(classifyIntent("Hello?"), "social");
 assert.strictEqual(classifyNeedsLiveSource("What is game theory?"), false);
+assert.strictEqual(classifyProjectStatusQuestion("What's new with Trump?"), false);
 assert.strictEqual(
   classifyMessage("Today I noticed I was calmer after prayer."),
   MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY
