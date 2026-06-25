@@ -3,12 +3,21 @@ const { createSourceRecord } = require("../schema");
 
 const liveSources = [
   createSourceRecord({
+    id: "google",
+    title: "Google Programmable Search",
+    layer: SOURCE_LAYERS.LIVE,
+    authorityLevel: "web-news-discovery-reference",
+    updateFrequency: "continuous",
+    retrievalMode: "adapter-stub",
+    trustNotes: "Broad web/news discovery only; cite and verify results independently."
+  }),
+  createSourceRecord({
     id: "x",
     title: "X",
     layer: SOURCE_LAYERS.LIVE,
     authorityLevel: "news-social-reference",
     updateFrequency: "continuous",
-    retrievalMode: "not-implemented",
+    retrievalMode: "adapter-stub",
     trustNotes: "Live social signal only; verify independently."
   }),
   createSourceRecord({
