@@ -19,7 +19,8 @@
     "test:themes": "node scripts/test-themeSynthesis.js",
     "test:canonical": "node scripts/test-canonicalGrounding.js",
     "test:canonical-sources": "node scripts/test-canonicalSources.js",
-    "test:projection": "node scripts/test-discordProjection.js"
+    "test:projection": "node scripts/test-discordProjection.js",
+    "test:diagnostics": "node scripts/test-diagnosticsRedaction.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
