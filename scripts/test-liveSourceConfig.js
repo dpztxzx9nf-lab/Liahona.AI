@@ -28,16 +28,16 @@ async function run() {
   assert.strictEqual(defaultConfig.maxResults, 5);
   assert.strictEqual(defaultConfig.timeoutMs, 3000);
   assert.deepStrictEqual(defaultConfig.missingCredentials.google, [
-    "GOOGLE_API_KEY",
-    "GOOGLE_CSE_ID"
+    "GOOGLE_SEARCH_API_KEY",
+    "GOOGLE_SEARCH_ENGINE_ID"
   ]);
   assert.deepStrictEqual(defaultConfig.missingCredentials.x, ["X_BEARER_TOKEN"]);
 
   const disabledWithCredentials = getLiveSourceConfig({
     LIVE_SOURCES_ENABLED: "false",
     GOOGLE_SEARCH_ENABLED: "true",
-    GOOGLE_API_KEY: SECRET_GOOGLE_KEY,
-    GOOGLE_CSE_ID: "google-cse-id",
+    GOOGLE_SEARCH_API_KEY: SECRET_GOOGLE_KEY,
+    GOOGLE_SEARCH_ENGINE_ID: "google-cse-id",
     X_SEARCH_ENABLED: "true",
     X_BEARER_TOKEN: SECRET_X_TOKEN
   });
@@ -72,6 +72,18 @@ async function run() {
   assertNoSecrets(disabledGoogleResult);
   assertNoSecrets(disabledXResult);
 
+  const configuredWithExistingGoogleNames = getLiveSourceConfig({
+    LIVE_SOURCES_ENABLED: "true",
+    GOOGLE_SEARCH_ENABLED: "true",
+    GOOGLE_SEARCH_API_KEY: SECRET_GOOGLE_KEY,
+    GOOGLE_SEARCH_ENGINE_ID: "google-cse-id"
+  });
+
+  assert.strictEqual(configuredWithExistingGoogleNames.googleCredentialsPresent, true);
+  assert.strictEqual(configuredWithExistingGoogleNames.googleConfigured, true);
+  assert.deepStrictEqual(configuredWithExistingGoogleNames.missingCredentials.google, []);
+  assertNoSecrets(configuredWithExistingGoogleNames);
+
   const missingGoogleCredentials = getLiveSourceConfig({
     LIVE_SOURCES_ENABLED: "true",
     GOOGLE_SEARCH_ENABLED: "true"
@@ -83,12 +95,23 @@ async function run() {
 
   assert.strictEqual(missingGoogleCredentials.googleConfigured, false);
   assert.deepStrictEqual(missingGoogleCredentials.missingCredentials.google, [
-    "GOOGLE_API_KEY",
-    "GOOGLE_CSE_ID"
+    "GOOGLE_SEARCH_API_KEY",
+    "GOOGLE_SEARCH_ENGINE_ID"
   ]);
   assert.strictEqual(missingGoogleResult.status, "missing_credentials");
   assert.strictEqual(missingGoogleResult.reason, "GOOGLE_CREDENTIALS_MISSING");
   assert.deepStrictEqual(missingGoogleResult.results, []);
+
+  const legacyGoogleCredentials = getLiveSourceConfig({
+    LIVE_SOURCES_ENABLED: "true",
+    GOOGLE_SEARCH_ENABLED: "true",
+    GOOGLE_API_KEY: SECRET_GOOGLE_KEY,
+    GOOGLE_CSE_ID: "legacy-google-cse-id"
+  });
+
+  assert.strictEqual(legacyGoogleCredentials.googleCredentialsPresent, true);
+  assert.strictEqual(legacyGoogleCredentials.googleConfigured, true);
+  assert.deepStrictEqual(legacyGoogleCredentials.missingCredentials.google, []);
 
   const missingXCredentials = getLiveSourceConfig({
     LIVE_SOURCES_ENABLED: "true",
@@ -125,7 +148,7 @@ async function run() {
   const xSource = getLiveSourceById("x");
 
   assert.strictEqual(googleSource.layer, "live");
-  assert.strictEqual(googleSource.retrievalMode, "adapter-stub");
+  assert.strictEqual(googleSource.retrievalMode, "programmable-search-json-api");
   assert.strictEqual(xSource.layer, "live");
   assert.strictEqual(xSource.retrievalMode, "adapter-stub");
 

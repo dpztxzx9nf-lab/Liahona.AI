@@ -13,8 +13,8 @@ function googleEnv(overrides = {}) {
   return {
     LIVE_SOURCES_ENABLED: "true",
     GOOGLE_SEARCH_ENABLED: "true",
-    GOOGLE_API_KEY: SECRET_GOOGLE_KEY,
-    GOOGLE_CSE_ID: SECRET_CSE_ID,
+    GOOGLE_SEARCH_API_KEY: SECRET_GOOGLE_KEY,
+    GOOGLE_SEARCH_ENGINE_ID: SECRET_CSE_ID,
     LIVE_SOURCE_TIMEOUT_MS: "3000",
     LIVE_SOURCE_MAX_RESULTS: "5",
     ...overrides
@@ -89,8 +89,8 @@ async function run() {
   assert.strictEqual(missingCredentials.status, "missing_credentials");
   assert.strictEqual(missingCredentials.reason, "GOOGLE_CREDENTIALS_MISSING");
   assert.deepStrictEqual(missingCredentials.missingCredentials, [
-    "GOOGLE_API_KEY",
-    "GOOGLE_CSE_ID"
+    "GOOGLE_SEARCH_API_KEY",
+    "GOOGLE_SEARCH_ENGINE_ID"
   ]);
   assertNoSecrets(missingCredentials);
 
@@ -142,6 +142,31 @@ async function run() {
     provider: "google"
   });
   assertNoSecrets(success);
+
+  let legacyAliasUrl = null;
+  const legacyAlias = await searchGoogle({
+    query: "legacy alias event",
+    env: {
+      LIVE_SOURCES_ENABLED: "true",
+      GOOGLE_SEARCH_ENABLED: "true",
+      GOOGLE_API_KEY: SECRET_GOOGLE_KEY,
+      GOOGLE_CSE_ID: SECRET_CSE_ID
+    },
+    fetchFn: async (url) => {
+      legacyAliasUrl = url;
+      return createResponse({
+        body: {
+          items: makeItems(1)
+        }
+      });
+    },
+    now: () => new Date(FETCHED_AT)
+  });
+
+  assert.strictEqual(legacyAlias.status, "ok");
+  assert.strictEqual(legacyAliasUrl.searchParams.get("key"), SECRET_GOOGLE_KEY);
+  assert.strictEqual(legacyAliasUrl.searchParams.get("cx"), SECRET_CSE_ID);
+  assertNoSecrets(legacyAlias);
 
   const empty = await searchGoogle({
     query: "nothing found",

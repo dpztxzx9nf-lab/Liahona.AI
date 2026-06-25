@@ -2,6 +2,8 @@ const DEFAULT_TIMEOUT_MS = 3000;
 const DEFAULT_MAX_RESULTS = 5;
 const MAX_TIMEOUT_MS = 15000;
 const MAX_RESULTS = 25;
+const GOOGLE_API_KEY_ENV_NAMES = ["GOOGLE_SEARCH_API_KEY", "GOOGLE_API_KEY"];
+const GOOGLE_CSE_ID_ENV_NAMES = ["GOOGLE_SEARCH_ENGINE_ID", "GOOGLE_CSE_ID"];
 
 function parseBoolean(value, defaultValue = false) {
   if (value === undefined || value === null || value === "") {
@@ -39,22 +41,26 @@ function hasValue(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function hasAnyEnvValue(env, names) {
+  return names.some((name) => hasValue(env[name]));
+}
+
 function getLiveSourceConfig(env = process.env) {
   const liveSourcesEnabled = parseBoolean(env.LIVE_SOURCES_ENABLED, false);
   const googleSearchEnabled = parseBoolean(env.GOOGLE_SEARCH_ENABLED, false);
   const xSearchEnabled = parseBoolean(env.X_SEARCH_ENABLED, false);
-  const googleApiKeyPresent = hasValue(env.GOOGLE_API_KEY);
-  const googleCseIdPresent = hasValue(env.GOOGLE_CSE_ID);
+  const googleApiKeyPresent = hasAnyEnvValue(env, GOOGLE_API_KEY_ENV_NAMES);
+  const googleCseIdPresent = hasAnyEnvValue(env, GOOGLE_CSE_ID_ENV_NAMES);
   const xBearerTokenPresent = hasValue(env.X_BEARER_TOKEN);
   const googleMissingCredentials = [];
   const xMissingCredentials = [];
 
   if (!googleApiKeyPresent) {
-    googleMissingCredentials.push("GOOGLE_API_KEY");
+    googleMissingCredentials.push("GOOGLE_SEARCH_API_KEY");
   }
 
   if (!googleCseIdPresent) {
-    googleMissingCredentials.push("GOOGLE_CSE_ID");
+    googleMissingCredentials.push("GOOGLE_SEARCH_ENGINE_ID");
   }
 
   if (!xBearerTokenPresent) {
@@ -114,6 +120,8 @@ module.exports = {
   DEFAULT_MAX_RESULTS,
   MAX_TIMEOUT_MS,
   MAX_RESULTS,
+  GOOGLE_API_KEY_ENV_NAMES,
+  GOOGLE_CSE_ID_ENV_NAMES,
   getLiveSourceConfig,
   getLiveSourceConfigSummary,
   parseBoolean

@@ -1,12 +1,14 @@
 # Live Source Access Plan
 
-This document is planning only. It does not implement live API calls, add
-credentials, change Discord behavior, or enable source retrieval.
+This document tracks live-source access. Google Programmable Search is
+implemented behind environment flags and local credentials; X and direct AP /
+Reuters adapters remain planning items.
 
 ## Purpose
 
-Liahona should eventually answer current-information questions through a safe,
-read-only live-source layer instead of defaulting to the Reuters/AP fallback.
+Liahona answers current-information questions through a safe, read-only
+live-source layer when configured, instead of defaulting to the Reuters/AP
+fallback.
 
 Planned source roles:
 
@@ -18,7 +20,7 @@ Planned source roles:
 ## Non-Goals
 
 - Do not scrape websites, Google result pages, or X pages.
-- Do not add live web, Google, or X access in this planning PR.
+- Do not add scraping-based live web, Google result page, or X page access.
 - Do not store API keys or tokens in the repo.
 - Do not treat Google or X as canonical truth.
 - Do not make canonical, gospel, scripture, project, KINDEX, journal,
@@ -34,6 +36,8 @@ Google:
 - Planned path: Google Programmable Search / Custom Search JSON API.
 - Endpoint family: `https://customsearch.googleapis.com/customsearch/v1`.
 - Required inputs: API key and Programmable Search Engine ID.
+- Runtime variables: `GOOGLE_SEARCH_API_KEY` and
+  `GOOGLE_SEARCH_ENGINE_ID`.
 - Note: as of June 25, 2026, Google's Custom Search JSON API documentation says
   the product is closed to new customers and existing customers must transition
   by January 1, 2027. Implementation should confirm account eligibility or pick
@@ -104,7 +108,7 @@ The Google adapter should:
 
 - Use the official Programmable Search / Custom Search JSON API if available.
 - Make read-only `GET` requests.
-- Require `GOOGLE_API_KEY` and `GOOGLE_CSE_ID`.
+- Require `GOOGLE_SEARCH_API_KEY` and `GOOGLE_SEARCH_ENGINE_ID`.
 - Apply `LIVE_SOURCE_TIMEOUT_MS`.
 - Cap results with `LIVE_SOURCE_MAX_RESULTS`.
 - Return title, URL, source domain, timestamp when available, and a short
@@ -130,8 +134,8 @@ Live source access should be off unless explicitly enabled.
 
 - `LIVE_SOURCES_ENABLED`: global live-source gate.
 - `GOOGLE_SEARCH_ENABLED`: enables the Google adapter.
-- `GOOGLE_API_KEY`: Google API key.
-- `GOOGLE_CSE_ID`: Google Programmable Search Engine ID.
+- `GOOGLE_SEARCH_API_KEY`: Google API key.
+- `GOOGLE_SEARCH_ENGINE_ID`: Google Programmable Search Engine ID.
 - `X_SEARCH_ENABLED`: enables the X adapter.
 - `X_BEARER_TOKEN`: X API bearer token.
 - `LIVE_SOURCE_TIMEOUT_MS`: request timeout, with a conservative default.

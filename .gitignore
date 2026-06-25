@@ -8,3 +8,7 @@ logs/*.jsonl
 .verb.md
 *.canvas
 Liahona Hub.md
+
+.env.md
+
+env.md
