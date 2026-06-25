@@ -18,7 +18,7 @@ function getClient() {
 
 function buildStyleGuidance(interpretation) {
   if (interpretation.needsLiveSource) {
-    return "This asks about current or live events. You cannot access live news. Say that plainly in one or two sentences and point to Reuters or AP. Do not guess at current facts.";
+    return "This asks about current or live events. If live source context is not provided, say live source access is not enabled in this Discord context. Do not guess at current facts.";
   }
 
   if (interpretation.intent === "project_status") {
@@ -125,7 +125,7 @@ function fallbackReply(content, interpretation) {
   }
 
   if (interpretation.needsLiveSource) {
-    return "I can't see live news. For what's current, check Reuters or AP.";
+    return "I don't have live source access enabled in this Discord context.";
   }
 
   if (interpretation.intent === "project_status") {

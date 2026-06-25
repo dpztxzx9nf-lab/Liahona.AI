@@ -2,6 +2,7 @@ const assert = require("assert");
 const {
   interpretMessage,
   classifyProjectStatusQuestion,
+  classifyProtectedLiveSourceQuestion,
   classifyNeedsLiveSource
 } = require("../src/interpretive/interpretMessage");
 const {
@@ -65,6 +66,19 @@ function routeSnapshot(content) {
 
 const cases = [
   {
+    content: "What's new?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "question",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: false,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallback: ""
+    }
+  },
+  {
     content: "What's new with your code?",
     expected: {
       classification: MESSAGE_CLASSIFICATIONS.QUESTION,
@@ -104,6 +118,33 @@ const cases = [
       shouldRespondInUninvokedGuildChannel: false,
       fallbackIncludes: "journal",
       fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with #journal?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY,
+      intent: "project_status",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: true,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "journal",
+      fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with Jesus?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "question",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: false,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallback: ""
     }
   },
   {
@@ -158,7 +199,22 @@ const cases = [
       needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "Reuters"
+      fallbackIncludes: "live source access enabled",
+      fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "Any major headlines today?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "question",
+      needsLiveSource: true,
+      needsRetrieval: false,
+      needsProjectStatus: false,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "live source access enabled",
+      fallbackExcludes: "Reuters"
     }
   },
   {
@@ -171,7 +227,8 @@ const cases = [
       needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "Reuters"
+      fallbackIncludes: "live source access enabled",
+      fallbackExcludes: "Reuters"
     }
   },
   {
@@ -184,7 +241,8 @@ const cases = [
       needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "Reuters"
+      fallbackIncludes: "live source access enabled",
+      fallbackExcludes: "Reuters"
     }
   },
   {
@@ -259,6 +317,16 @@ for (const testCase of cases) {
 }
 
 assert.strictEqual(
+  classifyNeedsLiveSource("What's new?"),
+  false,
+  "bare what's-new wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProtectedLiveSourceQuestion("What's new?"),
+  true,
+  "bare what's-new wording should be protected as ambiguous"
+);
+assert.strictEqual(
   classifyNeedsLiveSource("What's new with your code?"),
   false,
   "project/status wording should not route through live-source detection"
@@ -289,6 +357,26 @@ assert.strictEqual(
   "internal journal/KINDEX wording should be guarded before live-source routing"
 );
 assert.strictEqual(
+  classifyNeedsLiveSource("What's new with #journal?"),
+  false,
+  "internal journal wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProtectedLiveSourceQuestion("What's new with #journal?"),
+  true,
+  "internal journal wording should be guarded before live-source routing"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("What's new with Jesus?"),
+  false,
+  "spiritual wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProtectedLiveSourceQuestion("What's new with Jesus?"),
+  true,
+  "spiritual wording should be guarded before live-source routing"
+);
+assert.strictEqual(
   classifyNeedsLiveSource("What's new with the gospel?"),
   false,
   "gospel/source wording should not route through live-source detection"
@@ -297,6 +385,11 @@ assert.strictEqual(
   classifyProjectStatusQuestion("What's new with the gospel?"),
   true,
   "gospel/source wording should be guarded before live-source routing"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("Any major headlines today?"),
+  true,
+  "public headline wording should use live-source detection"
 );
 assert.strictEqual(
   classifyNeedsLiveSource("What's happening in the news today?"),

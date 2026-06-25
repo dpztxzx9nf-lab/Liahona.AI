@@ -25,8 +25,22 @@ function classifyProjectStatusQuestion(content) {
   return hasAny(text, [
     /\b(liahona|your|you|the bot|this bot|runtime|code|repo|repository|system|project)\b.*\b(code|repo|repository|runtime|architecture|system|project|status|update|updates|changed|changes|new|latest|version|release|commit|commits)\b/,
     /\b(what['']?s new|what is new|any updates?|latest|current status|status update)\b.*\b(your code|the code|runtime|repo|repository|your architecture|the architecture|system architecture|project|liahona|the bot|this bot|kindex|#?journal|gospel|scripture|canonical|sources?|continuity)\b/,
+    /\b(what['']?s new|what is new|any updates?|latest|current status|status update)\b.*#journal\b/,
     /\b(what is|what['']?s|explain|describe)\s+liahona\b/,
     /\b(liahona)\b.*\b(what is|what['']?s|architecture|runtime|code|status|updates?)\b/
+  ]);
+}
+
+function classifyProtectedLiveSourceQuestion(content) {
+  const text = normalizeText(content);
+
+  if (/^what['']?s new\??$/.test(text) || /^what is new\??$/.test(text)) {
+    return true;
+  }
+
+  return hasAny(text, [
+    /\bwhat['']?s new\b.*(?:\bliahona\b|\bkindex\b|#journal\b|\bjournal\b|\bgospel\b|\bscripture\b|\bcanonical\b|\bsources?\b|\bcontinuity\b|\barchitecture\b|\bruntime\b|\bjesus\b|\bchrist\b|\bsavior\b)/,
+    /\bwhat is new\b.*(?:\bliahona\b|\bkindex\b|#journal\b|\bjournal\b|\bgospel\b|\bscripture\b|\bcanonical\b|\bsources?\b|\bcontinuity\b|\barchitecture\b|\bruntime\b|\bjesus\b|\bchrist\b|\bsavior\b)/
   ]);
 }
 
@@ -34,6 +48,10 @@ function classifyNeedsLiveSource(content) {
   const text = normalizeText(content);
 
   if (classifyProjectStatusQuestion(text)) {
+    return false;
+  }
+
+  if (classifyProtectedLiveSourceQuestion(text)) {
     return false;
   }
 
@@ -191,6 +209,7 @@ module.exports = {
   INTENTS,
   interpretMessage,
   classifyProjectStatusQuestion,
+  classifyProtectedLiveSourceQuestion,
   classifyNeedsLiveSource,
   classifyIntent,
   getMaxOutputTokens

@@ -9,6 +9,7 @@ const { registerPublicContinuity } = require("./src/runtime/publicContinuity");
 const { createCanonicalPort } = require("./src/ports/CanonicalPort");
 const { createContinuityPort } = require("./src/ports/ContinuityPort");
 const { createInterpretivePort } = require("./src/ports/InterpretivePort");
+const { createLiveSourcePort } = require("./src/ports/LiveSourcePort");
 const { createProjectionPort } = require("./src/ports/ProjectionPort");
 const {
   logDiagnostic,
@@ -70,6 +71,7 @@ const ports = {
   canonical: createCanonicalPort(),
   continuity: createContinuityPort(),
   interpretive: createInterpretivePort(),
+  liveSources: createLiveSourcePort(),
   projection: createProjectionPort()
 };
 
