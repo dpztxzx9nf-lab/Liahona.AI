@@ -4,7 +4,11 @@ const {
   getLiveSourceConfigSummary,
   parseBoolean
 } = require("./config");
-const { searchGoogle } = require("./googleSearch");
+const {
+  GOOGLE_SEARCH_ENDPOINT,
+  GOOGLE_MAX_RESULTS_PER_REQUEST,
+  searchGoogle
+} = require("./googleSearch");
 const { searchX } = require("./xSearch");
 
 module.exports = {
@@ -12,6 +16,8 @@ module.exports = {
   getLiveSourceConfig,
   getLiveSourceConfigSummary,
   parseBoolean,
+  GOOGLE_SEARCH_ENDPOINT,
+  GOOGLE_MAX_RESULTS_PER_REQUEST,
   searchGoogle,
   searchX
 };
