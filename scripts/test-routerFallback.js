@@ -74,7 +74,49 @@ const cases = [
       needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "live repo access",
+      fallbackIncludes: "known structure",
+      fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with Kindex?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "project_status",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: true,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "KINDEX",
+      fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with #journal in Kindex?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY,
+      intent: "project_status",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: true,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "journal",
+      fallbackExcludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with the gospel?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "project_status",
+      needsLiveSource: false,
+      needsRetrieval: false,
+      needsProjectStatus: true,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "source history",
       fallbackExcludes: "Reuters"
     }
   },
@@ -88,7 +130,7 @@ const cases = [
       needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "known architecture",
+      fallbackIncludes: "architecture",
       fallbackExcludes: "Reuters"
     }
   },
@@ -102,12 +144,38 @@ const cases = [
       needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: true,
-      fallbackIncludes: "known architecture",
+      fallbackIncludes: "known structure",
       fallbackExcludes: "Reuters"
     }
   },
   {
     content: "What's happening in the news today?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "question",
+      needsLiveSource: true,
+      needsRetrieval: false,
+      needsProjectStatus: false,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new with Trump?",
+    expected: {
+      classification: MESSAGE_CLASSIFICATIONS.QUESTION,
+      intent: "question",
+      needsLiveSource: true,
+      needsRetrieval: false,
+      needsProjectStatus: false,
+      shouldRespondInDm: true,
+      shouldRespondInUninvokedGuildChannel: false,
+      fallbackIncludes: "Reuters"
+    }
+  },
+  {
+    content: "What's new in Ukraine?",
     expected: {
       classification: MESSAGE_CLASSIFICATIONS.QUESTION,
       intent: "question",
@@ -201,6 +269,36 @@ assert.strictEqual(
   "project/status wording should be identifiable before live-source routing"
 );
 assert.strictEqual(
+  classifyNeedsLiveSource("What's new with Kindex?"),
+  false,
+  "internal KINDEX wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new with Kindex?"),
+  true,
+  "internal KINDEX wording should be guarded before live-source routing"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("What's new with #journal in Kindex?"),
+  false,
+  "internal journal/KINDEX wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new with #journal in Kindex?"),
+  true,
+  "internal journal/KINDEX wording should be guarded before live-source routing"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("What's new with the gospel?"),
+  false,
+  "gospel/source wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new with the gospel?"),
+  true,
+  "gospel/source wording should be guarded before live-source routing"
+);
+assert.strictEqual(
   classifyNeedsLiveSource("What's happening in the news today?"),
   true,
   "public news wording should continue to use live-source detection"
@@ -209,6 +307,26 @@ assert.strictEqual(
   classifyProjectStatusQuestion("What's happening in the news today?"),
   false,
   "public news wording should not be treated as project status"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("What's new with Trump?"),
+  true,
+  "public figure wording should still route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new with Trump?"),
+  false,
+  "public figure wording should not be treated as project status"
+);
+assert.strictEqual(
+  classifyNeedsLiveSource("What's new in Ukraine?"),
+  true,
+  "public current-events wording should still route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new in Ukraine?"),
+  false,
+  "public current-events wording should not be treated as project status"
 );
 assert.deepStrictEqual(
   cases

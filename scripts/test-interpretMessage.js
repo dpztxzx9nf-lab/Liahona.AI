@@ -37,6 +37,7 @@ for (const input of educationalCases) {
 
 const liveCases = [
   "What's new with Trump?",
+  "What's new in Ukraine?",
   "What is happening in the news today?",
   "Any breaking headlines right now?"
 ];
@@ -52,6 +53,9 @@ for (const input of liveCases) {
 
 const projectStatusCases = [
   "What's new with your code?",
+  "What's new with Kindex?",
+  "What's new with #journal in Kindex?",
+  "What's new with the gospel?",
   "Any updates on your architecture?",
   "What is Liahona?"
 ];
@@ -63,15 +67,16 @@ for (const input of projectStatusCases) {
   assert.strictEqual(result.needsProjectStatus, true, `${input} should need project status`);
   assert.strictEqual(classifyProjectStatusQuestion(input), true, `${input} should match project status`);
   assert.strictEqual(
-    fallbackReply(input, result).includes("live repo access"),
+    fallbackReply(input, result).includes("known structure"),
     true,
-    `${input} should get honest repo-access fallback`
+    `${input} should get honest internal/source fallback`
   );
 }
 
 assert.strictEqual(classifyIntent("Hello?"), "social");
 assert.strictEqual(classifyNeedsLiveSource("What is game theory?"), false);
 assert.strictEqual(classifyProjectStatusQuestion("What's new with Trump?"), false);
+assert.strictEqual(classifyProjectStatusQuestion("What's new in Ukraine?"), false);
 assert.strictEqual(
   classifyMessage("Today I noticed I was calmer after prayer."),
   MESSAGE_CLASSIFICATIONS.JOURNAL_ENTRY

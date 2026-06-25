@@ -22,7 +22,7 @@ function buildStyleGuidance(interpretation) {
   }
 
   if (interpretation.intent === "project_status") {
-    return "This asks about Liahona's code, runtime, architecture, or project status. Do not claim live repository access or latest commits. Say that limit plainly and answer only from known architecture or runtime context.";
+    return "This asks about Liahona's code, runtime, architecture, KINDEX, journal, continuity, canonical sources, or project status. Do not claim live repository, KINDEX, Discord, journal, source-history, or latest-commit access. Say that limit plainly and answer only from known structure, orientation, architecture, or runtime context.";
   }
 
   if (interpretation.intent === "question" || interpretation.intent === "philosophical") {
@@ -129,7 +129,7 @@ function fallbackReply(content, interpretation) {
   }
 
   if (interpretation.intent === "project_status") {
-    return "I don't have live repo access from this Discord context, so I can't report exact latest commits. I can explain my known architecture and current runtime shape. For exact latest changes, check GitHub or ask from a repo-connected context.";
+    return "I don't have live access to KINDEX, journal, current repo, or source history from this Discord context. I can explain the known structure, orientation, architecture, or runtime shape.";
   }
 
   if (content.trim() === "!ping") {
