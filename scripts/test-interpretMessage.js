@@ -46,8 +46,13 @@ for (const input of liveCases) {
   const result = interpretMessage(input);
   assert.strictEqual(result.needsLiveSource, true, `${input} should need live source`);
   assert.ok(
+    fallbackReply(input, result).includes("live source access enabled"),
+    `${input} should use live-source capability fallback`
+  );
+  assert.strictEqual(
     fallbackReply(input, result).includes("Reuters"),
-    `${input} should point to live sources`
+    false,
+    `${input} should not use Reuters/AP as the default fallback`
   );
 }
 

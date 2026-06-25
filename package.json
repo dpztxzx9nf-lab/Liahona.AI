@@ -23,7 +23,8 @@
     "test:diagnostics": "node scripts/test-diagnosticsRedaction.js",
     "test:router": "node scripts/test-routerFallback.js",
     "test:live-sources": "node scripts/test-liveSourceConfig.js",
-    "test:google-live-search": "node scripts/test-googleLiveSearch.js"
+    "test:google-live-search": "node scripts/test-googleLiveSearch.js",
+    "test:live-source-runtime": "node scripts/test-liveSourceRuntime.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

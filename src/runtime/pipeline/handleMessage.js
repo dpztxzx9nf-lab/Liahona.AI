@@ -8,6 +8,7 @@ const {
   canContinue
 } = require("./invocation");
 const { prepareReplyText } = require("../../execution/prepareReply");
+const { generateLiveSourceReply } = require("../../execution/liveSourceReply");
 const {
   logDiagnostic,
   logError,
@@ -22,6 +23,17 @@ const {
 const { checkResponseCoherence } = require("../../execution/coherenceCheck");
 const { synthesizeRecurringThemes } = require("../../continuity/themeSynthesis");
 const { detectCanonicalContext } = require("../../canonical/grounding");
+
+function logLiveSourceResult({ ctx, result }) {
+  if (!result) {
+    return;
+  }
+
+  logDiagnostic("LIVE_SOURCE_RESULT", {
+    ...correlationFields(ctx),
+    ...result
+  });
+}
 
 function isIgnoredMessage(message, clientUserId) {
   if (!message?.author) {
@@ -252,43 +264,58 @@ async function processMessage(message, { clientUserId, ports }) {
   const generationStartedAt = Date.now();
 
   try {
-    retrievedContext = await retrieveContext({
-      message,
-      ports,
-      classification,
-      interpretation,
-      ctx
-    });
-
-    if (shouldSynthesizeThemes({ classification, message, clientUserId, interpretation })) {
-      recurringThemes = synthesizeRecurringThemes(retrievedContext);
-    }
-
-    canonicalSources = await retrieveCanonicalSources({
-      message,
-      ports,
-      canonicalContext: canonical_context,
-      ctx
-    });
-
-    const generation = await ports.interpretive.generate({
+    const liveSourceGeneration = await generateLiveSourceReply({
       content: message.content,
       interpretation,
-      ctx,
-      retrievedContext,
-      recurringThemes,
-      canonicalContext: canonical_context,
-      canonicalSources
+      liveSources: ports.liveSources
     });
 
-    finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
-    retrievedContext = generation?.retrieved_context ?? retrievedContext;
-    recurringThemes = generation?.recurring_themes ?? recurringThemes;
-    canonical_context = generation?.canonical_context ?? canonical_context;
-    canonicalSources = generation?.canonical_sources ?? canonicalSources;
+    let generation = liveSourceGeneration;
 
-    if (generation?.openai_response_id) {
-      ctx.openai_response_id = generation.openai_response_id;
+    if (liveSourceGeneration) {
+      logLiveSourceResult({
+        ctx,
+        result: liveSourceGeneration.live_source_result
+      });
+    } else {
+      retrievedContext = await retrieveContext({
+        message,
+        ports,
+        classification,
+        interpretation,
+        ctx
+      });
+
+      if (shouldSynthesizeThemes({ classification, message, clientUserId, interpretation })) {
+        recurringThemes = synthesizeRecurringThemes(retrievedContext);
+      }
+
+      canonicalSources = await retrieveCanonicalSources({
+        message,
+        ports,
+        canonicalContext: canonical_context,
+        ctx
+      });
+
+      generation = await ports.interpretive.generate({
+        content: message.content,
+        interpretation,
+        ctx,
+        retrievedContext,
+        recurringThemes,
+        canonicalContext: canonical_context,
+        canonicalSources
+      });
+
+      finalPrompt = generation?.final_prompt || ctx.final_prompt || null;
+      retrievedContext = generation?.retrieved_context ?? retrievedContext;
+      recurringThemes = generation?.recurring_themes ?? recurringThemes;
+      canonical_context = generation?.canonical_context ?? canonical_context;
+      canonicalSources = generation?.canonical_sources ?? canonicalSources;
+
+      if (generation?.openai_response_id) {
+        ctx.openai_response_id = generation.openai_response_id;
+      }
     }
 
     const prepared = prepareReplyText(generation);
