@@ -2,7 +2,7 @@ const { SOURCE_LAYERS } = require("./layers");
 const { createSourceRecord } = require("./schema");
 const canonical = require("./canonical/manifest");
 const philosophical = require("./philosophical/manifest");
-const live = require("./live/manifest");
+const live = require("./live");
 const continuity = require("./continuity/manifest");
 const runtime = require("./runtime/manifest");
 
