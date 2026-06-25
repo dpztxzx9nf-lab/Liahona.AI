@@ -1,6 +1,7 @@
 const assert = require("assert");
 const {
   interpretMessage,
+  classifyProjectStatusQuestion,
   classifyNeedsLiveSource
 } = require("../src/interpretive/interpretMessage");
 const {
@@ -46,6 +47,7 @@ function routeSnapshot(content) {
     intent: interpretation.intent,
     needsLiveSource: interpretation.needsLiveSource,
     needsRetrieval: interpretation.needsRetrieval,
+    needsProjectStatus: interpretation.needsProjectStatus,
     shouldRespondInDm: applyChannelSilence(
       dmMessage(content),
       interpretation,
@@ -66,39 +68,42 @@ const cases = [
     content: "What's new with your code?",
     expected: {
       classification: MESSAGE_CLASSIFICATIONS.QUESTION,
-      intent: "question",
-      needsLiveSource: true,
+      intent: "project_status",
+      needsLiveSource: false,
       needsRetrieval: false,
+      needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallbackIncludes: "Reuters",
-      knownGap: "project/status wording is currently treated as live-source wording"
+      fallbackIncludes: "live repo access",
+      fallbackExcludes: "Reuters"
     }
   },
   {
     content: "Any updates on your architecture?",
     expected: {
       classification: MESSAGE_CLASSIFICATIONS.QUESTION,
-      intent: "question",
+      intent: "project_status",
       needsLiveSource: false,
       needsRetrieval: false,
+      needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
-      fallback: "",
-      knownGap: "architecture questions are not separately routed yet"
+      fallbackIncludes: "known architecture",
+      fallbackExcludes: "Reuters"
     }
   },
   {
     content: "What is Liahona?",
     expected: {
       classification: MESSAGE_CLASSIFICATIONS.QUESTION,
-      intent: "question",
+      intent: "project_status",
       needsLiveSource: false,
       needsRetrieval: false,
+      needsProjectStatus: true,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: true,
-      fallback: "",
-      knownGap: "identity questions are not separately routed yet"
+      fallbackIncludes: "known architecture",
+      fallbackExcludes: "Reuters"
     }
   },
   {
@@ -108,6 +113,7 @@ const cases = [
       intent: "question",
       needsLiveSource: true,
       needsRetrieval: false,
+      needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
       fallbackIncludes: "Reuters"
@@ -120,6 +126,7 @@ const cases = [
       intent: "question",
       needsLiveSource: false,
       needsRetrieval: false,
+      needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
       fallback: ""
@@ -132,6 +139,7 @@ const cases = [
       intent: "retrieval",
       needsLiveSource: false,
       needsRetrieval: true,
+      needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
       fallback: "I don't hold that continuity here."
@@ -144,6 +152,7 @@ const cases = [
       intent: "casual",
       needsLiveSource: false,
       needsRetrieval: false,
+      needsProjectStatus: false,
       shouldRespondInDm: true,
       shouldRespondInUninvokedGuildChannel: false,
       fallback: "",
@@ -160,6 +169,7 @@ for (const testCase of cases) {
   assert.strictEqual(actual.intent, expected.intent, testCase.content);
   assert.strictEqual(actual.needsLiveSource, expected.needsLiveSource, testCase.content);
   assert.strictEqual(actual.needsRetrieval, expected.needsRetrieval, testCase.content);
+  assert.strictEqual(actual.needsProjectStatus, expected.needsProjectStatus, testCase.content);
   assert.strictEqual(actual.shouldRespondInDm, expected.shouldRespondInDm, testCase.content);
   assert.strictEqual(
     actual.shouldRespondInUninvokedGuildChannel,
@@ -174,26 +184,37 @@ for (const testCase of cases) {
   if (expected.fallbackIncludes) {
     assert.ok(actual.fallback.includes(expected.fallbackIncludes), testCase.content);
   }
+
+  if (expected.fallbackExcludes) {
+    assert.strictEqual(actual.fallback.includes(expected.fallbackExcludes), false, testCase.content);
+  }
 }
 
 assert.strictEqual(
   classifyNeedsLiveSource("What's new with your code?"),
+  false,
+  "project/status wording should not route through live-source detection"
+);
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's new with your code?"),
   true,
-  "current project/status wording misroutes through live-source detection"
+  "project/status wording should be identifiable before live-source routing"
 );
 assert.strictEqual(
   classifyNeedsLiveSource("What's happening in the news today?"),
   true,
   "public news wording should continue to use live-source detection"
 );
+assert.strictEqual(
+  classifyProjectStatusQuestion("What's happening in the news today?"),
+  false,
+  "public news wording should not be treated as project status"
+);
 assert.deepStrictEqual(
   cases
     .filter((testCase) => testCase.expected.knownGap)
     .map((testCase) => testCase.content),
   [
-    "What's new with your code?",
-    "Any updates on your architecture?",
-    "What is Liahona?",
     "Give me a reflection prompt."
   ],
   "known routing gaps should remain explicit before router changes"

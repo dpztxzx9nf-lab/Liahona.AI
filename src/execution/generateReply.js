@@ -21,6 +21,10 @@ function buildStyleGuidance(interpretation) {
     return "This asks about current or live events. You cannot access live news. Say that plainly in one or two sentences and point to Reuters or AP. Do not guess at current facts.";
   }
 
+  if (interpretation.intent === "project_status") {
+    return "This asks about Liahona's code, runtime, architecture, or project status. Do not claim live repository access or latest commits. Say that limit plainly and answer only from known architecture or runtime context.";
+  }
+
   if (interpretation.intent === "question" || interpretation.intent === "philosophical") {
     return "Give a direct, plain educational answer in two to four short sentences. Define the topic and one key point. Do not refuse. Do not say you lack a clear answer.";
   }
@@ -122,6 +126,10 @@ function fallbackReply(content, interpretation) {
 
   if (interpretation.needsLiveSource) {
     return "I can't see live news. For what's current, check Reuters or AP.";
+  }
+
+  if (interpretation.intent === "project_status") {
+    return "I don't have live repo access from this Discord context, so I can't report exact latest commits. I can explain my known architecture and current runtime shape. For exact latest changes, check GitHub or ask from a repo-connected context.";
   }
 
   if (content.trim() === "!ping") {

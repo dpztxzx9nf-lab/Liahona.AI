@@ -2,6 +2,7 @@ const INTENTS = new Set([
   "casual",
   "question",
   "creative",
+  "project_status",
   "reflective",
   "retrieval",
   "journal",
@@ -18,8 +19,23 @@ function hasAny(text, patterns) {
   return patterns.some((pattern) => pattern.test(text));
 }
 
+function classifyProjectStatusQuestion(content) {
+  const text = normalizeText(content);
+
+  return hasAny(text, [
+    /\b(liahona|your|you|the bot|this bot|runtime|code|repo|repository|system|project)\b.*\b(code|repo|repository|runtime|architecture|system|project|status|update|updates|changed|changes|new|latest|version|release|commit|commits)\b/,
+    /\b(what['']?s new|what is new|any updates?|latest|current status|status update)\b.*\b(your code|the code|runtime|repo|repository|your architecture|the architecture|system architecture|project|liahona|the bot|this bot)\b/,
+    /\b(what is|what['']?s|explain|describe)\s+liahona\b/,
+    /\b(liahona)\b.*\b(what is|what['']?s|architecture|runtime|code|status|updates?)\b/
+  ]);
+}
+
 function classifyNeedsLiveSource(content) {
   const text = normalizeText(content);
+
+  if (classifyProjectStatusQuestion(text)) {
+    return false;
+  }
 
   return hasAny(text, [
     /\b(right now|as of today|today|tonight|currently|latest|breaking|just now)\b/,
@@ -50,6 +66,10 @@ function classifyIntent(content) {
     /\b(what did i say|what was that|where is)\b/
   ])) {
     return "retrieval";
+  }
+
+  if (classifyProjectStatusQuestion(text)) {
+    return "project_status";
   }
 
   if (hasAny(text, [
@@ -109,6 +129,7 @@ function getResponseStyle(intent, needsLiveSource) {
   const styles = {
     casual: "silent-or-one-short-line",
     question: "direct-educational-answer",
+    project_status: "project-status-honest-limit",
     creative: "practical-output-only",
     reflective: "one-grounded-observation-max",
     retrieval: "honest-limit-brief",
@@ -130,6 +151,7 @@ function getMaxOutputTokens(intent, needsLiveSource) {
     casual: 40,
     social: 60,
     question: 180,
+    project_status: 140,
     journal: 80,
     retrieval: 100,
     reflective: 140,
@@ -160,6 +182,7 @@ function interpretMessage(message) {
     responseStyle: getResponseStyle(intent, needsLiveSource),
     maxOutputTokens: getMaxOutputTokens(intent, needsLiveSource),
     needsRetrieval: intent === "retrieval",
+    needsProjectStatus: intent === "project_status",
     needsLiveSource
   };
 }
@@ -167,6 +190,7 @@ function interpretMessage(message) {
 module.exports = {
   INTENTS,
   interpretMessage,
+  classifyProjectStatusQuestion,
   classifyNeedsLiveSource,
   classifyIntent,
   getMaxOutputTokens
