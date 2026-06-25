@@ -20,7 +20,8 @@
     "test:canonical": "node scripts/test-canonicalGrounding.js",
     "test:canonical-sources": "node scripts/test-canonicalSources.js",
     "test:projection": "node scripts/test-discordProjection.js",
-    "test:diagnostics": "node scripts/test-diagnosticsRedaction.js"
+    "test:diagnostics": "node scripts/test-diagnosticsRedaction.js",
+    "test:router": "node scripts/test-routerFallback.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
