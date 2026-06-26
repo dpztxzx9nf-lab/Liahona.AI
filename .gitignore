@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.local
+.env.*.local
 data/*.db
 data/*.jsonl
 logs/*.jsonl
@@ -8,3 +10,7 @@ logs/*.jsonl
 .verb.md
 *.canvas
 Liahona Hub.md
+
+.env.md
+
+env.md

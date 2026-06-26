@@ -8,7 +8,7 @@ const liveSources = [
     layer: SOURCE_LAYERS.LIVE,
     authorityLevel: "web-news-discovery-reference",
     updateFrequency: "continuous",
-    retrievalMode: "adapter-stub",
+    retrievalMode: "programmable-search-json-api",
     trustNotes: "Broad web/news discovery only; cite and verify results independently."
   }),
   createSourceRecord({

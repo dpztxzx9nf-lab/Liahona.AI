@@ -79,7 +79,7 @@ async function run() {
     configured: false,
     resultCount: 0,
     results: [],
-    missingCredentials: ["GOOGLE_API_KEY", "GOOGLE_CSE_ID"]
+    missingCredentials: ["GOOGLE_SEARCH_API_KEY", "GOOGLE_SEARCH_ENGINE_ID"]
   });
 
   assert.strictEqual(missingCredentials.interpretation.needsLiveSource, true);

@@ -1,4 +1,8 @@
-const { getLiveSourceConfig } = require("./config");
+const {
+  GOOGLE_API_KEY_ENV_NAMES,
+  GOOGLE_CSE_ID_ENV_NAMES,
+  getLiveSourceConfig
+} = require("./config");
 
 const GOOGLE_SEARCH_ENDPOINT = "https://customsearch.googleapis.com/customsearch/v1";
 const GOOGLE_MAX_RESULTS_PER_REQUEST = 10;
@@ -54,6 +58,10 @@ function firstValue(...values) {
   return values.find((value) => typeof value === "string" && value.trim().length > 0) || null;
 }
 
+function firstEnvValue(env, names) {
+  return firstValue(...names.map((name) => env[name]));
+}
+
 function extractPublishedAt(item = {}) {
   const metatags = item.pagemap?.metatags;
   const firstMetatags = Array.isArray(metatags) ? metatags[0] : null;
@@ -92,8 +100,8 @@ function normalizeGoogleItem(item = {}, { query, fetchedAt }) {
 function buildGoogleSearchUrl({ query, env, maxResults }) {
   const url = new URL(GOOGLE_SEARCH_ENDPOINT);
 
-  url.searchParams.set("key", String(env.GOOGLE_API_KEY || "").trim());
-  url.searchParams.set("cx", String(env.GOOGLE_CSE_ID || "").trim());
+  url.searchParams.set("key", firstEnvValue(env, GOOGLE_API_KEY_ENV_NAMES) || "");
+  url.searchParams.set("cx", firstEnvValue(env, GOOGLE_CSE_ID_ENV_NAMES) || "");
   url.searchParams.set("q", query);
   url.searchParams.set("num", String(maxResults));
 
@@ -103,12 +111,12 @@ function buildGoogleSearchUrl({ query, env, maxResults }) {
 function getGoogleMissingCredentials(env) {
   const missingCredentials = [];
 
-  if (!String(env.GOOGLE_API_KEY || "").trim()) {
-    missingCredentials.push("GOOGLE_API_KEY");
+  if (!firstEnvValue(env, GOOGLE_API_KEY_ENV_NAMES)) {
+    missingCredentials.push("GOOGLE_SEARCH_API_KEY");
   }
 
-  if (!String(env.GOOGLE_CSE_ID || "").trim()) {
-    missingCredentials.push("GOOGLE_CSE_ID");
+  if (!firstEnvValue(env, GOOGLE_CSE_ID_ENV_NAMES)) {
+    missingCredentials.push("GOOGLE_SEARCH_ENGINE_ID");
   }
 
   return missingCredentials;
